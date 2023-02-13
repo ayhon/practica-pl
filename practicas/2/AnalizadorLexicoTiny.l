@@ -35,28 +35,34 @@ digito = ({digitoPositivo}|0)
 parteEntera = {digitoPositivo}{digito}*
 parteDecimal = {digito}* {digitoPositivo}
 separador = [ \t\r\b\n]
-comentario = #[^\n]* 
-evalua = evalua
-donde = donde
-identificador = {letra}({letra}|{digito})*
+comentario = \/\/[^\n]* 
+print = print
 numeroEntero = [\+\-]?{parteEntera}
 numeroReal = [\+\-]?{parteEntera}\.{parteDecimal}
+numero = {numeroEntero}|{numeroReal}
+identificador = {letra}({letra}|{digito})*
+
+operadorConcat = \#
 operadorSuma = \+
 operadorResta = \-
 operadorMultiplicacion = \*
 operadorDivision = \/
+operadorMenor = \<
+operadorMayor = \>
+operadorIgual = \=\=
+operadorDistinto = \!\=
+
+inicioLista = \[
+finLista = \]
+coma = ,
+
 parentesisApertura = \(
 parentesisCierre = \)
-igual = \=
-coma  = ,
+asignacion = \=
 %%
 {separador}               {}
 {comentario}              {}
-{evalua}                  {return ops.unidadEvalua();}
-{donde}                   {return ops.unidadDonde();}
 {identificador}           {return ops.unidadId();}
-{numeroEntero}            {return ops.unidadEnt();}
-{numeroReal}              {return ops.unidadReal();}
 {operadorSuma}            {return ops.unidadSuma();}
 {operadorResta}           {return ops.unidadResta();}
 {operadorMultiplicacion}  {return ops.unidadMul();}
@@ -65,4 +71,18 @@ coma  = ,
 {parentesisCierre}        {return ops.unidadPCierre();} 
 {igual}                   {return ops.unidadIgual();} 
 {coma}                    {return ops.unidadComa();}
+{numero}
+{operadorConcat}
+{operadorMenor}
+{operadorMayor}
+{operadorIgual}
+{operadorDistinto}
+{inicioLista}
+{finLista}
+{print}
+
 [^]                       {errores.errorLexico(fila(),columna(),lexema());}  
+{evalua}                  {return ops.unidadEvalua();}
+{donde}                   {return ops.unidadDonde();}
+{numeroEntero}            {return ops.unidadEnt();}
+{numeroReal}              {return ops.unidadReal();}

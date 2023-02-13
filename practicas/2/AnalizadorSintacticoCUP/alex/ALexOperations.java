@@ -14,22 +14,6 @@ public class ALexOperations {
                 alex.lexema());
     }
 
-    public UnidadLexica unidadEvalua() {
-        return new UnidadLexica(alex.fila(), alex.columna(), ClaseLexica.EVALUA);
-    }
-
-    public UnidadLexica unidadDonde() {
-        return new UnidadLexica(alex.fila(), alex.columna(), ClaseLexica.DONDE);
-    }
-
-    public UnidadLexica unidadEnt() {
-        return new UnidadLexica(alex.fila(), alex.columna(), ClaseLexica.ENT, alex.lexema());
-    }
-
-    public UnidadLexica unidadReal() {
-        return new UnidadLexica(alex.fila(), alex.columna(), ClaseLexica.REAL, alex.lexema());
-    }
-
     public UnidadLexica unidadSuma() {
         return new UnidadLexica(alex.fila(), alex.columna(), ClaseLexica.MAS);
     }
@@ -65,4 +49,32 @@ public class ALexOperations {
     public UnidadLexica unidadEof() {
         return new UnidadLexica(alex.fila(), alex.columna(), ClaseLexica.EOF);
     }
+    // public UnidadLexica unidadNumero() {
+    // return new UnidadLexica(alex.fila(), alex.columna(), ClaseLexica.);
+    // }
+    // public UnidadLexica unidadConcat() {
+    // return new UnidadLexica(alex.fila(), alex.columna(), ClaseLexica.);
+    // }
+    // public UnidadLexica unidadMenor() {
+    // return new UnidadLexica(alex.fila(), alex.columna(), ClaseLexica.);
+    // }
+    // public UnidadLexica unidadMayor() {
+    // return new UnidadLexica(alex.fila(), alex.columna(), ClaseLexica.);
+    // }
+    // public UnidadLexica unidadIgual() {
+    // return new UnidadLexica(alex.fila(), alex.columna(), ClaseLexica.);
+    // }
+    // public UnidadLexica unidadDistinto() {
+    // return new UnidadLexica(alex.fila(), alex.columna(), ClaseLexica.);
+    // }
+    // public UnidadLexica unidadInicioLista() {
+    // return new UnidadLexica(alex.fila(), alex.columna(), ClaseLexica.);
+    // }
+    // public UnidadLexica unidadFinLista() {
+    // return new UnidadLexica(alex.fila(), alex.columna(), ClaseLexica.);
+    // }
+    // public UnidadLexica unidadPrint() {
+    // return new UnidadLexica(alex.fila(), alex.columna(), ClaseLexica.);
+    // }
+
 }

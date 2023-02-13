@@ -1,0 +1,8 @@
+{
+    "java.project.referencedLibraries": [
+        "**/*.jar"
+    ],
+    "files.exclude": {
+        "**/*.class": true
+    }
+}

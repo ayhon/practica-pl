@@ -1,0 +1,11 @@
+L = []                  // L contiene la lista vacia                               
+L2 = [1,2,3]            // L2 contiene una lista con 3 numeros                     
+L3 = L1#L2              // L3 es la concatenación de L1 y L2, es decir L2          
+L4 = [[[1,2],3],4]      // L4 es una lista heterogénea                             
+L5 = lreduce + L4       // L5 tiene un único elemento: la suma de los números de L4
+L6 = lmap - 1 L4        // L6 se obtiene restando 1 a los números de L4            
+print L5                // Se imprime [10]                                         
+print L6                // Se imprime [[[0,1],2],3]                                
+L7 = lfilter != 1 L4    // L7 es una copia de L4 eliminando los números iguales a 1
+print L7                // Se imprime [[[2],3],4]
+L8 = lfilter > 2 L7     // L8 será [[[],3],4]

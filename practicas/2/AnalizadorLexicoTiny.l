@@ -69,7 +69,7 @@ asignacion = \=
 {operadorDivision}        {return ops.unidadDiv();}
 {parentesisApertura}      {return ops.unidadPAp();}
 {parentesisCierre}        {return ops.unidadPCierre();} 
-{igual}                   {return ops.unidadIgual();} 
+{asignacion}              {return ops.unidadAsignacion();} 
 {coma}                    {return ops.unidadComa();}
 {numero}
 {operadorConcat}
@@ -82,7 +82,7 @@ asignacion = \=
 {print}
 
 [^]                       {errores.errorLexico(fila(),columna(),lexema());}  
-{evalua}                  {return ops.unidadEvalua();}
-{donde}                   {return ops.unidadDonde();}
-{numeroEntero}            {return ops.unidadEnt();}
-{numeroReal}              {return ops.unidadReal();}
+//{evalua}                  {return ops.unidadEvalua();}
+//{donde}                   {return ops.unidadDonde();}
+//{numeroEntero}            {return ops.unidadEnt();}
+//{numeroReal}              {return ops.unidadReal();}

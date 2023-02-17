@@ -41,6 +41,9 @@ numeroEntero = [\+\-]?{parteEntera}
 numeroReal = [\+\-]?{parteEntera}\.{parteDecimal}
 numero = {numeroEntero}|{numeroReal}
 identificador = {letra}({letra}|{digito})*
+lreduce = lreduce
+lfilter = lfilter
+lmap = lmap
 
 operadorConcat = \#
 operadorSuma = \+
@@ -62,6 +65,10 @@ asignacion = \=
 %%
 {separador}               {}
 {comentario}              {}
+{print}                   {return ops.unidadPrint();}
+{lreduce}                 {return ops.unidadLReduce();}
+{lfilter}                 {return ops.unidadLFilter();}
+{lmap}                    {return ops.unidadLMap();}
 {identificador}           {return ops.unidadId();}
 {operadorSuma}            {return ops.unidadSuma();}
 {operadorResta}           {return ops.unidadResta();}
@@ -71,15 +78,15 @@ asignacion = \=
 {parentesisCierre}        {return ops.unidadPCierre();} 
 {asignacion}              {return ops.unidadAsignacion();} 
 {coma}                    {return ops.unidadComa();}
-{numero}
-{operadorConcat}
-{operadorMenor}
-{operadorMayor}
-{operadorIgual}
-{operadorDistinto}
-{inicioLista}
-{finLista}
-{print}
+{numero}                  {return ops.unidadNumero();}
+{operadorConcat}          {return ops.unidadConcat();}
+{operadorMenor}           {return ops.unidadMenor();}
+{operadorMayor}           {return ops.unidadMayor();}
+{operadorIgual}           {return ops.unidadIgual();}
+{operadorDistinto}        {return ops.unidadDistinto();}
+{inicioLista}             {return ops.unidadInicioLista();}
+{finLista}                {return ops.unidadFinLista();}
+
 
 [^]                       {errores.errorLexico(fila(),columna(),lexema());}  
 //{evalua}                  {return ops.unidadEvalua();}

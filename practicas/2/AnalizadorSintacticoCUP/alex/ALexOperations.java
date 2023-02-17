@@ -41,10 +41,12 @@ public class ALexOperations {
     public UnidadLexica unidadComa() {
         return new UnidadLexica(alex.fila(), alex.columna(), ClaseLexica.COMA);
     }
+
     public UnidadLexica unidadEof() {
         return new UnidadLexica(alex.fila(), alex.columna(), ClaseLexica.EOF);
     }
-    public UnidadLexica unidadAsignacion(){
+
+    public UnidadLexica unidadAsignacion() {
         return new UnidadLexica(alex.fila(), alex.columna(), ClaseLexica.ASSIGN);
     }
 
@@ -53,34 +55,47 @@ public class ALexOperations {
         return new UnidadLexica(alex.fila(), alex.columna(), ClaseLexica.NUM);
     }
 
-	public UnidadLexica unidadConcat() {
+    public UnidadLexica unidadConcat() {
         return new UnidadLexica(alex.fila(), alex.columna(), ClaseLexica.CONCAT);
     }
 
-	public UnidadLexica unidadMenor() {
+    public UnidadLexica unidadMenor() {
         return new UnidadLexica(alex.fila(), alex.columna(), ClaseLexica.LESS);
     }
 
-	public UnidadLexica unidadMayor() {
+    public UnidadLexica unidadMayor() {
         return new UnidadLexica(alex.fila(), alex.columna(), ClaseLexica.GREATER);
     }
 
-	public UnidadLexica unidadIgual() {
+    public UnidadLexica unidadIgual() {
         return new UnidadLexica(alex.fila(), alex.columna(), ClaseLexica.EQUAL);
     }
 
-	public UnidadLexica unidadDistinto() {
+    public UnidadLexica unidadDistinto() {
         return new UnidadLexica(alex.fila(), alex.columna(), ClaseLexica.UNEQUAL);
     }
 
-	public UnidadLexica unidadInicioLista() {
+    public UnidadLexica unidadInicioLista() {
         return new UnidadLexica(alex.fila(), alex.columna(), ClaseLexica.LBEGIN);
     }
 
-	public UnidadLexica unidadFinLista() {
+    public UnidadLexica unidadFinLista() {
         return new UnidadLexica(alex.fila(), alex.columna(), ClaseLexica.LEND);
     }
-	public UnidadLexica unidadPrint() {
+
+    public UnidadLexica unidadPrint() {
         return new UnidadLexica(alex.fila(), alex.columna(), ClaseLexica.PRINT);
+    }
+
+    public UnidadLexica unidadLReduce() {
+        return new UnidadLexica(alex.fila(), alex.columna(), ClaseLexica.LREDUCE);
+    }
+
+    public UnidadLexica unidadLFilter() {
+        return new UnidadLexica(alex.fila(), alex.columna(), ClaseLexica.LFILTER);
+    }
+
+    public UnidadLexica unidadLMap() {
+        return new UnidadLexica(alex.fila(), alex.columna(), ClaseLexica.LMAP);
     }
 }

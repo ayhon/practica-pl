@@ -1,11 +1,11 @@
 green_echo(){
-    echo "\e[32m$1\e[m"
+    echo -e "\e[32m$1\e[m\n"
 }
 red_echo(){
-    echo "\e[31m$1\e[m"
+    echo -e "\e[31m$1\e[m\n"
 }
 blue_echo(){
-    echo "\e[34m$1\e[m"
+    echo -e "\e[34m$1\e[m\n"
 }
 exit_loudly(){
     red_echo "Fix this!"
@@ -13,8 +13,8 @@ exit_loudly(){
 }
 victory(){
     blue_echo "DONE!"
-    sleep 1
-    curl parrot.live
+    # sleep 1
+    # curl parrot.live
 }
 jflex(){
     java -cp jflex.jar jflex.Main $1
@@ -34,6 +34,6 @@ green_echo "Compilando Java"
 (cd AnalizadorSintacticoCUP && javac -cp "../cup.jar" */*.java) || exit_loudly
 
 green_echo "Ejecutando el analizador sintactico"
-(cd AnalizadorSintacticoCUP && java -cp ".:../cup.jar" asint.Main ../input.txt) || exit_loudly
+(cd AnalizadorSintacticoCUP && java -cp ".:../cup.jar" asint.Main ../inputList.txt) || exit_loudly
 
 victory

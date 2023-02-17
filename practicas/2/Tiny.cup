@@ -18,13 +18,20 @@ init with {:
    alex.fijaGestionErrores(errores);
 :};
 
+terminal IDEN, 
+         NUM, MAS, MENOS, POR, DIV, 
+         ASSIGN, 
+         COMA, PAP, PCIERRE, LBEGIN, LEND, 
+         PRINT, CONCAT, LREDUCE, LMAP, LFILTER,
+         LESS, GREATER, UNEQUAL, EQUAL;
 
-terminal     IDEN, NUM, MAS, MENOS, POR, DIV, ASSIGN, COMA, PAP, PCIERRE,
-             LBEGIN, LEND, PRINT, CONCAT, LESS, GREATER, UNEQUAL, EQUAL,
-             LREDUCE, LMAP, LFILTER;
+non terminal S, STATs, 
+            STAT, EXPR, 
+            OPERARIT, OPERBOOL, 
+            LIST, INLIST, ELEMLIST;
 
-non terminal S, STATs, STAT, EXPR, OPERARIT, OPERBOOL, LIST, INLIST, ELEMLIST;
-
+/// Expresion devuelve una lista
+/// Statement es una asignacion o un print
 S ::= STATs;
 STATs ::= STAT STATs | STAT;
 STAT ::= PRINT EXPR | IDEN ASSIGN EXPR;
@@ -37,7 +44,6 @@ EXPR ::= LREDUCE OPERARIT EXPR
 OPERARIT ::= MAS | MENOS | POR | DIV;
 OPERBOOL ::= LESS | GREATER | UNEQUAL | EQUAL;
       
-LIST ::= LBEGIN INLIST LEND;
+LIST ::= LBEGIN INLIST LEND | IDEN;
 INLIST ::= ELEMLIST | ELEMLIST COMA INLIST | ;
 ELEMLIST ::= NUM | LIST;
-

@@ -14,7 +14,15 @@ ASIGNACION ::= TIPO IDEN PCOMA
           |  TIPO IDEN OP_ASIGN EXPR PCOMA 
 ```
 
-### Condicional con 1 y 2 ramas (if y if-else)
+### Condicional con 1 y 2 ramas
+La sintaxis sobre los condicionales en nuestro leguaje serán  la de:
+
+```
+if cond then
+codigo
+end
+```
+Y en caso de dos ramas:
 
 ```
 if cond then
@@ -24,6 +32,7 @@ codigo
 end
 ```
 
+## ATTENTION:?Esto habría que quitarlo no?
 ```
 INST_IF ::= IF EXPR THEN STMTs END
        |  IF EXPR THEN STMTs ELSE STMTs END
@@ -62,7 +71,7 @@ INST_FOR ::= FOR IDEN FROM EXPR TO EXPR DO STMTs END
 
 ### Llamadas a función.
 
-  Se usan paréntesis
+ Para llevar a cabo llamadas a funciones, utilizamos el nombre de la función seguido por paréntesis que contienen los parámetros para la misma separados por comas. Ejemplo:
 
 ```
 fun_function(a,b,10,1+3,4)
@@ -116,7 +125,7 @@ La prioridad de `->`hace que `@curr->next->next` es equivalente a `(@curr)->next
 
 ### Instrucción case (Salto a cada rama en tiempo constante)
 
-TODO: Ver si hacemos esto, y como (Creo que no es opcional)
+La sintaxis se compone de la palabra clave 'match' seguido de la variable a evaluar, seguido de la palabra clave 'is'. En las siguientes lineas se separan los diferentes casos con la siguiente estructura, primero la palabra clave 'case' seguido de la constante a comparar, segido de la palabra clave 'do', finalemente en las siguientes líneas aparecen las lineas del código para el caso. El último caso se puede abreviar con un otherwise en lugar del 'case' + const +  'do'. Terminamos con un 'end'. Ejemplo:
 
 ```
 match a is
@@ -150,11 +159,13 @@ int a = array 10; ¿?
 func sort(array int a) -> array int
 ```
 
-### Funciones (paso parámetros por valor o referencia)
+### Funciones
 
-Hemos decidido pasar parámetros por valor, puesto tenemos punteros. Queda más claro.
+Hemos decidido pasar parámetros por valor, puesto tenemos punteros. Creemos que de esta forma queda más claro.
 
-La sintaxis es la siguiente
+La sintaxis es la siguiente:
+
+Comenzamos con la palabra clave 'func' seguido del nombre de la función con los parámentros y su tipo entre parétesis, a continuación aparece '->' + tipo que representa el tipo que devuelve la función. A continuación aparece el código de la función, terminando con un end. Ejemplo:
 
 ```
 func nombre(int a, int a) -> int
@@ -213,7 +224,7 @@ MODULE_INSTR := MODULE IDEN IS DECLs END
 
 ### Cláusulas de importanción
 
-El acceso a los campos de un módulo se hace con `::`.
+El acceso a los campos de un módulo se hace con `::`, precedido por el nombre del módulo. Los módulos se importan al inicio del programa, usando la sintaxis 'import' + módulo. Ejemplo:
 
 ```
 import Std;

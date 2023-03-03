@@ -1,0 +1,45 @@
+package constructorast;
+
+import java_cup.runtime.*;
+import alex.AnalizadorLexicoExp;
+import alex.UnidadLexica;
+import alex.TokenValue;
+import errors.GestionErroresExp;
+import ast.*;
+
+scan with {: return getScanner().next_token(); :};
+//action code {:
+//   ... add some code to declare and initialize e.g. variables used by the code embedded in the grammar
+//:};
+parser code {: 
+   private GestionErroresExp errores;
+   public void syntax_error(Symbol unidadLexica) {
+     errores.errorSintactico((UnidadLexica)unidadLexica);
+   }
+:};
+init with {: 
+   errores = new GestionErroresExp();
+   AnalizadorLexicoExp alex = (AnalizadorLexicoExp)getScanner();
+   alex.fijaGestionErrores(errores);
+:};
+
+
+terminal  MAS, POR, PAP, PCIERRE;
+terminal TokenValue NUM;
+
+non terminal  E Exp, Term, Fact;
+
+Exp ::= Exp: aDeexp1 MAS Term: aDeterm 
+   {: RESULT= new EBin(aDeexp1,aDeterm,Operator.SUM); :};
+Exp ::= Term: aDeterm
+   {: RESULT=aDeterm; :};
+Term ::= Term: aDeterm1 POR Fact: aDefact 
+   {: RESULT= new EBin(aDeterm1,aDefact,Operator.MUL); :};
+Term ::= Fact: aDefact
+   {: RESULT=aDefact; :};   
+Fact ::= NUM: numValue           
+   {: RESULT = new Num(numValue.lexema); :};
+Fact ::= PAP Exp: aDeexp PCIERRE
+   {: RESULT = aDeexp; :};
+
+

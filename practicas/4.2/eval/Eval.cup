@@ -1,0 +1,46 @@
+package eval;
+
+import java_cup.runtime.*;
+import alex.AnalizadorLexicoEval;
+import alex.UnidadLexica;
+import alex.TokenValue;
+import errors.GestionErroresEval;
+
+scan with {: return getScanner().next_token(); :};
+parser code {: 
+   private GestionErroresEval errores;
+   public void syntax_error(Symbol unidadLexica) {
+     errores.errorSintactico((UnidadLexica)unidadLexica);
+   }
+:};
+init with {: 
+   errores = new GestionErroresEval();
+   AnalizadorLexicoEval alex = (AnalizadorLexicoEval)getScanner();
+   alex.fijaGestionErrores(errores);
+:};
+
+
+terminal  MAS, POR, PAP, PCIERRE;
+terminal TokenValue NUM;  // Must be of the same type as the "value" in Symbol
+// terminal NUM;        // if nothing is said then it has type Object (same for non-terminals) 
+non terminal  Integer Exp, Term, Fact;
+
+Exp ::= Exp: exp1 MAS Term: term 
+   // {: RESULT = Integer.valueOf(exp1.intValue() + term.intValue()); :};
+   {: int aux = exp1.intValue() + term.intValue(); RESULT = Integer.valueOf(aux); :};
+Exp ::= Term: term
+   {: RESULT = term; :};
+   // {: RESULT = term.clone(); :};
+   
+Term ::= Term: term1 POR Fact: fact 
+   {: RESULT = Integer.valueOf(term1.intValue() * fact.intValue()); :};
+Term ::= Fact: fact
+   {: RESULT = fact; :};   
+Fact ::= NUM: numValue      // numValue returns the object in "value" of Symbol
+                            // Remind that UnidadLexica is a subcalss of Symbol
+   {: RESULT = Integer.valueOf(numValue.lexema); :};
+   // {: RESULT = Integer.valueOf(((TokenValue)lexDeNum).lexema); :}; // if it is not said that is a TokenValue
+Fact ::= PAP Exp: exp PCIERRE
+   {: RESULT = exp; :};
+
+

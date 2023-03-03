@@ -1,0 +1,45 @@
+package asint;
+
+import java_cup.runtime.*;
+import alex.AnalizadorLexicoTiny;
+import alex.UnidadLexica;
+import alex.TokenValue;
+import errors.GestionErroresTiny;
+
+scan with {: return getScanner().next_token(); :};
+parser code {: 
+   private GestionErroresTiny errores;
+   public void syntax_error(Symbol unidadLexica) {
+     errores.errorSintactico((UnidadLexica)unidadLexica);
+   }
+:};
+init with {: 
+   errores = new GestionErroresTiny();
+   AnalizadorLexicoTiny alex = (AnalizadorLexicoTiny)getScanner();
+   alex.fijaGestionErrores(errores);
+:};
+
+
+terminal  TokenValue  DONDE, EVALUA, IDEN, ENT, REAL, MAS,
+                      MENOS, POR, DIV, IGUAL, COMA, PAP, PCIERRE;
+
+non terminal  S, Ds, LDs, D, E0, E1, E2, OP0, OP1;
+
+S   ::= EVALUA E0 Ds
+    	| EVALUA error Ds; //2 (descomentar esta línea y comentar siguiente)
+//	| error; 
+Ds  ::= DONDE LDs | ;
+LDs ::= LDs COMA:c D
+    	{: System.out.println(" instrucción correcta. Linea " + c.fila); :}
+	| D
+	{: System.out.println(" instrucción correcta"); :}
+	| error; // 3 (descomentar esta línea y borrar ; anterior)
+D   ::= IDEN IGUAL E0
+    	| IDEN error; // 4 (descomentar esta línea y borrar ; anterior)
+E0  ::= E0 OP0 E1 | E1 ;
+E1  ::= E1 OP1 E2 | E2 ;
+E2  ::= ENT | REAL | IDEN | PAP E0 PCIERRE ;  
+OP0 ::= MAS | MENOS ;
+OP1 ::= POR | DIV ;
+
+

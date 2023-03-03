@@ -1,0 +1,6 @@
+evalua
+166.386 * euros + 1.66386 * (centimos1 + centimos2)
+donde
+euros = 567,
+centimos1 = 456,
+centimos2 = 10

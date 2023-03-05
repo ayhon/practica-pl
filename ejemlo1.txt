@@ -1,0 +1,38 @@
+//Ejecución de un programa inútil para calcular un número de Fibbonaci 
+//para dar una idea de la sintaxis del lenguaje
+
+import Math;
+
+//Funcion auxiliar
+func func_fib(int n) -> int
+    //Switch sencillo
+    match n is
+        case 1 do
+            return 1;
+        case 2 do
+            return 1;
+        default
+            //Llamamos a una función ficticia del módulo Math
+            return Math::fib(n-1) +  Math::fib(n-2);
+    end
+
+
+func main() -> int
+    int n;
+    scan(n);
+
+    int res = func_fib(n);
+
+    //Ejemplo de condicional
+    if res > 0 then
+        print(res);
+    else if res == 0 then
+        print(res);
+    end
+end
+
+
+
+
+
+

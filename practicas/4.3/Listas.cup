@@ -1,0 +1,55 @@
+package asint;
+
+import java_cup.runtime.*;
+import alex.AnalizadorLexicoTiny;
+import alex.UnidadLexica;
+import errors.GestionErroresTiny;
+
+scan with {: return getScanner().next_token(); :};
+parser code {: 
+   private GestionErroresTiny errores;
+   public void syntax_error(Symbol unidadLexica) {
+     errores.errorSintactico((UnidadLexica)unidadLexica);
+   }
+:};
+init with {: 
+   errores = new GestionErroresTiny();
+   AnalizadorLexicoTiny alex = (AnalizadorLexicoTiny)getScanner();
+   alex.fijaGestionErrores(errores);
+:};
+
+terminal IDEN, NUM, MAS, MENOS, POR, DIV, 
+         ASSIGN, 
+         COMA, PAP, PCIERRE, LBEGIN, LEND, 
+         PRINT, CONCAT, LREDUCE, LMAP, LFILTER,
+         LESS, GREATER, UNEQUAL, EQUAL;
+
+non terminal S, STATs, 
+            STAT, EXPR, 
+            OPERARIT, OPERBOOL, 
+            LIST, INLIST, ELEMLIST,
+            FUNCIONES, SUMANDOS, FINAL;
+
+/// Expresion devuelve una lista
+/// Statement es una asignacion o un print
+S ::= STATs;
+STATs ::= STAT STATs | STAT;
+STAT ::= PRINT EXPR | IDEN ASSIGN EXPR;
+EXPR ::= FUNCIONES;
+
+FUNCIONES ::= LREDUCE OPERARIT SUMANDOS 
+           |  LMAP OPERARIT NUM SUMANDOS 
+           |  LFILTER OPERBOOL NUM SUMANDOS
+           |  SUMANDOS;
+
+SUMANDOS ::= FINAL CONCAT SUMANDOS
+          |  FINAL;
+   
+FINAL ::= LIST | IDEN | PAP EXPR PCIERRE;
+
+OPERARIT ::= MAS | MENOS | POR | DIV;
+OPERBOOL ::= LESS | GREATER | UNEQUAL | EQUAL;
+      
+LIST ::= LBEGIN INLIST LEND;
+INLIST ::= ELEMLIST | ELEMLIST COMA INLIST | ;
+ELEMLIST ::= NUM | LIST;

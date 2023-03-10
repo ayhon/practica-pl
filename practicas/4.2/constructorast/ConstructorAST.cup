@@ -27,7 +27,7 @@ init with {:
 terminal  MAS, POR, PAP, PCIERRE;
 terminal TokenValue NUM;
 
-non terminal  E Exp, Term, Fact;
+non terminal E Exp, Term, Fact;
 
 Exp ::= Exp: aDeexp1 MAS Term: aDeterm 
    {: RESULT= new EBin(aDeexp1,aDeterm,Operator.SUM); :};

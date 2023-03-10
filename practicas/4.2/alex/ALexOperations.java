@@ -1,10 +1,10 @@
 package alex;
 
-import eval.ClaseLexica;
+import constructorast.ClaseLexica;
 
 public class ALexOperations {
-  private AnalizadorLexicoEval alex;
-  public ALexOperations(AnalizadorLexicoEval alex) {
+  private AnalizadorLexicoExp alex;
+  public ALexOperations(AnalizadorLexicoExp alex) {
    this.alex = alex;   
   }
   public UnidadLexica unidadEnt() {

@@ -1,0 +1,39 @@
+package ditto.parser;
+
+import java_cup.runtime.*;
+import ditto.lexer.Lexer;
+import ditto.lexer.Token;
+import ditto.errors.ErrorHandler;
+
+scan with {: return getScanner().next_token(); :};
+parser code {: 
+   private ErrorHandler errors;
+   public void syntax_error(Symbol token) {
+     errors.syntaxError((Token)token);
+   }
+:};
+init with {: 
+   errors = new ErrorHandler();
+   Lexer lex = (Lexer)getScanner();
+   lex.setErrorHandler(errors);
+:};
+
+terminal TRUE, FALSE, NAT, PLUS, MINUS, TIMES, DIV, MOD, LESS, GREATER, NOT_EQUAL, EQUAL,
+         GREATER_EQUAL, LESS_EQUAL, AND, OR, NOT, OPEN_PAR, CLOSE_PAR;
+
+non terminal S, EXPR, DISJUNCTION, CONJUNCTION, NEGATION, EQUALITY, COMPARISON, TERM, FACTOR, UNARY, PRIMARY;
+
+S ::= EXPR;
+
+EXPR        ::= DISJUNCTION;
+DISJUNCTION ::= DISJUNCTION OR CONJUNCTION | CONJUNCTION;
+CONJUNCTION ::= CONJUNCTION AND NEGATION | NEGATION;
+NEGATION    ::= NOT NEGATION | EQUALITY;
+EQUALITY    ::= EQUALITY EQUAL COMPARISON | EQUALITY NOT_EQUAL COMPARISON | COMPARISON;
+COMPARISON  ::= COMPARISON LESS TERM | COMPARISON GREATER TERM | COMPARISON LESS_EQUAL TERM | COMPARISON GREATER_EQUAL TERM | TERM;
+TERM        ::= TERM PLUS FACTOR | TERM MINUS FACTOR | FACTOR;
+FACTOR      ::= FACTOR TIMES UNARY | FACTOR DIV UNARY | FACTOR MOD UNARY | UNARY;
+UNARY       ::= MINUS UNARY | PLUS UNARY | PRIMARY;
+PRIMARY     ::= TRUE | FALSE | NAT | OPEN_PAR EXPR CLOSE_PAR;
+
+

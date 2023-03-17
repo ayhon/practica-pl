@@ -16,7 +16,14 @@ case $1 in
                 rm ditto/lexer/Lexer.java~
                 ;;
             parser)
-                cup ditto/parser/Parser.cup
+                cup -parser Parser -symbols TokenKind -nopositions ditto/parser/Syntax.cup
+                mv Parser.java ditto/parser/
+                mv TokenKind.java ditto/parser/
+                ;;
+            all)
+                for target in {lexer,parser}; do
+                    $0 build $target
+                done
                 ;;
             *)
                 echo "Nou entiendo"
@@ -25,8 +32,12 @@ case $1 in
         esac
         ;;
     lexer)
-        echo "No hemos llegado ahí"
-        stop
+        javac -cp "$JAR_PATH/*" ditto/lexer/*.java \
+         && java -cp "$JAR_PATH/*:." ditto.lexer.Test test/expr-input.txt
+        ;;
+    parser)
+        javac -cp "$JAR_PATH/*" ditto/*/*.java \
+         && java -cp "$JAR_PATH/*:." ditto.parser.Test test/expr-input.txt
         ;;
     *)
         echo "Nou entiendo"

@@ -4,6 +4,8 @@
 
 package ditto.lexer;
 
+import ditto.errors.ErrorHandler;
+
 
 // See https://github.com/jflex-de/jflex/issues/222
 @SuppressWarnings("FallThrough")
@@ -297,7 +299,7 @@ public class Lexer implements java_cup.runtime.Scanner {
   public int row() {return yyline+1;}
   public int col() {return yycolumn+1;}
   public void setErrorHandler(ErrorHandler errores) {
-   this.errores = errores;
+    this.errores = errores;
   }
 
 

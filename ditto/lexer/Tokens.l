@@ -1,12 +1,16 @@
 package ditto.lexer;
 
+import ditto.errors.ErrorHandler;
+
 %%
-%cup
+%unicode
 %line
 %column
 %class Lexer
-%unicode
 %public
+/*%type Token*/
+/*Descomentar cuando se quiera poner con CUP */
+%cup
 
 %{
   private LexerOperations ops;
@@ -15,7 +19,7 @@ package ditto.lexer;
   public int row() {return yyline+1;}
   public int col() {return yycolumn+1;}
   public void setErrorHandler(ErrorHandler errores) {
-   this.errores = errores;
+    this.errores = errores;
   }
 %}
 
@@ -39,7 +43,6 @@ natural = ({nonZeroDigit}{digit}*|0)
 
 true = true
 false = false
-boolean = {true}|{false}
 
 /* Operadores binarios */
 plus = \+

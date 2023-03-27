@@ -65,6 +65,38 @@ or = or
 openPar = \(
 closePar = \)
 
+/* Variables */
+
+letter = [a-zA-Z]
+identifier = {letter}({letter}|{digit})*
+
+assign = :\=
+
+/* Keywords */
+func = func
+if = if
+else = else
+for = for
+while = while
+import = import
+return = return
+match = match
+case = case
+is = is 
+otherwise = otherwise
+end = end
+do = do
+then = then
+module = module
+struct = struct
+public = public
+from = from
+to = to 
+by = by
+ptr = ptr 
+ref = ref
+array = array
+
 
 %%
 {separator}                   {}
@@ -89,4 +121,30 @@ closePar = \)
 {or}                          {return ops.scanOr();}
 {true}                        {return ops.scanTrue();}
 {false}                       {return ops.scanFalse();}
+
+{identifier}                  {return ops.scanIdentifier();}
+{assign}                      {return ops.scanAssign();}
+{func}                        {return ops.scanFunc();}
+{if}                          {return ops.scanIf();}
+{else}                        {return ops.scanElse();}
+{for}                         {return ops.scanFor();}
+{while}                       {return ops.scanWhile();}
+{import}                      {return ops.scanImport();}
+{return}                      {return ops.scanReturn();}
+{match}                       {return ops.scanMatch();}
+{case}                        {return ops.scanCase();}
+{is}                          {return ops.scanIs();}
+{otherwise}                   {return ops.scanOtherwise();}
+{end}                         {return ops.scanEnd();}
+{do}                          {return ops.scanDo();}
+{then}                        {return ops.scanThen();}
+{module}                      {return ops.scanModule();}
+{struct}                      {return ops.scanStruct();}
+{public}                      {return ops.scanPublic();}
+{from}                        {return ops.scanFrom();}
+{to}                          {return ops.scanTo();}
+{by}                          {return ops.scanBy();}
+{ptr}                         {return ops.scanPtr();}
+{ref}                         {return ops.scanRef();}
+{array}                       {return ops.scanArray();}
 [^]                           {errores.lexicalError(row(),col(),lexeme());}  

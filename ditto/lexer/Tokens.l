@@ -64,6 +64,9 @@ or = or
 openPar = \(
 closePar = \)
 
+openBracket = \[
+closeBracker = \]
+
 rArrow = ->
 
 /* Variables */
@@ -115,6 +118,8 @@ new = new
 {mod}                         {return ops.scanMod();}
 {openPar}                     {return ops.scanOpenPar();}
 {closePar}                    {return ops.scanClosePar();}
+{openBracket}                 {return ops.scanOpenBracket();}
+{closeBracket}                {return ops.scanCloseBracket();}
 {greaterThan}                 {return ops.scanGreaterThan();}
 {greaterEqual}                {return ops.scanGreaterEqual();}
 {lessThan}                    {return ops.scanLessThan();}

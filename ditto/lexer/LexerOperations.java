@@ -43,6 +43,14 @@ public class LexerOperations {
         System.out.println("Token ClosePar");
         return new Token(lexer.col(), lexer.row(), lexer.lexeme(), TokenKind.CLOSE_PAR);
     }
+    Token scanOpenBracket(){
+        System.out.println("Token OpenBracket");
+        return new Token(lexer.col(), lexer.row(), lexer.lexeme(), TokenKind.OPEN_BRACKET);
+    }
+    Token scanCloseBracket(){
+        System.out.println("Token CloseBracket");
+        return new Token(lexer.col(), lexer.row(), lexer.lexeme(), TokenKind.CLOSE_BRACKET);
+    }
     Token scanGreaterThan(){
         System.out.println("Token GreaterThan");
         return new Token(lexer.col(), lexer.row(), lexer.lexeme(), TokenKind.GREATER);

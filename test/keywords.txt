@@ -15,8 +15,10 @@
 // for x from 10 to 1 by -1 do
 //     print(x);
 // end
+import Std;
 
 func play() -> array int
+    array int arr := [1,2,3,4,5];
     int guess;
     int secret_number := Random::integer(0,100);
     scan(guess);
@@ -45,5 +47,16 @@ func play() -> array int
     end
     for x from 10 to 1 by -1 do
         print(x);
+    end
+end
+
+
+struct Name is
+    struct Sub is
+        int a := 10;
+        ptr int version;
+        func hello() -> array int
+            return [0; 10];
+        end
     end
 end

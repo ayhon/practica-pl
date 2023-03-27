@@ -15,7 +15,7 @@ public class ErrorHandler {
         } else {
             System.out.println(
                     "ERROR row " + token.row() + " col " + token.col()
-                            + ": Unexpected element");
+                            + ": Unexpected elemendadwat");
         }
         System.exit(1);
     }

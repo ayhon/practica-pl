@@ -4,5 +4,8 @@
     ],
     "files.exclude": {
         "**/*.class": true
+    },
+    "files.watcherExclude": {
+        "**/target": true
     }
 }

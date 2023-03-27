@@ -35,7 +35,6 @@ import ditto.errors.ErrorHandler;
 separator = [ \t\r\b\n]
 comment = \/\/[^\n]* 
 
-
 /* Literales */
 digit = [0-9]
 nonZeroDigit = [1-9]
@@ -65,12 +64,17 @@ or = or
 openPar = \(
 closePar = \)
 
-/* Variables */
+rArrow = ->
 
-letter = [a-zA-Z]
+/* Variables */
+letter = [a-zA-Z_]
 identifier = {letter}({letter}|{digit})*
 
 assign = :\=
+semicolon = \;
+comma = ,
+colon = :
+quadot = ::
 
 /* Keywords */
 func = func
@@ -96,6 +100,7 @@ by = by
 ptr = ptr 
 ref = ref
 array = array
+new = new
 
 
 %%
@@ -122,7 +127,11 @@ array = array
 {true}                        {return ops.scanTrue();}
 {false}                       {return ops.scanFalse();}
 
-{identifier}                  {return ops.scanIdentifier();}
+{semicolon}                   {return ops.scanSemicolon();}
+{comma}                       {return ops.scanComma();}
+{rArrow}                      {return ops.scanRArrow();}
+{quadot}                      {return ops.scanQuadot();}
+
 {assign}                      {return ops.scanAssign();}
 {func}                        {return ops.scanFunc();}
 {if}                          {return ops.scanIf();}
@@ -147,4 +156,6 @@ array = array
 {ptr}                         {return ops.scanPtr();}
 {ref}                         {return ops.scanRef();}
 {array}                       {return ops.scanArray();}
+{new}                         {return ops.scanNew();}
+{identifier}                  {return ops.scanIdentifier();}
 [^]                           {errores.lexicalError(row(),col(),lexeme());}  

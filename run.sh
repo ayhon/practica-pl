@@ -16,9 +16,9 @@ case $1 in
                 rm ditto/lexer/Lexer.java~
                 ;;
             parser)
-                cup -parser Parser -symbols TokenKind -nopositions ditto/parser/Syntax.cup
-                mv Parser.java ditto/parser/
-                mv TokenKind.java ditto/parser/
+                cup -parser Parser -symbols TokenKind -nopositions ditto/parser/Syntax.cup && \
+                  mv Parser.java ditto/parser/ && \
+                  mv TokenKind.java ditto/parser/
                 ;;
             all)
                 for target in {lexer,parser}; do
@@ -37,7 +37,7 @@ case $1 in
         ;;
     parser)
         javac -cp "$JAR_PATH/*" ditto/*/*.java \
-         && java -cp "$JAR_PATH/*:." ditto.parser.Test test/expr-input.txt
+         && java -cp "$JAR_PATH/*:." ditto.parser.Test test/keywords.txt
         ;;
     *)
         echo "Nou entiendo"

@@ -78,6 +78,8 @@ semicolon = \;
 comma = ,
 colon = :
 quadot = ::
+dot = \.
+at = @
 
 /* Keywords */
 func = func
@@ -136,6 +138,8 @@ new = new
 {comma}                       {return ops.scanComma();}
 {rArrow}                      {return ops.scanRArrow();}
 {quadot}                      {return ops.scanQuadot();}
+{dot}                         {return ops.scanDot();}
+{at}                          {return ops.scanAt();}
 
 {assign}                      {return ops.scanAssign();}
 {func}                        {return ops.scanFunc();}

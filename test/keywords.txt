@@ -19,6 +19,12 @@ import Std;
 
 func play() -> array int
     array int arr := [1,2,3,4,5];
+    if arr[0] == 10 then
+        print(10);
+    else 
+        ptr int a := ptr arr[2];
+        return @(a+2).first(10);
+    end
     int guess;
     int secret_number := Random::integer(0,100);
     scan(guess);

@@ -111,6 +111,14 @@ public class LexerOperations {
         System.out.println("Token Quadot");
         return new Token(lexer.col(), lexer.row(), lexer.lexeme(), TokenKind.QUADOT);
     }
+    Token scanDot(){
+        System.out.println("Token Dot");
+        return new Token(lexer.col(), lexer.row(), lexer.lexeme(), TokenKind.DOT);
+    }
+    Token scanAt(){
+        System.out.println("Token At");
+        return new Token(lexer.col(), lexer.row(), lexer.lexeme(), TokenKind.AT);
+    }
     Token scanIdentifier(){
         System.out.println("Token Identifier");
         return new Token(lexer.col(), lexer.row(), lexer.lexeme(), TokenKind.IDEN);

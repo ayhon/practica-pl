@@ -65,7 +65,7 @@ openPar = \(
 closePar = \)
 
 openBracket = \[
-closeBracker = \]
+closeBracket = \]
 
 rArrow = ->
 

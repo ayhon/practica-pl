@@ -40,8 +40,8 @@ terminal String IDEN;
 
 non terminal S, STMTs;
 non terminal Expr EXPR,
-             DISJUNCTION, CONJUNCTION.
-             NEGATION, EQUALITY, COMPARISON
+             DISJUNCTION, CONJUNCTION,
+             NEGATION, EQUALITY, COMPARISON,
              TERM, FACTOR, UNARY, DESIGNATION, PRIMARY, FUNC_CALL,
              LITERAL, ARRAY_LITERAL;
 non terminal ArrayList<Expr> EXPRs;

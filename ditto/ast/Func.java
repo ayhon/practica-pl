@@ -2,13 +2,13 @@ package ditto.ast;
 
 import java.util.ArrayList;
 
-public class Fun implements Node {
+public class Func implements Node {
     private final String id;
     private final ArrayList<Param> params;
     private final Type result;
     private final ArrayList<Statement> body;
 
-    Fun(String id, ArrayList<Param> params, Type result, ArrayList<Statement> body) {
+    Func(String id, ArrayList<Param> params, Type result, ArrayList<Statement> body) {
         this.id = id;
         this.params = params;
         this.result = result;

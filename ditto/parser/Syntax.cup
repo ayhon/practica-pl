@@ -116,7 +116,7 @@ DESIGNATION ::= DESIGNATION:d OPEN_BRACKET EXPR:e CLOSE_BRACKET  /* design[expr]
              {: RESULT = new Var(name); :};                      /* Var should take a binding */                               
 NAME        ::= NAME:more QUADOT IDEN:name                       /* name::iden */
              {: RESULT = more; more.add(name); :}
-              | IDEN: name
+              | IDEN:name
              {: RESULT = new ArrayList<String>(); RESULT.add(name); :}; 
 
 LITERAL     ::= NAT | TRUE | FALSE | ARRAY_LITERAL;
@@ -126,7 +126,10 @@ ARRAY_LITERAL ::= OPEN_BRACKET CLOSE_BRACKET                       /* [], empty 
               |   OPEN_BRACKET LITERAL SEMICOLON NAT CLOSE_BRACKET; // [default; size]
 LITERALs    ::= LITERALs COMMA LITERAL | LITERAL;
 
-STMTs       ::= STMTs STMT | ;
+/* TODO: Quiza luego hay problema, porque estamos modificando la misma referencia de ArrayList */
+STMTs       ::= STMTs:statements STMT:st {: RESULT = statements; statements.add(st); :}
+               | {: RESULT = new ArrayList<Statement>(); :};
+
 STMT        ::= EXPR SEMICOLON |
                 ASSIGNMENT |
                 VAR_DECL | // No ponemos funciones u otras declaraciones porque no las queremos en el cuerpo de una función

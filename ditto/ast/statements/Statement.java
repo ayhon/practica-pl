@@ -1,3 +1,3 @@
-package ditto.ast;
+package ditto.ast.statements;
 
 public interface Statement {}

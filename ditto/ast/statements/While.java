@@ -1,4 +1,4 @@
-package ditto.ast;
+package ditto.ast.statements;
 
 import java.util.ArrayList;
 

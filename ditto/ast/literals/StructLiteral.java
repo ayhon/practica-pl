@@ -4,7 +4,7 @@ import java.util.List;
 
 import ditto.ast.Node;
 
-public class StructLiteral extends Node{
+public class StructLiteral extends Node {
 
     @Override
     public String getAstString() {
@@ -17,5 +17,5 @@ public class StructLiteral extends Node{
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'getAstArguments'");
     }
-    
+
 }

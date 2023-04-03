@@ -7,10 +7,11 @@ public abstract class Node {
     // public ?? bind() // for the future
     // public ?? generateCode() // for the future
     public abstract String getAstString();
+
     public abstract List<Object> getAstArguments();
 
     @Override
-    public String toString(){
+    public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append('(');
         sb.append(getAstString());
@@ -36,7 +37,7 @@ public abstract class Node {
         int idx = 0;
         for (Object item : list) {
             sb.append(item.toString());
-            if(idx != list.size() - 1) 
+            if (idx != list.size() - 1)
                 sb.append(',');
             idx += 1;
         }
@@ -44,4 +45,3 @@ public abstract class Node {
         return sb.toString();
     }
 }
-

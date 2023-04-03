@@ -9,13 +9,19 @@ import ditto.ast.types.Type;
 public class OperUn extends Node implements Expr {
     public enum Operators {
         NOT, NEG, POS, REF, DEREF;
+
         public String toString() {
-            switch (this) { 
-                case NOT:   return "not";
-                case NEG:   return "-";
-                case POS:   return "+";
-                case REF:   return "ptr";
-                default: throw new IllegalArgumentException("Invalid operator");
+            switch (this) {
+                case NOT:
+                    return "not";
+                case NEG:
+                    return "-";
+                case POS:
+                    return "+";
+                case REF:
+                    return "ptr";
+                default:
+                    throw new IllegalArgumentException("Invalid operator");
             }
         }
     }
@@ -37,11 +43,17 @@ public class OperUn extends Node implements Expr {
     }
 
     @Override
-    public Type getType() { throw new UnsupportedOperationException("Unimplemented method 'getType'");}
+    public Type getType() {
+        throw new UnsupportedOperationException("Unimplemented method 'getType'");
+    }
 
     @Override
-    public String getAstString() { return op.toString(); }
+    public String getAstString() {
+        return op.toString();
+    }
 
     @Override
-    public List<Object> getAstArguments() { return Arrays.asList(expr); }
+    public List<Object> getAstArguments() {
+        return Arrays.asList(expr);
+    }
 }

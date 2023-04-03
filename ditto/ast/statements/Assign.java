@@ -1,6 +1,4 @@
-package ditto.ast;
-
-import java.util.List;
+package ditto.ast.statements;
 
 import ditto.ast.designators.Designator;
 import ditto.ast.expressions.Expr;

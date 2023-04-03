@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ditto.ast.Node;
-import ditto.ast.Statement;
+import ditto.ast.statements.Statement;
 import ditto.ast.types.Type;
 import ditto.ast.types.VoidType;
 

@@ -4,7 +4,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import ditto.ast.Node;
-import ditto.ast.Statement;
+import ditto.ast.statements.Statement;
 import ditto.ast.types.Type;
 
 public class DefVar extends Node implements Statement {

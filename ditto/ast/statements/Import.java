@@ -1,6 +1,6 @@
-package ditto.ast;
+package ditto.ast.statements;
 
-public class Import implements Node {
+public class Import implements Statement {
     private final String id;
 
     Import(String id) {

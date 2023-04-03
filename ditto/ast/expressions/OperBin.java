@@ -22,29 +22,48 @@ public class OperBin extends ditto.ast.Node implements Expr {
         OR,
         ACCESS,
         ACCESS_ARR;
+
         public String toString() {
             switch (this) {
-                case SUM: return "+";
-                case SUBS: return "-";
-                case MUL: return "*";
-                case DIV: return "/";
-                case MODULO: return "%";
-                case EQUALS: return "==";
-                case NOTEQUALS: return "!=";
-                case LESS: return "<";
-                case GREATER: return ">";
-                case LESS_EQUAL: return "<=";
-                case GREATER_EQUAL: return ">=";
-                case AND: return "and";
-                case OR: return "or";
-                default: throw new IllegalArgumentException("Invalid operator");
+                case SUM:
+                    return "+";
+                case SUBS:
+                    return "-";
+                case MUL:
+                    return "*";
+                case DIV:
+                    return "/";
+                case MODULO:
+                    return "%";
+                case EQUALS:
+                    return "==";
+                case NOTEQUALS:
+                    return "!=";
+                case LESS:
+                    return "<";
+                case GREATER:
+                    return ">";
+                case LESS_EQUAL:
+                    return "<=";
+                case GREATER_EQUAL:
+                    return ">=";
+                case AND:
+                    return "and";
+                case OR:
+                    return "or";
+                default:
+                    throw new IllegalArgumentException("Invalid operator");
             }
         }
-        public boolean isDesignator(){
+
+        public boolean isDesignator() {
             switch (this) {
-                case ACCESS: return true;
-                case ACCESS_ARR: return true;
-                default: return false;
+                case ACCESS:
+                    return true;
+                case ACCESS_ARR:
+                    return true;
+                default:
+                    return false;
             }
         }
     }
@@ -78,8 +97,12 @@ public class OperBin extends ditto.ast.Node implements Expr {
     }
 
     @Override
-    public String getAstString() { return op.toString(); }
+    public String getAstString() {
+        return op.toString();
+    }
 
     @Override
-    public List<Object> getAstArguments() { return Arrays.asList(left, right); }
+    public List<Object> getAstArguments() {
+        return Arrays.asList(left, right);
+    }
 }

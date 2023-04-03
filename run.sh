@@ -21,9 +21,7 @@ case $1 in
                   mv TokenKind.java ditto/parser/
                 ;;
             all)
-                for target in {lexer,parser}; do
-                    $0 build $target
-                done
+                $0 build lexer && $0 build parser
                 ;;
             *)
                 echo "Nou entiendo"

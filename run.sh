@@ -30,11 +30,11 @@ case $1 in
         esac
         ;;
     lexer)
-        javac -cp "$JAR_PATH/*" ditto/lexer/*.java \
+        javac -cp "$JAR_PATH/*:." ditto/lexer/*.java \
          && java -cp "$JAR_PATH/*:." ditto.lexer.Test test/expr-input.txt
         ;;
     parser)
-        javac -cp "$JAR_PATH/*" ditto/*/*.java \
+        javac -cp "$JAR_PATH/*:." ditto/*/*.java \
          && java -cp "$JAR_PATH/*:." ditto.parser.Test test/keywords.txt
         ;;
     *)

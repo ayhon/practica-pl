@@ -12,9 +12,6 @@ public class Natural implements Expr {
     }
 
     @Override
-    public int eval() {return value;}
-
-    @Override
     public String toString() {
         return "( nat ( " + value + " ) )";
     }

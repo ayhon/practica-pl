@@ -11,10 +11,7 @@ public class False implements Literal {
     public static False getInstance() {
         return instance;
     }
-    @Override
-    public int eval() {
-        return 0;
-    }
+
     @Override
     public Type getType() {
         return BoolType.getInstance();

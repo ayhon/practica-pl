@@ -24,7 +24,7 @@ public class Var extends Node implements Designator {
                 sb.append("::");
             idx += 1;
         }
-        this.name = ;
+        this.name = sb.toString();
     }
     public Var(String iden) {
         this.name = iden;

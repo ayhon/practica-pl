@@ -12,10 +12,6 @@ public class True implements Expr {
         return instance;
     }
     @Override
-    public int eval() {
-        return 1;
-    }
-    @Override
     public Type getType() {
         return BoolType.getInstance();
     }

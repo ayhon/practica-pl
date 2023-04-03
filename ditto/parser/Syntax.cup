@@ -81,6 +81,7 @@ MODULE_DECL ::= MODULE IDEN IS DECLARATIONs_WITH_VISIBILITY END;
 
 FUN_DECL    ::= FUNC IDEN OPEN_PAR FUNC_PARAMs CLOSE_PAR STMTs END |
                 FUNC IDEN OPEN_PAR FUNC_PARAMs CLOSE_PAR R_ARROW TYPE STMTs END;
+                
 FUNC_PARAMs ::= AT_LEAST_ONE_PARAM | NO_PARAM;
 AT_LEAST_ONE_PARAM ::= AT_LEAST_ONE_PARAM COMMA PARAM | PARAM;
 PARAM       ::= TYPE IDEN | REF TYPE IDEN;
@@ -154,8 +155,10 @@ TYPE        ::= IDEN:name
               | ARRAY NAT:size TYPE:t           // TODO: Estudiar si es mejor otra sintaxis
              {: RESULT = new ArrayType(t, size); :};
 
-IF_STMT     ::= IF EXPR THEN STMTs END 
-              | IF EXPR THEN STMTs ELSE STMTs END;
+IF_STMT     ::= IF EXPR:cond THEN STMTs:then END
+               {: RESULT = new If(cond, then); :}
+              | IF EXPR:cond THEN STMTs:then ELSE STMTs:els END
+              {: RESULT = new If(cond, then, els); :};
 
 FOR_STMT    ::= FOR IDEN:index FROM EXPR:from TO EXPR:to DO STMTs:statements END
                {: RESULT = new For(index, from, to, statements); :}

@@ -1,11 +1,16 @@
 package ditto.ast;
 
-public class Assign implements Node {
-    private final String id;
+import java.util.List;
+
+import ditto.ast.designators.Designator;
+import ditto.ast.expressions.Expr;
+
+public class Assign extends Node {
+    private final Designator place;
     private final Expr expr;
 
-    Assign(String id, Expr expr) {
-        this.id = id;
+    Assign(Designator place, Expr expr) {
+        this.place = place;
         this.expr = expr;
     }
 
@@ -13,12 +18,18 @@ public class Assign implements Node {
         return expr;
     }
 
-    public String getId() {
-        return id;
+    public Designator getPlace() {
+        return place;
     }
 
     @Override
     public String toString() {
-        return "(assign " + id + " " + expr + ")";
+        return "(assign " + place + " " + expr + ")";
     }
+
+    @Override
+    public String getAstString() { return ":="; }
+
+    @Override
+    public List<Object> getAstArguments() { return Arrays.asList(place, expr);}
 }

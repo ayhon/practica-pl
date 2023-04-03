@@ -1,5 +1,3 @@
 package ditto.ast.types;
 
-public interface Type {
-    
-}
+public interface Type {}

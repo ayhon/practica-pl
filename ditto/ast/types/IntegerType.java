@@ -1,5 +1,12 @@
 package ditto.ast.types;
 
-public class IntegerType implements Type{
-    
+// Singleton
+public class IntegerType implements Type {
+    private static IntegerType instance = new IntegerType();
+    private IntegerType() {}
+    public static IntegerType getInstance() {
+        return instance;
+    }
+    @Override
+    public String toString() { return "int"; }
 }

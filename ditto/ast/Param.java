@@ -1,5 +1,7 @@
 package ditto.ast;
 
+import ditto.ast.types.Type;
+
 public class Param {
     private final Type type;
     private final String name;

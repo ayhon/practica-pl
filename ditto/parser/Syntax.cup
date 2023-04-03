@@ -5,6 +5,13 @@ import ditto.lexer.Lexer;
 import ditto.lexer.Token;
 import ditto.errors.ErrorHandler;
 
+import ditto.ast.*;
+import ditto.ast.definitions.*;
+import ditto.ast.declarations.*;
+import ditto.ast.expressions.*;
+import ditto.ast.literals.*;
+import ditto.ast.types.*;
+
 scan with {: return getScanner().next_token(); :};
 parser code {: 
    private ErrorHandler errors;
@@ -18,26 +25,33 @@ init with {:
    lex.setErrorHandler(errors);
 :};
 
-terminal PLUS, MINUS, TIMES, DIV, MOD, LESS, GREATER, NOT_EQUAL, EQUAL,
-         GREATER_EQUAL, LESS_EQUAL, AND, OR, NOT, OPEN_PAR, CLOSE_PAR;
+/* PUNTUATION */
+terminal PLUS, MINUS, TIMES, DIV, MOD, NOT_EQUAL, EQUAL, GREATER, LESS, GREATER_EQUAL, LESS_EQUAL,
+         OPEN_PAR, CLOSE_PAR, OPEN_BRACKET, CLOSE_BRACKET,
+         SEMICOLON, COMMA, DOT, QUADOT, AT, R_ARROW, ASSIGN;
+/* KEYWORDS */
+terminal AND, OR, NOT, FUNC, IF, ELSE, FOR, WHILE, IMPORT, RETURN, MATCH, CASE, IS, OTHERWISE, END, DO, THEN, MODULE, STRUCT, PUBLIC, FROM, TO, BY,
+         PTR, REF, ARRAY, NEW;
+/* LITERALS */
+terminal Natural NAT;
+terminal True   TRUE;
+terminal False FALSE;
+terminal String IDEN;
 
-terminal NAT;
-terminal TRUE, FALSE;
-terminal IDEN, ASSIGN, FUNC, IF, ELSE, FOR, WHILE, IMPORT, RETURN, MATCH, CASE, IS, SEMICOLON, COMMA, QUADOT,
-         OPEN_BRACKET, CLOSE_BRACKET, R_ARROW, OTHERWISE, END, DO, THEN, MODULE, STRUCT, PUBLIC, FROM, TO, BY,
-         PTR, REF, ARRAY, NEW, DOT, AT;
+non terminal S, STMTs;
+non terminal Expr EXPR,
+             DISJUNCTION, CONJUNCTION.
+             NEGATION, EQUALITY, COMPARISON
+             TERM, FACTOR, UNARY, DESIGNATION, PRIMARY, FUNC_CALL,
+             LITERAL, ARRAY_LITERAL;
+non terminal ArrayList<Expr> EXPRs;
 
-non terminal S, EXPR, STMTs;
-non terminal DISJUNCTION, CONJUNCTION;
-non terminal NEGATION, EQUALITY, COMPARISON;
-non terminal TERM, FACTOR, UNARY, ACCESS, PRIMARY, FUNC_CALL;
-non terminal STMT, ASSIGNMENT, IF_STMT, FOR_STMT, WHILE_STMT, MATCH_STMT, RETURN_STMT, NEW_STMT;
-non terminal VAR_DECL, FUN_DECL, STRUCT_DECL, MODULE_DECL;
-non terminal TYPE, NAME, LITERAL, ARRAY_LITERAL;
-non terminal CASE_STMTs, EXPRs, LITERALs;
+non terminal Statement STMT, ASSIGNMENT, IF_STMT, FOR_STMT, WHILE_STMT, MATCH_STMT, RETURN_STMT;
+non terminal Definitions VAR_DECL, FUN_DECL, STRUCT_DECL, MODULE_DECL;
+non terminal TYPE, NAME;
+non terminal CASE_STMTs, LITERALs;
 non terminal FUNC_PARAMs, AT_LEAST_ONE_PARAM, NO_PARAM, PARAM;
 non terminal IMPORTs, DECLARATIONs, DECLARATION, DECLARATIONs_WITH_VISIBILITY, VISIBILITY;
-non terminal VAR_OR_FUNC_CALL;
 
 S ::= IMPORTs DECLARATIONs;
 
@@ -66,23 +80,37 @@ EQUALITY    ::= EQUALITY EQUAL COMPARISON | EQUALITY NOT_EQUAL COMPARISON | COMP
 COMPARISON  ::= COMPARISON LESS TERM | COMPARISON GREATER TERM | COMPARISON LESS_EQUAL TERM | COMPARISON GREATER_EQUAL TERM | TERM;
 TERM        ::= TERM PLUS FACTOR | TERM MINUS FACTOR | FACTOR;
 FACTOR      ::= FACTOR TIMES UNARY | FACTOR DIV UNARY | FACTOR MOD UNARY | UNARY;
-UNARY       ::= MINUS UNARY | PLUS UNARY | PTR UNARY | AT UNARY | ACCESS;
-ACCESS      ::= ACCESS OPEN_BRACKET EXPR CLOSE_BRACKET | /* iden[expr]   */
-                ACCESS DOT VAR_OR_FUNC_CALL |            /* iden.var()   */
-                ACCESS R_ARROW VAR_OR_FUNC_CALL |        /* iden->var    */
-                PRIMARY;
-PRIMARY     ::= LITERAL | NEW LITERAL | NAME | FUNC_CALL | OPEN_PAR EXPR CLOSE_PAR;
-FUNC_CALL   ::= NAME OPEN_PAR EXPRs CLOSE_PAR;
-EXPRs       ::= EXPRs COMMA EXPR | EXPR;
+UNARY       ::= MINUS UNARY | PLUS UNARY | PTR UNARY | AT UNARY | PRIMARY;
+PRIMARY     ::= LITERAL:e {: RESULT = e; :}
+              | NEW LITERAL
+              | DESIGNATION:d {: RESULT = d :}
+              | FUNC_CALL:x {: RESULT = x; :}
+              | OPEN_PAR EXPR:e CLOSE_PAR {: RESULT = e; :};
+FUNC_CALL   ::= DESIGNATION:d OPEN_PAR EXPRs CLOSE_PAR /* design(arg, ...) // Llamada con algún argumento */
+             {: RESULT = new Call(d, e); :}
+              | DESIGNATION OPEN_PAR CLOSE_PAR;      /* design()         // Llamada sin ningún argumento */
+EXPRs       ::= EXPRs:more COMMA EXPR:e {: RESULT = more; more.add(e); :}
+              | EXPR:e {: RESULT = new ArrayList<Expr>(); RESULT.add(e); :};
 
-VAR_OR_FUNC_CALL ::= IDEN | FUNC_CALL;
 
-NAME        ::= NAME QUADOT IDEN | IDEN; // iden::iden::iden
+DESIGNATION ::= DESIGNATION:d OPEN_BRACKET EXPR:e CLOSE_BRACKET  /* design[expr]   */
+             {: RESULT = new ArrayAcces(d, e); :}
+              | DESIGNATION:d DOT IDEN:name                      /* design.iden()   */
+             {: RESULT = new StructAccess(d, name); :}
+              | DESIGNATION R_ARROW IDEN                         /* desig->iden    */
+             {: RESULT = new StructAccess(new Deref(d), name); :}
+              | NAME:name
+             {: RESULT = new Var(name); :};                      /* Var should take a binding */                               
+NAME        ::= NAME:more QUADOT IDEN:name                       /* name::iden */
+             {: RESULT = more; more.add(name); :}
+              | IDEN: name
+             {: RESULT = new ArrayList<String>(); RESULT.add(name); :}; 
 
 LITERAL     ::= NAT | TRUE | FALSE | ARRAY_LITERAL;
-ARRAY_LITERAL ::= OPEN_BRACKET CLOSE_BRACKET |                      /* [], empty array */
-                  OPEN_BRACKET LITERALs CLOSE_BRACKET |             /* [ elem1, elem2, elem3, ..]*/
-                  OPEN_BRACKET LITERAL SEMICOLON NAT CLOSE_BRACKET; // [default; size]
+ARRAY_LITERAL ::= OPEN_BRACKET CLOSE_BRACKET                       /* [], empty array */
+             {: RESULT = new ArrayLiteral(new ArrayList<Literal>()); :}
+              |   OPEN_BRACKET LITERALs CLOSE_BRACKET              /* [ elem1, elem2, elem3, ..]*/
+              |   OPEN_BRACKET LITERAL SEMICOLON NAT CLOSE_BRACKET; // [default; size]
 LITERALs    ::= LITERALs COMMA LITERAL | LITERAL;
 
 STMTs       ::= STMTs STMT | ;
@@ -95,22 +123,31 @@ STMT        ::= EXPR SEMICOLON |
                 MATCH_STMT |
                 RETURN_STMT;
 
-ASSIGNMENT  ::= IDEN ASSIGN EXPR SEMICOLON;
+ASSIGNMENT  ::= IDEN:name ASSIGN EXPR: e SEMICOLON 
+             {: RESULT = new Assign(name, e); :};
 
-VAR_DECL    ::= TYPE IDEN SEMICOLON | 
-                TYPE ASSIGNMENT;
-TYPE        ::= IDEN | PTR TYPE | ARRAY TYPE;
+VAR_DECL    ::= TYPE:t IDEN:name SEMICOLON
+             {: RESULT = new Var(t, name); :}
+              | TYPE ASSIGNMENT;
+TYPE        ::= IDEN:name
+             {: RESULT = new StructType(name):} // By default, if it's not a primitive type, it's a struct. TODO: Link to the struct definition
+              | PTR TYPE:t 
+             {: RESULT = new PointerType(t); :}
+              | ARRAY TYPE:t
+             {: RESULT = new ArrayType(t); :}   // Esta descripción de tipo array solo se permite en argumentos de funciones A lo mejor si ponemos `array int a := [1,2]`, podemos "inferir" el tamaño de `a`con el tamaño del array literal */
+              | ARRAY NAT:size TYPE:t           // TODO: Estudiar si es mejor otra sintaxis
+             {: RESULT = new ArrayType(t, size); :};
 
-IF_STMT     ::= IF EXPR THEN STMTs END |
-                IF EXPR THEN STMTs ELSE STMTs END;
+IF_STMT     ::= IF EXPR THEN STMTs END 
+              | IF EXPR THEN STMTs ELSE STMTs END;
 
-FOR_STMT    ::= FOR IDEN FROM EXPR TO EXPR DO STMTs END |
-                FOR IDEN FROM EXPR TO EXPR BY EXPR DO STMTs END;
+FOR_STMT    ::= FOR IDEN FROM EXPR TO EXPR DO STMTs END
+              | FOR IDEN FROM EXPR TO EXPR BY EXPR DO STMTs END;
 
 WHILE_STMT  ::= WHILE EXPR DO STMTs END;
 
-MATCH_STMT  ::= MATCH EXPR CASE_STMTs OTHERWISE STMTs END |
-                MATCH EXPR CASE_STMTs END;
+MATCH_STMT  ::= MATCH EXPR CASE_STMTs OTHERWISE STMTs END
+              | MATCH EXPR CASE_STMTs END;
 CASE_STMTs  ::= CASE EXPR IS STMTs CASE_STMTs | ;
 
 RETURN_STMT ::= RETURN EXPR SEMICOLON;

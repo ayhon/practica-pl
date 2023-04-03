@@ -1,19 +1,39 @@
 package ditto.lexer;
 
 import ditto.parser.TokenKind;
+import ditto.ast.literals.*;
 
 public class LexerOperations {
     private final Lexer lexer;
     LexerOperations(Lexer lexer){
         this.lexer = lexer;
     }
+    /* TERMINALES CON REPRESENTACIÓN EN EL AST */
+    Token scanNatural(){
+        System.out.println("Token Natural");
+        return new Token(lexer.col(), lexer.row(), lexer.lexeme(), TokenKind.NAT, new Natural(lexer.lexeme()));
+        // Pasamos aquí una instancia de `Natural` para que el parser pueda recibir un `Natural` cuando detecte el terminal
+    }
+    Token scanTrue(){
+        System.out.println("Token True");
+        return new Token(lexer.col(), lexer.row(), lexer.lexeme(), TokenKind.TRUE, True.getInstance());
+        // Pasamos aquí una instancia de `True` para que el parser pueda recibir un `True` cuando detecte el terminal
+    }
+    Token scanFalse(){
+        System.out.println("Token False");
+        return new Token(lexer.col(), lexer.row(), lexer.lexeme(), TokenKind.FALSE, False.getInstance());
+        // Pasamos aquí una instancia de `False` para que el parser pueda recibir un `False` cuando detecte el terminal
+    }
+    Token scanIdentifier(){
+        System.out.println("Token Identifier");
+        return new Token(lexer.col(), lexer.row(), lexer.lexeme(), TokenKind.IDEN, lexer.lexeme());
+        // Pasamos aquí `lexeme` para que el parser pueda recibir un `String` cuando detecte el terminal
+    }
+    /* TERMINALES SIN REPRESENTACIÓN EN EL AST */
+    /** PUNTUACIÓN **/
     Token scanEOF(){
         System.out.println("Token EOF");
         return new Token(lexer.col(), lexer.row(), lexer.lexeme(), TokenKind.EOF);
-    }
-    Token scanNatural(){
-        System.out.println("Token Natural");
-        return new Token(lexer.col(), lexer.row(), lexer.lexeme(), TokenKind.NAT);
     }
     Token scanPlus(){
         System.out.println("Token Plus");
@@ -75,26 +95,6 @@ public class LexerOperations {
         System.out.println("Token NotEqual");
         return new Token(lexer.col(), lexer.row(), lexer.lexeme(), TokenKind.NOT_EQUAL);
     }
-    Token scanNot(){
-        System.out.println("Token Not");
-        return new Token(lexer.col(), lexer.row(), lexer.lexeme(), TokenKind.NOT);
-    }
-    Token scanAnd(){
-        System.out.println("Token And");
-        return new Token(lexer.col(), lexer.row(), lexer.lexeme(), TokenKind.AND);
-    }
-    Token scanOr(){
-        System.out.println("Token Or");
-        return new Token(lexer.col(), lexer.row(), lexer.lexeme(), TokenKind.OR);
-    }
-    Token scanTrue(){
-        System.out.println("Token True");
-        return new Token(lexer.col(), lexer.row(), lexer.lexeme(), TokenKind.TRUE);
-    }
-    Token scanFalse(){
-        System.out.println("Token False");
-        return new Token(lexer.col(), lexer.row(), lexer.lexeme(), TokenKind.FALSE);
-    }
     Token scanSemicolon(){
         System.out.println("Token Semicolon");
         return new Token(lexer.col(), lexer.row(), lexer.lexeme(), TokenKind.SEMICOLON);
@@ -119,13 +119,22 @@ public class LexerOperations {
         System.out.println("Token At");
         return new Token(lexer.col(), lexer.row(), lexer.lexeme(), TokenKind.AT);
     }
-    Token scanIdentifier(){
-        System.out.println("Token Identifier");
-        return new Token(lexer.col(), lexer.row(), lexer.lexeme(), TokenKind.IDEN);
-    }
     Token scanAssign(){
         System.out.println("Token Assign"); 
         return new Token(lexer.col(), lexer.row(), lexer.lexeme(), TokenKind.ASSIGN);
+    }
+    /** PALABRAS RESERVADAS **/
+    Token scanNot(){
+        System.out.println("Token Not");
+        return new Token(lexer.col(), lexer.row(), lexer.lexeme(), TokenKind.NOT);
+    }
+    Token scanAnd(){
+        System.out.println("Token And");
+        return new Token(lexer.col(), lexer.row(), lexer.lexeme(), TokenKind.AND);
+    }
+    Token scanOr(){
+        System.out.println("Token Or");
+        return new Token(lexer.col(), lexer.row(), lexer.lexeme(), TokenKind.OR);
     }
     Token scanFunc(){
         System.out.println("Token Func");

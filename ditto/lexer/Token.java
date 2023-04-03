@@ -9,7 +9,14 @@ public class Token extends Symbol {
     private int kind;
 
     public Token(int col, int row, String lexeme, int kind) {
-        super(kind);
+        super(kind, null);
+        this.row = row;
+        this.col = col;
+        this.lexeme = lexeme;
+        this.kind = kind;
+    }
+    public Token(int col, int row, String lexeme, int kind, Object terminal) {
+        super(kind, terminal);
         this.row = row;
         this.col = col;
         this.lexeme = lexeme;

@@ -26,10 +26,4 @@ public class Assign implements Statement {
     public String toString() {
         return "(assign " + place + " " + expr + ")";
     }
-
-    @Override
-    public String getAstString() { return ":="; }
-
-    @Override
-    public List<Object> getAstArguments() { return Arrays.asList(place, expr);}
 }

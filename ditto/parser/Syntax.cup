@@ -41,7 +41,8 @@ terminal True   TRUE;
 terminal False FALSE;
 terminal String IDEN;
 
-non terminal S, STMTs;
+non terminal S;
+non terminal ArrayList<Statement> STMTs;
 non terminal Expr EXPR,
              DISJUNCTION, CONJUNCTION,
              NEGATION, EQUALITY, COMPARISON,
@@ -153,8 +154,10 @@ TYPE        ::= IDEN:name
 IF_STMT     ::= IF EXPR THEN STMTs END 
               | IF EXPR THEN STMTs ELSE STMTs END;
 
-FOR_STMT    ::= FOR IDEN FROM EXPR TO EXPR DO STMTs END
-              | FOR IDEN FROM EXPR TO EXPR BY EXPR DO STMTs END;
+FOR_STMT    ::= FOR IDEN:index FROM EXPR:from TO EXPR:to DO STMTs:statements END
+               {: RESULT = new For(index, from, to, statements); :}
+              | FOR IDEN:index FROM EXPR:from TO EXPR:to BY EXPR:by DO STMTs:statements END
+              {: RESULT = new For(index, from, to, by, statements); :};
 
 WHILE_STMT  ::= WHILE EXPR DO STMTs END;
 

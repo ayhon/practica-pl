@@ -2,19 +2,25 @@ package ditto.ast;
 
 import java.util.ArrayList;
 
-public class For implements Node {
-    private final String index;
-    private final Expr from;
-    private final Expr to;
-    private final Expr by;
-    private final ArrayList<Statement> body;
+import ditto.ast.expressions.Expr;
 
-    For(String index, Expr from, Expr to, Expr by, ArrayList<Statement> body) {
+public class For implements Statement {
+    public final String index;
+    public final Expr from;
+    public final Expr to;
+    public final Expr by;
+    public final ArrayList<Statement> body;
+
+    public For(String index, Expr from, Expr to, Expr by, ArrayList<Statement> body) {
         this.index = index;
         this.from = from;
         this.to = to;
         this.by = by;
         this.body = body;
+    }
+
+    public For(String index, Expr from, Expr to, ArrayList<Statement> body) {
+        this(index, from, to, null, body);
     }
 
     @Override

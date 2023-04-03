@@ -165,7 +165,8 @@ FOR_STMT    ::= FOR IDEN:index FROM EXPR:from TO EXPR:to DO STMTs:statements END
               | FOR IDEN:index FROM EXPR:from TO EXPR:to BY EXPR:by DO STMTs:statements END
               {: RESULT = new For(index, from, to, by, statements); :};
 
-WHILE_STMT  ::= WHILE EXPR DO STMTs END;
+WHILE_STMT  ::= WHILE EXPR:cond DO STMTs:statements END
+              {: RESULT = new While(cond, statements); :};
 
 MATCH_STMT  ::= MATCH EXPR CASE_STMTs OTHERWISE STMTs END
               | MATCH EXPR CASE_STMTs END;

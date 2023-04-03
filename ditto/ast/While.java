@@ -2,11 +2,13 @@ package ditto.ast;
 
 import java.util.ArrayList;
 
-public class While implements Node {
+import ditto.ast.expressions.Expr;
+
+public class While implements Statement {
     public final Expr cond;
     public final ArrayList<Statement> statements;
 
-    While(Expr cond, ArrayList<Statement> statements) {
+    public While(Expr cond, ArrayList<Statement> statements) {
         this.cond = cond;
         this.statements = statements;
     }

@@ -6,11 +6,11 @@ import ditto.lexer.Token;
 import ditto.errors.ErrorHandler;
 import java.util.ArrayList;
 
-import ditto.ast.*;
 import ditto.ast.definitions.*;
 import ditto.ast.designators.*;
 import ditto.ast.expressions.*;
 import ditto.ast.literals.*;
+import ditto.ast.statements.*;
 import ditto.ast.types.*;
 
 scan with {: return getScanner().next_token(); :};

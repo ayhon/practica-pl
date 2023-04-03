@@ -4,10 +4,11 @@ import java_cup.runtime.*;
 import ditto.lexer.Lexer;
 import ditto.lexer.Token;
 import ditto.errors.ErrorHandler;
+import java.util.ArrayList;
 
 import ditto.ast.*;
 import ditto.ast.definitions.*;
-import ditto.ast.declarations.*;
+import ditto.ast.designators.*;
 import ditto.ast.expressions.*;
 import ditto.ast.literals.*;
 import ditto.ast.types.*;
@@ -29,9 +30,11 @@ init with {:
 terminal PLUS, MINUS, TIMES, DIV, MOD, NOT_EQUAL, EQUAL, GREATER, LESS, GREATER_EQUAL, LESS_EQUAL,
          OPEN_PAR, CLOSE_PAR, OPEN_BRACKET, CLOSE_BRACKET,
          SEMICOLON, COMMA, DOT, QUADOT, AT, R_ARROW, ASSIGN;
+
 /* KEYWORDS */
 terminal AND, OR, NOT, FUNC, IF, ELSE, FOR, WHILE, IMPORT, RETURN, MATCH, CASE, IS, OTHERWISE, END, DO, THEN, MODULE, STRUCT, PUBLIC, FROM, TO, BY,
          PTR, REF, ARRAY, NEW;
+
 /* LITERALS */
 terminal Natural NAT;
 terminal True   TRUE;
@@ -42,20 +45,30 @@ non terminal S, STMTs;
 non terminal Expr EXPR,
              DISJUNCTION, CONJUNCTION,
              NEGATION, EQUALITY, COMPARISON,
-             TERM, FACTOR, UNARY, DESIGNATION, PRIMARY, FUNC_CALL,
+             TERM, FACTOR, UNARY, PRIMARY, FUNC_CALL,
              LITERAL, ARRAY_LITERAL;
+
+non terminal Designator DESIGNATION;
 non terminal ArrayList<Expr> EXPRs;
 
 non terminal Statement STMT, ASSIGNMENT, IF_STMT, FOR_STMT, WHILE_STMT, MATCH_STMT, RETURN_STMT;
-non terminal Definitions VAR_DECL, FUN_DECL, STRUCT_DECL, MODULE_DECL;
-non terminal TYPE, NAME;
+
+non terminal DefVar VAR_DECL;
+non terminal DefFunc FUN_DECL;
+non terminal DefStruct STRUCT_DECL;
+non terminal MODULE_DECL;
+
+non terminal Type TYPE;
+non terminal ArrayList<String> NAME;
 non terminal CASE_STMTs, LITERALs;
 non terminal FUNC_PARAMs, AT_LEAST_ONE_PARAM, NO_PARAM, PARAM;
 non terminal IMPORTs, DECLARATIONs, DECLARATION, DECLARATIONs_WITH_VISIBILITY, VISIBILITY;
 
+/* Nuestro programa empieza con un conjunto de imports, y luego declaraciones */
 S ::= IMPORTs DECLARATIONs;
 
 IMPORTs ::= IMPORTs IMPORT NAME SEMICOLON | ;
+
 DECLARATIONs ::= DECLARATIONs DECLARATION | ;
 DECLARATION ::= STRUCT_DECL | MODULE_DECL | FUN_DECL | VAR_DECL;
 DECLARATIONs_WITH_VISIBILITY ::= DECLARATIONs_WITH_VISIBILITY VISIBILITY DECLARATION | DECLARATION;
@@ -83,21 +96,20 @@ FACTOR      ::= FACTOR TIMES UNARY | FACTOR DIV UNARY | FACTOR MOD UNARY | UNARY
 UNARY       ::= MINUS UNARY | PLUS UNARY | PTR UNARY | AT UNARY | PRIMARY;
 PRIMARY     ::= LITERAL:e {: RESULT = e; :}
               | NEW LITERAL
-              | DESIGNATION:d {: RESULT = d :}
+              | DESIGNATION:d {: RESULT = d; :}
               | FUNC_CALL:x {: RESULT = x; :}
               | OPEN_PAR EXPR:e CLOSE_PAR {: RESULT = e; :};
-FUNC_CALL   ::= DESIGNATION:d OPEN_PAR EXPRs CLOSE_PAR /* design(arg, ...) // Llamada con algún argumento */
-             {: RESULT = new Call(d, e); :}
+FUNC_CALL   ::= DESIGNATION:d OPEN_PAR EXPRs:e CLOSE_PAR /* design(arg, ...) // Llamada con algún argumento */
+               {: RESULT = new Call(d, e); :}
               | DESIGNATION OPEN_PAR CLOSE_PAR;      /* design()         // Llamada sin ningún argumento */
 EXPRs       ::= EXPRs:more COMMA EXPR:e {: RESULT = more; more.add(e); :}
               | EXPR:e {: RESULT = new ArrayList<Expr>(); RESULT.add(e); :};
 
-
 DESIGNATION ::= DESIGNATION:d OPEN_BRACKET EXPR:e CLOSE_BRACKET  /* design[expr]   */
-             {: RESULT = new ArrayAcces(d, e); :}
+             {: RESULT = new ArrayAccess(d, e); :}
               | DESIGNATION:d DOT IDEN:name                      /* design.iden()   */
              {: RESULT = new StructAccess(d, name); :}
-              | DESIGNATION R_ARROW IDEN                         /* desig->iden    */
+              | DESIGNATION:d R_ARROW IDEN:name                         /* desig->iden    */
              {: RESULT = new StructAccess(new Deref(d), name); :}
               | NAME:name
              {: RESULT = new Var(name); :};                      /* Var should take a binding */                               
@@ -123,14 +135,14 @@ STMT        ::= EXPR SEMICOLON |
                 MATCH_STMT |
                 RETURN_STMT;
 
-ASSIGNMENT  ::= IDEN:name ASSIGN EXPR: e SEMICOLON 
+ASSIGNMENT  ::= DESIGNATION:name ASSIGN EXPR: e SEMICOLON 
              {: RESULT = new Assign(name, e); :};
 
 VAR_DECL    ::= TYPE:t IDEN:name SEMICOLON
-             {: RESULT = new Var(t, name); :}
+             {: RESULT = new DefVar(t, name); :}
               | TYPE ASSIGNMENT;
 TYPE        ::= IDEN:name
-             {: RESULT = new StructType(name):} // By default, if it's not a primitive type, it's a struct. TODO: Link to the struct definition
+             {: RESULT = new StructType(name); :} // By default, if it's not a primitive type, it's a struct. TODO: Link to the struct definition
               | PTR TYPE:t 
              {: RESULT = new PointerType(t); :}
               | ARRAY TYPE:t

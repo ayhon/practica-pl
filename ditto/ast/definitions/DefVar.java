@@ -18,8 +18,12 @@ public class DefVar extends Node implements Statement {
     }
 
     @Override
-    public String getAstString() { return "let"; }
+    public String getAstString() {
+        return "let";
+    }
 
     @Override
-    public List<Object> getAstArguments() { return Arrays.asList(name, type); }
+    public List<Object> getAstArguments() {
+        return Arrays.asList(name, type);
+    }
 }

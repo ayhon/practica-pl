@@ -11,6 +11,10 @@ public class Natural implements Expr {
         value = Integer.parseInt(lexeme);
     }
 
+    public int getValue() {
+        return value;
+    }
+
     @Override
     public String toString() {
         return "( nat ( " + value + " ) )";

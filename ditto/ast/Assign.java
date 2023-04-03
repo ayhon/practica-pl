@@ -5,11 +5,11 @@ import java.util.List;
 import ditto.ast.designators.Designator;
 import ditto.ast.expressions.Expr;
 
-public class Assign extends Node {
+public class Assign implements Statement {
     private final Designator place;
     private final Expr expr;
 
-    Assign(Designator place, Expr expr) {
+    public Assign(Designator place, Expr expr) {
         this.place = place;
         this.expr = expr;
     }

@@ -16,6 +16,7 @@ public class DefStruct extends Node {
         this.attributes = new ArrayList<>(0);
         this.methods = new ArrayList<>(0);
     }
+
     public DefStruct(String name, List<DefVar> attributes, List<DefFunc> methods) {
         this.name = name;
         this.attributes = attributes;
@@ -23,8 +24,12 @@ public class DefStruct extends Node {
     }
 
     @Override
-    public String getAstString() { return "def-struct"; }
+    public String getAstString() {
+        return "def-struct";
+    }
 
     @Override
-    public List<Object> getAstArguments() {return Arrays.asList(name,attributes, methods); }   
+    public List<Object> getAstArguments() {
+        return Arrays.asList(name, attributes, methods);
+    }
 }

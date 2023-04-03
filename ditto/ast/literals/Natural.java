@@ -7,6 +7,10 @@ import ditto.ast.types.Type;
 public class Natural implements Expr {
     private final int value;
 
+    public Natural(int value) {
+        this.value = value;
+    }
+    
     public Natural(String lexeme) {
         value = Integer.parseInt(lexeme);
     }

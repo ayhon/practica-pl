@@ -9,7 +9,7 @@ public class ArrayType implements Type {
     /// If size is null, then this type definition is only possible
     /// in the arguments of a function definition.
     public ArrayType(Type elementType) {
-        this(elementType, null);
+        this(elementType, new Natural(0));
     }
 
     public ArrayType(Type elementType, Natural size) {

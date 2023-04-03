@@ -13,7 +13,7 @@ case $1 in
         case $2 in
             lexer)
                 jflex ditto/lexer/Tokens.l
-                rm ditto/lexer/Lexer.java~
+                rm -f ditto/lexer/Lexer.java~
                 ;;
             parser)
                 cup -parser Parser -symbols TokenKind -nopositions ditto/parser/Syntax.cup && \

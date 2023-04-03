@@ -62,7 +62,8 @@ non terminal MODULE_DECL;
 non terminal Type TYPE;
 non terminal ArrayList<String> NAME;
 non terminal CASE_STMTs, LITERALs;
-non terminal FUNC_PARAMs, AT_LEAST_ONE_PARAM, NO_PARAM, PARAM;
+non terminal ArrayList<Param> FUNC_PARAMs, AT_LEAST_ONE_PARAM, NO_PARAM;
+non terminal Param PARAM;
 non terminal IMPORTs, DECLARATIONs, DECLARATION, DECLARATIONs_WITH_VISIBILITY, VISIBILITY;
 
 /* Nuestro programa empieza con un conjunto de imports, y luego declaraciones */
@@ -79,13 +80,24 @@ STRUCT_DECL ::= STRUCT IDEN IS DECLARATIONs END;
 
 MODULE_DECL ::= MODULE IDEN IS DECLARATIONs_WITH_VISIBILITY END;
 
-FUN_DECL    ::= FUNC IDEN OPEN_PAR FUNC_PARAMs CLOSE_PAR STMTs END |
-                FUNC IDEN OPEN_PAR FUNC_PARAMs CLOSE_PAR R_ARROW TYPE STMTs END;
+FUN_DECL    ::= FUNC IDEN:id OPEN_PAR FUNC_PARAMs:params CLOSE_PAR STMTs:statements END
+               {: RESULT = new DefFunc(id, params, statements); :} | 
+                FUNC IDEN:id OPEN_PAR FUNC_PARAMs:params CLOSE_PAR R_ARROW TYPE:type STMTs:statements END
+               {: RESULT = new DefFunc(id, params, type, statements); :};
                 
 FUNC_PARAMs ::= AT_LEAST_ONE_PARAM | NO_PARAM;
-AT_LEAST_ONE_PARAM ::= AT_LEAST_ONE_PARAM COMMA PARAM | PARAM;
-PARAM       ::= TYPE IDEN | REF TYPE IDEN;
-NO_PARAM    ::= ;
+
+AT_LEAST_ONE_PARAM ::= AT_LEAST_ONE_PARAM:params COMMA PARAM:p 
+                     {: RESULT = params; params.add(p); :} | 
+                     PARAM:p
+                     {: RESULT = new ArrayList<Param>(); RESULT.add(p); :};
+
+PARAM       ::= TYPE:t IDEN:id
+               {: RESULT = new Param(t, id); :} | 
+               REF TYPE:t IDEN:id
+               {: RESULT = new Param(t, id, true); :};
+
+NO_PARAM    ::= {: RESULT = new ArrayList<Param>(); :};
 
 EXPR        ::= DISJUNCTION;
 DISJUNCTION ::= DISJUNCTION OR CONJUNCTION | CONJUNCTION;

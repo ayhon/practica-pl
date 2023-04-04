@@ -1,11 +1,14 @@
 package ditto.ast.literals;
 
-import ditto.ast.expressions.Expr;
+import java.util.Arrays;
+import java.util.List;
+
+import ditto.ast.Node;
 import ditto.ast.types.BoolType;
 import ditto.ast.types.Type;
 
 // Singleton
-public class True implements Expr {
+public class True extends Node implements Literal {
     private static True instance = new True();
     private True() {}
     public static True getInstance() {
@@ -15,4 +18,13 @@ public class True implements Expr {
     public Type getType() {
         return BoolType.getInstance();
     }
+
+    @Override
+    public String getAstString() { return "true"; }
+
+    @Override
+    public List<Object> getAstArguments() { return Arrays.asList(); }
+
+    @Override
+    public String toString() { return getAstString(); }
 }

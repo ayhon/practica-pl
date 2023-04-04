@@ -4,7 +4,9 @@ import java_cup.runtime.*;
 import ditto.lexer.Lexer;
 import ditto.lexer.Token;
 import ditto.errors.ErrorHandler;
+import java.util.List;
 import java.util.ArrayList;
+
 
 import ditto.ast.definitions.*;
 import ditto.ast.designators.*;
@@ -43,14 +45,17 @@ terminal String IDEN;
 
 non terminal S;
 non terminal ArrayList<Statement> STMTs;
-non terminal Expr EXPR,
-             DISJUNCTION, CONJUNCTION,
-             NEGATION, EQUALITY, COMPARISON,
-             TERM, FACTOR, UNARY, PRIMARY, FUNC_CALL,
-             LITERAL, ARRAY_LITERAL;
 
+non terminal Expr EXPR, PRIMARY;
+non terminal OperBin DISJUNCTION, CONJUNCTION, EQUALITY, COMPARISON, TERM, FACTOR;
+non terminal OperUn NEGATION, UNARY;
+
+non terminal ArrayLiteral ARRAY_LITERAL;
+non terminal Call FUNC_CALL;
+
+non terminal Literal LITERAL;
 non terminal Designator DESIGNATION;
-non terminal ArrayList<Expr> EXPRs;
+non terminal List<Expr> EXPRs;
 
 non terminal Statement STMT, ASSIGNMENT, IF_STMT, FOR_STMT, WHILE_STMT, MATCH_STMT, RETURN_STMT;
 
@@ -60,9 +65,10 @@ non terminal DefStruct STRUCT_DECL;
 non terminal MODULE_DECL;
 
 non terminal Type TYPE;
-non terminal ArrayList<String> NAME;
-non terminal CASE_STMTs, LITERALs;
-non terminal ArrayList<Param> FUNC_PARAMs, AT_LEAST_ONE_PARAM, NO_PARAM;
+non terminal List<String> NAME;
+non terminal CASE_STMTs;
+non terminal List<Literal> LITERALs;
+non terminal List<Param> FUNC_PARAMs, AT_LEAST_ONE_PARAM, NO_PARAM;
 non terminal Param PARAM;
 non terminal IMPORTs, DECLARATIONs, DECLARATION, DECLARATIONs_WITH_VISIBILITY, VISIBILITY;
 
@@ -85,7 +91,9 @@ FUN_DECL    ::= FUNC IDEN:id OPEN_PAR FUNC_PARAMs:params CLOSE_PAR STMTs:stateme
                 FUNC IDEN:id OPEN_PAR FUNC_PARAMs:params CLOSE_PAR R_ARROW TYPE:type STMTs:statements END
                {: RESULT = new DefFunc(id, params, type, statements); :};
                 
-FUNC_PARAMs ::= AT_LEAST_ONE_PARAM | NO_PARAM;
+// Suponemos que como todas las ramas dan lugar a un solo no terminal, que tomará el valor de ese no terminal
+FUNC_PARAMs ::= AT_LEAST_ONE_PARAM:l {: RESULT = l; :}
+              | NO_PARAM:l {: RESULT = l; :};
 
 AT_LEAST_ONE_PARAM ::= AT_LEAST_ONE_PARAM:params COMMA PARAM:p 
                      {: RESULT = params; params.add(p); :} | 
@@ -100,14 +108,33 @@ PARAM       ::= TYPE:t IDEN:id
 NO_PARAM    ::= {: RESULT = new ArrayList<Param>(); :};
 
 EXPR        ::= DISJUNCTION;
-DISJUNCTION ::= DISJUNCTION OR CONJUNCTION | CONJUNCTION;
-CONJUNCTION ::= CONJUNCTION AND NEGATION | NEGATION;
-NEGATION    ::= NOT NEGATION | EQUALITY;
-EQUALITY    ::= EQUALITY EQUAL COMPARISON | EQUALITY NOT_EQUAL COMPARISON | COMPARISON;
-COMPARISON  ::= COMPARISON LESS TERM | COMPARISON GREATER TERM | COMPARISON LESS_EQUAL TERM | COMPARISON GREATER_EQUAL TERM | TERM;
-TERM        ::= TERM PLUS FACTOR | TERM MINUS FACTOR | FACTOR;
-FACTOR      ::= FACTOR TIMES UNARY | FACTOR DIV UNARY | FACTOR MOD UNARY | UNARY;
-UNARY       ::= MINUS UNARY | PLUS UNARY | PTR UNARY | AT UNARY | PRIMARY;
+DISJUNCTION ::= DISJUNCTION OR CONJUNCTION 
+              | CONJUNCTION;
+CONJUNCTION ::= CONJUNCTION AND NEGATION 
+              | NEGATION;
+NEGATION    ::= NOT NEGATION 
+              | EQUALITY;
+EQUALITY    ::= EQUALITY EQUAL COMPARISON 
+              | EQUALITY NOT_EQUAL COMPARISON 
+              | COMPARISON;
+COMPARISON  ::= COMPARISON LESS TERM 
+              | COMPARISON GREATER TERM 
+              | COMPARISON LESS_EQUAL TERM 
+              | COMPARISON GREATER_EQUAL TERM 
+              | TERM;
+TERM        ::= TERM PLUS FACTOR 
+              | TERM MINUS FACTOR 
+              | FACTOR;
+FACTOR      ::= FACTOR TIMES UNARY 
+              | FACTOR DIV UNARY 
+              | FACTOR MOD UNARY 
+              | UNARY;
+UNARY       ::= MINUS UNARY 
+              | PLUS UNARY 
+              | PTR UNARY 
+              | AT UNARY
+            //   | NEW UNARY
+              | PRIMARY;
 PRIMARY     ::= LITERAL:e {: RESULT = e; :}
               | NEW LITERAL
               | DESIGNATION:d {: RESULT = d; :}
@@ -118,6 +145,27 @@ FUNC_CALL   ::= DESIGNATION:d OPEN_PAR EXPRs:e CLOSE_PAR /* design(arg, ...) // 
               | DESIGNATION OPEN_PAR CLOSE_PAR;      /* design()         // Llamada sin ningún argumento */
 EXPRs       ::= EXPRs:more COMMA EXPR:e {: RESULT = more; more.add(e); :}
               | EXPR:e {: RESULT = new ArrayList<Expr>(); RESULT.add(e); :};
+
+/*
+Literales
+int    → 10, 1, 30
+bool   → true, false
+array  → [10; 1], [1,2,3,4]
+ptr    → NO TIENE (@a)
+struct → Persona{edad: 20}
+
+(new Persona{edad: 20})->edad // Ugly
+
+self.setNext(new Persona{edad: 20});
+self.next.prev = self;
+
+new Persona{edad: 20};
+new [Persona{}; 10];
+new true;
+new 10;
+
+*/
+
 
 DESIGNATION ::= DESIGNATION:d OPEN_BRACKET EXPR:e CLOSE_BRACKET  /* design[expr]   */
              {: RESULT = new ArrayAccess(d, e); :}
@@ -132,25 +180,31 @@ NAME        ::= NAME:more QUADOT IDEN:name                       /* name::iden *
               | IDEN:name
              {: RESULT = new ArrayList<String>(); RESULT.add(name); :}; 
 
-LITERAL     ::= NAT | TRUE | FALSE | ARRAY_LITERAL;
-ARRAY_LITERAL ::= OPEN_BRACKET CLOSE_BRACKET                       /* [], empty array */
-             {: RESULT = new ArrayLiteral(new ArrayList<Literal>()); :}
-              |   OPEN_BRACKET LITERALs CLOSE_BRACKET              /* [ elem1, elem2, elem3, ..]*/
-              |   OPEN_BRACKET LITERAL SEMICOLON NAT CLOSE_BRACKET; // [default; size]
-LITERALs    ::= LITERALs COMMA LITERAL | LITERAL;
+LITERAL     ::= NAT:n           {: RESULT = n; :}
+              | TRUE:t          {: RESULT = t; :}
+              | FALSE:f         {: RESULT = f; :}
+              | ARRAY_LITERAL:a {: RESULT = a; :};
+LITERALs    ::= LITERALs:more COMMA LITERAL:l {: RESULT = more; more.add(l); :}
+              | LITERAL:l {: RESULT = new ArrayList<Literal>(); RESULT.add(l); :};
+ARRAY_LITERAL ::= OPEN_BRACKET CLOSE_BRACKET        
+             {: RESULT = new ArrayLiteral(new ArrayList<Literal>()); :}  /* [] // empty array */
+              |   OPEN_BRACKET LITERALs:ls CLOSE_BRACKET              
+             {: RESULT = new ArrayLiteral(ls); :}                        /* [elem1, elem2, elem3, ...]*/
+              |   OPEN_BRACKET LITERAL:def SEMICOLON NAT:size CLOSE_BRACKET 
+             {: RESULT = new ArrayLiteral(def,size); :};             /* [default; size] */
 
 /* TODO: Quiza luego hay problema, porque estamos modificando la misma referencia de ArrayList */
 STMTs       ::= STMTs:statements STMT:st {: RESULT = statements; statements.add(st); :}
-               | {: RESULT = new ArrayList<Statement>(); :};
+           | {: RESULT = new ArrayList<Statement>(); :};
 
-STMT        ::= EXPR SEMICOLON |
-                ASSIGNMENT |
-                VAR_DECL | // No ponemos funciones u otras declaraciones porque no las queremos en el cuerpo de una función
-                IF_STMT |
-                FOR_STMT |
-                WHILE_STMT |
-                MATCH_STMT |
-                RETURN_STMT;
+STMT        ::= EXPR SEMICOLON 
+              | ASSIGNMENT
+              | VAR_DECL     // No ponemos funciones u otras declaraciones porque no las queremos en el cuerpo de una función
+              | IF_STMT
+              | FOR_STMT
+              | WHILE_STMT
+              | MATCH_STMT
+              | RETURN_STMT;
 
 ASSIGNMENT  ::= DESIGNATION:name ASSIGN EXPR: e SEMICOLON 
              {: RESULT = new Assign(name, e); :};

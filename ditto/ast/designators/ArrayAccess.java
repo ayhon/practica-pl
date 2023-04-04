@@ -12,23 +12,13 @@ import ditto.ast.types.Type;
 public class ArrayAccess extends Node implements Designator {
     private final Designator array;
     private final Expr index;
-    private final Type type;
 
     public ArrayAccess(Designator array, Expr index) {
         this.array = array;
         this.index = index;
-        this.type = null;
 
         /* Para cuando implementamos el chequeo de tipos
-        Type arr_type = array.getType();
-        if (arr_type instanceof ArrayType) { // Podemos usar == pues es un singleton
-            this.type = ((ArrayType) arr_type).getElementType();
-        } else
-            throw new IllegalArgumentException("Cannot index a non-array type");
-        this.index = index;
-        if (index.getType() != IntegerType.getInstance()) { // Podemos usar != pues es un singleton
-            throw new IllegalArgumentException("Array index must be an integer");
-        }
+
         */
     }
 
@@ -42,7 +32,13 @@ public class ArrayAccess extends Node implements Designator {
 
     @Override
     public Type getType() {
-        return type;
+        if (index.getType() != IntegerType.getInstance()) { // Podemos usar != pues es un singleton
+            throw new IllegalArgumentException("Array index must be an integer");
+        }
+        Type arr_type = array.getType();
+        if (arr_type instanceof ArrayType) { // Podemos usar == pues es un singleton
+            return ((ArrayType) arr_type).getElementType();
+        } else throw new IllegalArgumentException("Cannot index a non-array type");
     }
 
     @Override

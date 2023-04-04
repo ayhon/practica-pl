@@ -1,6 +1,6 @@
 # Práctica PL
 
-Implementación de un compilador de `INSERT_LANGUAGE_NAME_HERE` a WASM. Práctica de la asignatura *Procesadores de Lenguaje*
+Implementación de un compilador de `ditto` a WASM. Práctica de la asignatura *Procesadores de Lenguaje*
 
 ## Entregas
  - [> Feb] Primera entrega  

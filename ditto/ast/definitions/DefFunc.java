@@ -1,6 +1,5 @@
 package ditto.ast.definitions;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import ditto.ast.Node;
@@ -10,17 +9,19 @@ import ditto.ast.types.VoidType;
 
 public class DefFunc extends Node {
     private final String id;
-    private final ArrayList<Param> params;
+    private final List<Param> params;
     private final Type result;
-    private final ArrayList<Statement> body;
+    private final List<Statement> body;
 
-    public DefFunc(String id, ArrayList<Param> params, ArrayList<Statement> body) {
+    public DefFunc(String id, List<Param> params, List<Statement> body) {
         this(id, params, new VoidType(), body);
     }
 
-    public DefFunc(String id, ArrayList<Param> params, Type result, ArrayList<Statement> body) {
+    public DefFunc(String id, List<Param> params, Type result, List<Statement> body) {
         this.id = id;
         this.params = params;
+        if (params == null)
+            throw new RuntimeException("params is null");
         this.result = result;
         this.body = body;
     }

@@ -1,10 +1,9 @@
 package ditto.ast.literals;
 
-import ditto.ast.expressions.Expr;
 import ditto.ast.types.IntegerType;
 import ditto.ast.types.Type;
 
-public class Natural implements Expr {
+public class Natural implements Literal {
     private final int value;
 
     public Natural(int value) {

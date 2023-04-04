@@ -42,8 +42,8 @@ public class Call extends Node implements Expr {
 
     @Override
     public Type getType() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getType'");
+        /// Deberia ser el tipo de retorno de la funcion
+        return this.func.getType();
     }
 
 }

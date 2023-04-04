@@ -4,6 +4,9 @@ import java.util.Arrays;
 import java.util.List;
 
 import ditto.ast.Node;
+import ditto.ast.types.BoolType;
+import ditto.ast.types.IntegerType;
+import ditto.ast.types.PointerType;
 import ditto.ast.types.Type;
 
 public class OperUn extends Node implements Expr {
@@ -44,7 +47,20 @@ public class OperUn extends Node implements Expr {
 
     @Override
     public Type getType() {
-        throw new UnsupportedOperationException("Unimplemented method 'getType'");
+        switch (this.op) {
+            case NOT:
+                return BoolType.getInstance();
+            case NEG:
+                return IntegerType.getInstance();
+            case POS:
+                return IntegerType.getInstance();
+            case REF:
+                /// Se da con expresion `ptr x`,
+                /// que sirve para obtener el puntero a la variable x
+                return new PointerType(expr.getType());
+            default:
+                throw new IllegalArgumentException("Invalid operator");
+        }
     }
 
     @Override

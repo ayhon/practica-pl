@@ -92,8 +92,13 @@ public class OperBin extends ditto.ast.Node implements Expr {
 
     @Override
     public Type getType() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getType'");
+        /// El tipo resultante será el tipo de ambas expresiones
+        /// (tiene que ser el mismo)
+        if (left.getType() != right.getType()) {
+            throw new IllegalArgumentException("OperBin: left and right types must be the same");
+        }
+
+        return left.getType();
     }
 
     @Override

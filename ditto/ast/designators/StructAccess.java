@@ -15,6 +15,10 @@ public class StructAccess extends Node implements Designator {
 
     public StructAccess(Designator struct, String name) {
         this.name = name;
+        this.struct = struct;
+        this.type = null;
+
+        /* Para cuando implementamos el chequeo de tipos 
         Type struct_type = struct.getType();
         if (struct_type instanceof StructType) {
             this.struct = struct;
@@ -26,6 +30,7 @@ public class StructAccess extends Node implements Designator {
                         "Struct " + ((StructType) struct_type).getName() + " does not have a field named " + name);
         } else
             throw new IllegalArgumentException("Cannot access a field of a non-struct type");
+        */
     }
 
     public Designator getStruct() {

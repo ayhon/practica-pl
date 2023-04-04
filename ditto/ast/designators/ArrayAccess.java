@@ -16,6 +16,10 @@ public class ArrayAccess extends Node implements Designator {
 
     public ArrayAccess(Designator array, Expr index) {
         this.array = array;
+        this.index = index;
+        this.type = null;
+
+        /* Para cuando implementamos el chequeo de tipos
         Type arr_type = array.getType();
         if (arr_type instanceof ArrayType) { // Podemos usar == pues es un singleton
             this.type = ((ArrayType) arr_type).getElementType();
@@ -25,6 +29,7 @@ public class ArrayAccess extends Node implements Designator {
         if (index.getType() != IntegerType.getInstance()) { // Podemos usar != pues es un singleton
             throw new IllegalArgumentException("Array index must be an integer");
         }
+        */
     }
 
     public Designator getArray() {

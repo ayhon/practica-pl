@@ -31,4 +31,7 @@ public class False extends Node implements Literal {
 
     @Override
     public String toString() { return getAstString(); }
+
+    @Override
+    public Object getValue() {  return false;   }
 }

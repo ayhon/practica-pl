@@ -1,9 +1,13 @@
 package ditto.ast.literals;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import ditto.ast.Node;
 import ditto.ast.types.IntegerType;
 import ditto.ast.types.Type;
 
-public class Natural implements Literal {
+public class Natural extends Node implements Literal {
     private final int value;
 
     public Natural(int value) {
@@ -14,7 +18,11 @@ public class Natural implements Literal {
         value = Integer.parseInt(lexeme);
     }
 
-    public int getValue() {
+    @Override
+    public String getAstString() {
+        return "nat";
+    }
+    public Object getValue() {
         return value;
     }
 
@@ -26,5 +34,10 @@ public class Natural implements Literal {
     @Override
     public Type getType() {
         return IntegerType.getInstance();
+    }
+
+    @Override
+    public List<Object> getAstArguments() {
+        return new ArrayList<Object>(value);
     }
 }

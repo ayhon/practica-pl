@@ -8,4 +8,5 @@ public class PointerType implements Type {
     public PointerType(Type elementType) {
         this.elementType = elementType;
     }
+
 }

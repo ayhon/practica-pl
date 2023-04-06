@@ -27,7 +27,7 @@ public class ArrayLiteral extends Node implements Literal {
         if (elements.size() > 0) {
             this.elem_type = elements.get(0).getType();
         } else {
-            this.elem_type = null; // What do we do with the type of an empty array? If they can't be resized, it's weird to even keep.
+            throw new ArrayIndexOutOfBoundsException(); // Si no tiene elementos, como no se pueden añadir no tiene ni tendrá nunca un tipo
         }
     }
 
@@ -36,12 +36,15 @@ public class ArrayLiteral extends Node implements Literal {
     }
 
     public ArrayLiteral(Literal fill, Natural size) {
-        // TODO: Probablemente podamos reutilizar constructores de alguna manera
-        this.elements = new ArrayList<Literal>(size.getValue());
-        for (int i = 0; i < size.getValue(); i++) {
-            elements.add(fill);
+        int length = (int) size.getValue();
+        this.elements = new ArrayList<Literal>(length);
+
+        for (int i = 0; i < length; i++) {
+            elements.add(fill);         //El valor por defecto es siempre el mismo
         }
+
         this.ast_args = new ArrayList<Object>();
+        
         for (Literal l : elements) { // ast_args es elements pero como List<Object> en vez de List<Literal>
             ast_args.add(l);
         }
@@ -49,7 +52,7 @@ public class ArrayLiteral extends Node implements Literal {
         if (elements.size() > 0) {
             this.elem_type = elements.get(0).getType();
         } else {
-            this.elem_type = null; // What do we do with the type of an empty array? If they can't be resized, it's weird to even keep.
+            throw new ArrayIndexOutOfBoundsException(); // Si no tiene elementos, como no se pueden añadir no tiene ni tendrá nunca un tipo
         }
     }
 
@@ -66,6 +69,11 @@ public class ArrayLiteral extends Node implements Literal {
     @Override
     public Type getType() {
         return new ArrayType(elem_type);
+    }
+
+    @Override
+    public Object getValue() {
+        return this.elements;
     }
 
 }

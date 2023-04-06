@@ -3,9 +3,10 @@ package ditto.ast.expressions;
 import java.util.Arrays;
 import java.util.List;
 
+import ditto.ast.Node;
 import ditto.ast.types.Type;
 
-public class OperBin extends ditto.ast.Node implements Expr {
+public class OperBin extends Node implements Expr {
     public enum Operators {
         SUM,
         SUBS,

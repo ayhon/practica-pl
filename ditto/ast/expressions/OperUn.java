@@ -23,6 +23,8 @@ public class OperUn extends Node implements Expr {
                     return "+";
                 case REF:
                     return "ptr";
+                case DEREF:
+                    return "@";
                 default:
                     throw new IllegalArgumentException("Invalid operator");
             }
@@ -58,6 +60,10 @@ public class OperUn extends Node implements Expr {
                 /// Se da con expresion `ptr x`,
                 /// que sirve para obtener el puntero a la variable x
                 return new PointerType(expr.getType());
+            case DEREF: 
+                /// Se da con expresion `@x`,
+                /// que sirve para obtener el valor apuntado por el puntero x
+                return ((PointerType) expr.getType()).getElementType();
             default:
                 throw new IllegalArgumentException("Invalid operator");
         }

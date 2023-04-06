@@ -14,6 +14,7 @@ public class True extends Node implements Literal {
     public static True getInstance() {
         return instance;
     }
+    
     @Override
     public Type getType() {
         return BoolType.getInstance();
@@ -24,7 +25,9 @@ public class True extends Node implements Literal {
 
     @Override
     public List<Object> getAstArguments() { return Arrays.asList(); }
-
+    
     @Override
-    public String toString() { return getAstString(); }
+    public Object getValue() {
+        return true;
+    }
 }

@@ -14,7 +14,7 @@ public class ArrayType implements Type {
 
     public ArrayType(Type elementType, Natural size) {
         this.elementType = elementType;
-        this.size = size.getValue();
+        this.size = (int) size.getValue();
     }
 
     public Type getElementType() {

@@ -10,6 +10,9 @@ import ditto.ast.types.Type;
 // Singleton
 public class True extends Node implements Literal {
     private static True instance = new True();
+    private static Type type = BoolType.getInstance();
+
+
     private True() {}
     public static True getInstance() {
         return instance;
@@ -17,7 +20,7 @@ public class True extends Node implements Literal {
     
     @Override
     public Type getType() {
-        return BoolType.getInstance();
+        return type;
     }
 
     @Override

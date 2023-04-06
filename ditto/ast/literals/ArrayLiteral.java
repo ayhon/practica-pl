@@ -9,7 +9,7 @@ import ditto.ast.types.Type;
 
 public class ArrayLiteral extends Node implements Literal {
     private final List<Literal> elements;
-    private final Type elem_type;
+    private final ArrayType array_type;
     private final List<Object> ast_args;
 
     public List<Literal> getElements() {
@@ -24,11 +24,7 @@ public class ArrayLiteral extends Node implements Literal {
             ast_args.add(l);
         }
 
-        if (elements.size() > 0) {
-            this.elem_type = elements.get(0).getType();
-        } else {
-            throw new ArrayIndexOutOfBoundsException(); // Si no tiene elementos, como no se pueden añadir no tiene ni tendrá nunca un tipo
-        }
+        this.array_type = new ArrayType(elements.get(0).getType(), new Natural(elements.size()));
     }
 
     public ArrayLiteral() {
@@ -49,11 +45,7 @@ public class ArrayLiteral extends Node implements Literal {
             ast_args.add(l);
         }
 
-        if (elements.size() > 0) {
-            this.elem_type = elements.get(0).getType();
-        } else {
-            throw new ArrayIndexOutOfBoundsException(); // Si no tiene elementos, como no se pueden añadir no tiene ni tendrá nunca un tipo
-        }
+        this.array_type = new ArrayType(elements.get(0).getType(), new Natural(elements.size()));
     }
 
     @Override
@@ -68,7 +60,7 @@ public class ArrayLiteral extends Node implements Literal {
 
     @Override
     public Type getType() {
-        return new ArrayType(elem_type);
+        return this.array_type;
     }
 
     @Override

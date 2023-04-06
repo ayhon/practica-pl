@@ -1,3 +1,4 @@
+
 package ditto.ast.types;
 
 // Singleton
@@ -7,6 +8,4 @@ public class IntegerType implements Type {
     public static IntegerType getInstance() {
         return instance;
     }
-    @Override
-    public String toString() { return "int"; }
 }

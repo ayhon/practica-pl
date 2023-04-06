@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import ditto.ast.Node;
+import ditto.ast.expressions.Expr;
 import ditto.ast.types.StructType;
 import ditto.ast.types.Type;
 

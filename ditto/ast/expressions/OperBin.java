@@ -73,7 +73,7 @@ public class OperBin extends Node implements Expr {
     private final Expr left;
     private final Expr right;
 
-    OperBin(Operators op, Expr left, Expr right) {
+    public OperBin(Operators op, Expr left, Expr right) {
         this.op = op;
         this.left = left;
         this.right = right;

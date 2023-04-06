@@ -34,7 +34,7 @@ public class OperUn extends Node implements Expr {
     private final Operators op;
     private final Expr expr;
 
-    OperUn(Operators op, Expr expr) {
+    public OperUn(Operators op, Expr expr) {
         this.op = op;
         this.expr = expr;
     }

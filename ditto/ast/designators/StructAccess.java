@@ -2,10 +2,8 @@ package ditto.ast.designators;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 
 import ditto.ast.Node;
-import ditto.ast.types.StructType;
 import ditto.ast.types.Type;
 
 public class StructAccess extends Node implements Designator {

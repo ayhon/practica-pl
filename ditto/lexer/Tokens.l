@@ -76,7 +76,7 @@ identifier = {letter}({letter}|{digit})*
 assign = :\=
 semicolon = \;
 comma = ,
-colon = :
+//colon = :
 quadot = ::
 dot = \.
 at = @

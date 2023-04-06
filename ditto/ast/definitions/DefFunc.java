@@ -14,7 +14,7 @@ public class DefFunc extends Node {
     private final List<Statement> body;
 
     public DefFunc(String id, List<Param> params, List<Statement> body) {
-        this(id, params, new VoidType(), body);
+        this(id, params, VoidType.getInstance(), body);
     }
 
     public DefFunc(String id, List<Param> params, Type result, List<Statement> body) {

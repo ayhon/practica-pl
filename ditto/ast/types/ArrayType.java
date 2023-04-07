@@ -24,4 +24,9 @@ public class ArrayType implements Type {
     public Integer getSize() {
         return size;
     }
+
+    @Override
+    public String toString() {
+        return "ARRAY";
+    }
 }

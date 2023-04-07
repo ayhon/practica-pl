@@ -35,7 +35,12 @@ case $1 in
         ;;
     parser)
         javac -cp "$JAR_PATH/*:." ditto/*/*.java \
-         && java -cp "$JAR_PATH/*:." ditto.parser.Test test/keywords.txt
+         && java -cp "$JAR_PATH/*:." ditto.parser.Test test/keywords.ditto
+        ;;
+    ast)
+        file=`[ -z $2 ] && echo "test/keywords.ditto" || echo "test/$2.ditto"`
+        javac -cp "$JAR_PATH/*:." ditto/*/*.java \
+         && java -cp "$JAR_PATH/*:." ditto.ast.Test $file
         ;;
     *)
         echo "Nou entiendo"

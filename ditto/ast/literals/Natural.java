@@ -25,12 +25,7 @@ public class Natural extends Node implements Literal {
     public Object getValue() {
         return value;
     }
-
-    @Override
-    public String toString() {
-        return "( nat ( " + value + " ) )";
-    }
-
+    
     @Override
     public Type getType() {
         return IntegerType.getInstance();

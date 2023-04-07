@@ -36,7 +36,12 @@ public abstract class Node {
         sb.append('[');
         int idx = 0;
         for (Object item : list) {
-            sb.append(item.toString());
+            if(item == null){
+                sb.append("NULL");
+                continue;
+            } else {
+                sb.append(item.toString());
+            }
             if (idx != list.size() - 1)
                 sb.append(',');
             idx += 1;

@@ -1,5 +1,6 @@
 package ditto.ast.definitions;
 
+import java.util.Arrays;
 import java.util.List;
 
 import ditto.ast.Node;
@@ -20,8 +21,6 @@ public class DefFunc extends Node {
     public DefFunc(String id, List<Param> params, Type result, List<Statement> body) {
         this.id = id;
         this.params = params;
-        if (params == null)
-            throw new RuntimeException("params is null");
         this.result = result;
         this.body = body;
     }
@@ -32,9 +31,8 @@ public class DefFunc extends Node {
     }
 
     @Override
-    public List<Object> getAstArguments() {
-        throw new UnsupportedOperationException("Unimplemented method 'getAstArguments' for DefFunc");
-    }
+    public List<Object> getAstArguments() { return Arrays.asList(id, params, result, body); }
+    
     static public class Param {
         public final Type type;
         public final String name;

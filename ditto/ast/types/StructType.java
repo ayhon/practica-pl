@@ -38,4 +38,9 @@ public class StructType implements Type {
         this.fieldTypes = fieldTypes;
         this.returnFuncTypes = returnFuncTypes;
     }
+
+    @Override
+    public String toString() {
+        return "STRUCT";
+    }
 }

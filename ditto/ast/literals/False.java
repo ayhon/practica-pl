@@ -30,8 +30,5 @@ public class False extends Node implements Literal {
     public List<Object> getAstArguments() { return Arrays.asList(); }
 
     @Override
-    public String toString() { return getAstString(); }
-
-    @Override
     public Object getValue() {  return false;   }
 }

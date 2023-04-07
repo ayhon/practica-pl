@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ditto.ast.Node;
-import ditto.ast.expressions.Expr;
 import ditto.ast.types.ArrayType;
 import ditto.ast.types.Type;
 

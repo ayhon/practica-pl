@@ -4,7 +4,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import ditto.ast.Node;
-import ditto.ast.expressions.Expr;
 import ditto.ast.types.BoolType;
 import ditto.ast.types.Type;
 

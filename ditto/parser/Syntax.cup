@@ -107,7 +107,7 @@ PARAM       ::= TYPE:t IDEN:id                      /*Por valor*/
 
 NO_PARAM    ::= {: RESULT = new ArrayList<Param>(); :};
 
-EXPR        ::= DISJUNCTION;
+EXPR        ::= DISJUNCTION:d {: RESULT = d; :};
 DISJUNCTION ::= DISJUNCTION:left OR CONJUNCTION:rigth 
                 {: RESULT =  new OperBin(OperBin.Operators.OR, left, rigth); :}
               | CONJUNCTION:expr 

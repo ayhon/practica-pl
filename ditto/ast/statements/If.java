@@ -1,11 +1,13 @@
 package ditto.ast.statements;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
+import ditto.ast.Node;
 import ditto.ast.expressions.Expr;
 
-public class If implements Statement {
+public class If extends Node implements Statement {
     private Expr cond;
     private ArrayList<Statement> then;
     private ArrayList<Statement> els;
@@ -24,7 +26,8 @@ public class If implements Statement {
 
 
     @Override
-    public String toString() {
-        return "(if " + cond + " " + then + " " + els + ")";
-    }
+    public String getAstString() { return "if"; }
+
+    @Override
+    public List<Object> getAstArguments() { return Arrays.asList(cond, then, els); }
 }

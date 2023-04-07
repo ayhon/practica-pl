@@ -71,6 +71,14 @@ public class LexerOperations {
         System.out.println("Token CloseBracket");
         return new Token(lexer.col(), lexer.row(), lexer.lexeme(), TokenKind.CLOSE_BRACKET);
     }
+    Token scanOpenCurly(){
+        System.out.println("Token OpenCurly");
+        return new Token(lexer.col(), lexer.row(), lexer.lexeme(), TokenKind.OPEN_CURLY);
+    }
+    Token scanCloseCurly(){
+        System.out.println("Token CloseCurly");
+        return new Token(lexer.col(), lexer.row(), lexer.lexeme(), TokenKind.CLOSE_CURLY);
+    }
     Token scanGreaterThan(){
         System.out.println("Token GreaterThan");
         return new Token(lexer.col(), lexer.row(), lexer.lexeme(), TokenKind.GREATER);
@@ -98,6 +106,10 @@ public class LexerOperations {
     Token scanSemicolon(){
         System.out.println("Token Semicolon");
         return new Token(lexer.col(), lexer.row(), lexer.lexeme(), TokenKind.SEMICOLON);
+    }
+    Token scanColon(){
+        System.out.println("Token Colon");
+        return new Token(lexer.col(), lexer.row(), lexer.lexeme(), TokenKind.COLON);
     }
     Token scanComma(){
         System.out.println("Token Comma");

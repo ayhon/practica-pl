@@ -1,10 +1,14 @@
 package ditto.ast.statements;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
+import ditto.ast.Node;
 import ditto.ast.expressions.Expr;
+import ditto.ast.literals.Natural;
 
-public class For implements Statement {
+public class For extends Node implements Statement {
     public final String index;
     public final Expr from;
     public final Expr to;
@@ -20,11 +24,13 @@ public class For implements Statement {
     }
 
     public For(String index, Expr from, Expr to, ArrayList<Statement> body) {
-        this(index, from, to, null, body);
+        this(index, from, to, new Natural(1), body);
     }
 
     @Override
-    public String toString() {
-        return "(for " + index + " " + from + " " + to + " " + by + " " + body + ")";
-    }
+    public String getAstString() { return "for"; }
+
+    @Override
+    public List<Object> getAstArguments() { return Arrays.asList(index, from, to, by, body); }
+
 }

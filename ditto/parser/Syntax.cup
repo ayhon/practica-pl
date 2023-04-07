@@ -219,8 +219,8 @@ PRIMARY                     ::= LITERAL:e
 
 FUNC_CALL                   ::= DESIGNATION:d OPEN_PAR EXPRs:e CLOSE_PAR /* design(arg, ...) // Llamada con algún argumento */
                                     {: RESULT = new Call(d, e); :}
-                                | DESIGNATION:d OPEN_PAR CLOSE_PAR;      /* design()         // Llamada sin ningún argumento */
-                                    {: RESULT = new Call(d); :}
+                                | DESIGNATION:d OPEN_PAR CLOSE_PAR      /* design()         // Llamada sin ningún argumento */
+                                    {: RESULT = new Call(d); :};
 
 EXPRs                       ::= EXPRs:more COMMA EXPR:e 
                                     {: RESULT = more; more.add((Expr) e); :}

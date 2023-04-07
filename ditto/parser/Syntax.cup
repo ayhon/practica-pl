@@ -23,6 +23,10 @@ parser code {:
    public void syntax_error(Symbol token) {
      errors.syntaxError((Token)token);
    }
+   private Node root;
+   public Node getRoot() {
+     return root;
+   }
 :};
 init with {: 
    errors = new ErrorHandler();
@@ -80,7 +84,7 @@ non terminal DefinitionCollection DEFINITIONs;
 
 /* Nuestro programa empieza con un conjunto de imports, y luego declaraciones */
 S ::= IMPORTs:imports DEFINITIONs:declarations
-      {: RESULT = new Module(imports, declarations); :};
+      {: RESULT = new Module(imports, declarations); root = RESULT :};
 
 IMPORTs ::= IMPORTs:imports IMPORT NAME:name SEMICOLON
          {: RESULT = imports; imports.add(new DefModule(name)); :} |

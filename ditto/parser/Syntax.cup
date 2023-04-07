@@ -48,6 +48,9 @@ terminal PLUS, MINUS, TIMES, DIV, MOD, NOT_EQUAL, EQUAL, GREATER, LESS, GREATER_
 terminal AND, OR, NOT, FUNC, IF, ELSE, FOR, WHILE, IMPORT, RETURN, MATCH, CASE, IS, OTHERWISE,
          END, DO, THEN, MODULE, INT, BOOL, ARRAY, PTR, STRUCT, PUBLIC, FROM, TO, BY, REF, NEW;
 
+/* Programa principal */
+non terminal Node S;      
+
 /* LITERALS */
 terminal Natural NAT;
 terminal True   TRUE;
@@ -60,9 +63,6 @@ non terminal ArrayLiteral ARRAY_LITERAL;
 non terminal StructLiteral STRUCT_LITERAL;
 non terminal Map<String, Expr> ATRIBUTE_ASSIGNMENTs, AT_LEAST_ONE_ATR_ASSIGMENT;    /* Asignación de atributos en un literal de struct */
 
-non terminal Node S;      /* Programa principal */
-non terminal List<Statement> STMTs; /* Lista de sentencias */
-
 /* EXPRESIONES */
 non terminal List<Expr> EXPRs;      
 non terminal Expr EXPR, PRIMARY;
@@ -74,6 +74,7 @@ non terminal Call FUNC_CALL;
 non terminal Designator DESIGNATION;
 
 /* SENTENCIAS */
+non terminal List<Statement> STMTs;     /* Lista de sentencias */
 non terminal Statement STMT, ASSIGNMENT, IF_STMT, FOR_STMT, WHILE_STMT, MATCH_STMT, RETURN_STMT;
 non terminal List<Match.Case> CASE_STMTs;
 
@@ -91,219 +92,260 @@ non terminal DefFunc.Param PARAM;
 non terminal List<DefModule> IMPORTs;
 non terminal DefinitionCollection DEFINITIONs;
 
+/*** GRAMÁTICA DEL PROGRAMA ***/
+
 /* Nuestro programa empieza con un conjunto de imports, y luego declaraciones */
-S ::= IMPORTs:imports DEFINITIONs:declarations
-      {: RESULT = parser.setRoot(new Module(imports, declarations)); :};
+S                           ::= IMPORTs:imports DEFINITIONs:declarations
+                                    {: RESULT = parser.setRoot(new Module(imports, declarations)); :};
 
-IMPORTs ::= IMPORTs:imports IMPORT NAME:name SEMICOLON
-         {: RESULT = imports; imports.add(new DefModule(name)); :} |
-         {: RESULT = new ArrayList<DefModule>(); :};
 
-STRUCT_DEF ::= STRUCT IDEN:name IS DEFINITIONs:ds END
-            {: RESULT = new DefStruct(name, ds.getVariables(), ds.getFunctions()); :};
+/* GRAMÁTICA DE DEFINICIONES */
+IMPORTs                     ::= IMPORTs:imports IMPORT NAME:name SEMICOLON
+                                    {: RESULT = imports; imports.add(new DefModule(name)); :}
+                                |
+                                    {: RESULT = new ArrayList<DefModule>(); :};
+
+STRUCT_DEF                  ::= STRUCT IDEN:name IS DEFINITIONs:ds END
+                                    {: RESULT = new DefStruct(name, ds.getVariables(), ds.getFunctions()); :};
              
-DEFINITIONs ::= DEFINITIONs:defs STRUCT_DEF:defStruct {: RESULT = defs; defs.add(defStruct); :} | 
-                DEFINITIONs:defs FUN_DEF:defFun {: RESULT = defs; defs.add(defFun); :} | 
-                DEFINITIONs:defs VAR_DEF:defVar {: RESULT = defs; defs.add(defVar); :} |
-                {: RESULT = new DefinitionCollection(); :};
+DEFINITIONs                 ::= DEFINITIONs:defs STRUCT_DEF:defStruct 
+                                    {: RESULT = defs; defs.add(defStruct); :}
+                                | DEFINITIONs:defs FUN_DEF:defFun 
+                                    {: RESULT = defs; defs.add(defFun); :} 
+                                | DEFINITIONs:defs VAR_DEF:defVar 
+                                    {: RESULT = defs; defs.add(defVar); :}
+                                | 
+                                    {: RESULT = new DefinitionCollection(); :};
 
-FUN_DEF    ::= FUNC IDEN:id OPEN_PAR FUNC_PARAMs:params CLOSE_PAR STMTs:statements END
-               {: RESULT = new DefFunc(id, params, statements); :} | 
-                FUNC IDEN:id OPEN_PAR FUNC_PARAMs:params CLOSE_PAR R_ARROW TYPE:type STMTs:statements END
-               {: RESULT = new DefFunc(id, params, type, statements); :};
+FUN_DEF                     ::= FUNC IDEN:id OPEN_PAR FUNC_PARAMs:params CLOSE_PAR STMTs:statements END 
+                                    {: RESULT = new DefFunc(id, params, statements); :}
+                                | FUNC IDEN:id OPEN_PAR FUNC_PARAMs:params CLOSE_PAR R_ARROW TYPE:type STMTs:statements END 
+                                    {: RESULT = new DefFunc(id, params, type, statements); :};
                 
-// Suponemos que como todas las ramas dan lugar a un solo no terminal, que tomará el valor de ese no terminal
-FUNC_PARAMs ::= AT_LEAST_ONE_PARAM:l {: RESULT = l; :}
-              | NO_PARAM:l {: RESULT = l; :};
+/* Suponemos que como todas las ramas dan lugar a un solo no terminal, que tomará el valor de ese no terminal */
+FUNC_PARAMs                 ::= AT_LEAST_ONE_PARAM:l 
+                                    {: RESULT = l; :}
+                                | NO_PARAM:l 
+                                    {: RESULT = l; :};
 
-AT_LEAST_ONE_PARAM ::= AT_LEAST_ONE_PARAM:params COMMA PARAM:p 
-                     {: RESULT = params; params.add(p); :} | 
-                     PARAM:p
-                     {: RESULT = new ArrayList<DefFunc.Param>(); RESULT.add(p); :};
+AT_LEAST_ONE_PARAM          ::= AT_LEAST_ONE_PARAM:params COMMA PARAM:p 
+                                    {: RESULT = params; params.add(p); :}     
+                                | PARAM:p 
+                                    {: RESULT = new ArrayList<DefFunc.Param>(); RESULT.add(p); :};
 
-PARAM       ::= TYPE:t IDEN:id                      /* Por valor */
-               {: RESULT = new DefFunc.Param(t, id); :} | 
-               REF TYPE:t IDEN:id                   /* Por referencia */
-               {: RESULT = new DefFunc.Param(t, id, true); :};
+PARAM                       ::= TYPE:t IDEN:id /* Por valor */
+                                    {: RESULT = new DefFunc.Param(t, id); :}
+                                | REF TYPE:t IDEN:id  /* Por referencia */
+                                    {: RESULT = new DefFunc.Param(t, id, true); :};
 
-NO_PARAM    ::= {: RESULT = new ArrayList<DefFunc.Param>(); :};
+NO_PARAM                    ::= {: RESULT = new ArrayList<DefFunc.Param>(); :};
 
-EXPR        ::= DISJUNCTION:d {: RESULT = d; :};
-DISJUNCTION ::= DISJUNCTION:left OR CONJUNCTION:right 
-                {: RESULT =  new OperBin(OperBin.Operators.OR, left, right); :}
-              | CONJUNCTION:expr 
-                {: RESULT = expr; :};
-CONJUNCTION ::= CONJUNCTION:left AND NEGATION:right
-                {: RESULT = new OperBin(OperBin.Operators.AND, left, right); :}
-              | NEGATION:expr 
-                {: RESULT = expr; :};
-NEGATION    ::= NOT NEGATION:expr
-                {: RESULT = new OperUn(OperUn.Operators.NOT, expr); :}
-              | EQUALITY:expr  
-                {: RESULT = expr; :};
-EQUALITY    ::= EQUALITY:left EQUAL COMPARISON:right 
-                {: RESULT = new OperBin(OperBin.Operators.EQUALS, left, right); :}
-              | EQUALITY:left NOT_EQUAL COMPARISON:right 
-                {: RESULT = new OperBin(OperBin.Operators.NOTEQUALS, left, right); :}
-              | COMPARISON:expr 
-                {: RESULT = expr; :};
-COMPARISON  ::= COMPARISON:left LESS TERM:right
-                {: RESULT =  new OperBin(OperBin.Operators.LESS, left, right); :}
-              | COMPARISON:left GREATER TERM:right
-                {: RESULT = new OperBin(OperBin.Operators.GREATER, left, right); :} 
-              | COMPARISON:left LESS_EQUAL TERM:right
-                {: RESULT = new OperBin(OperBin.Operators.LESS_EQUAL, left, right); :} 
-              | COMPARISON:left GREATER_EQUAL TERM:right
-                {: RESULT = new OperBin(OperBin.Operators.GREATER_EQUAL, left, right); :} 
-              | TERM:expr
-                {: RESULT = expr; :};
-TERM        ::= TERM:left PLUS FACTOR:right
-                {: RESULT =  new OperBin(OperBin.Operators.SUM, left, right); :}
-              | TERM:left MINUS FACTOR:right
-                {: RESULT = new OperBin(OperBin.Operators.SUBS, left, right); :} 
-              | FACTOR:expr
-                {: RESULT = expr; :};
-FACTOR      ::= FACTOR:left TIMES UNARY:right
-                {: RESULT = new OperBin(OperBin.Operators.MUL, left, right); :}
-              | FACTOR:left DIV UNARY:right 
-                {: RESULT = new OperBin(OperBin.Operators.DIV, left, right); :}
-              | FACTOR:left MOD UNARY:right
-                {: RESULT = new OperBin(OperBin.Operators.MODULO, left, right); :} 
-              | UNARY:expr
-                {: RESULT = expr; :};
-UNARY       ::= MINUS UNARY:expr
-                {: RESULT = new OperUn(OperUn.Operators.NEG, expr); :}
-              | PLUS UNARY:expr 
-                {: RESULT = expr; :}
-              | PTR UNARY:expr
-                {: RESULT = new OperUn(OperUn.Operators.REF, expr); :}
-              | AT UNARY:expr
-                {: RESULT = new OperUn(OperUn.Operators.DEREF, expr); :}
-              | PRIMARY:expr
-                {: RESULT = expr; :};
-PRIMARY     ::= LITERAL:e {: RESULT = e; :}
-              | NEW STRUCT_LITERAL:s {: RESULT = new New(s); :}
-              | NEW ARRAY_LITERAL:a  {: RESULT = new New(a); :}
-              | DESIGNATION:d {: RESULT = (Expr) d; :}
-              | FUNC_CALL:x {: RESULT = (Expr) x; :}
-              | OPEN_PAR EXPR:e CLOSE_PAR {: RESULT = (Expr) e; :};
-FUNC_CALL   ::= DESIGNATION:d OPEN_PAR EXPRs:e CLOSE_PAR /* design(arg, ...) // Llamada con algún argumento */
-               {: RESULT = new Call(d, e); :}
-              | DESIGNATION OPEN_PAR CLOSE_PAR;      /* design()         // Llamada sin ningún argumento */
-EXPRs       ::= EXPRs:more COMMA EXPR:e {: RESULT = more; more.add((Expr) e); :}
-              | EXPR:e {: RESULT = new ArrayList<Expr>(); RESULT.add((Expr) e); :};
+/* GRAMÁTICA DE EXPRESIONES */
+EXPR                        ::= DISJUNCTION:d 
+                                    {: RESULT = d; :};
 
-/*
-Literales
-int    → 10, 1, 30
-bool   → true, false
-array  → [10; 1], [1,2,3,4]
-ptr    → NO TIENE (@a)
-struct → Persona{edad: 20}
+DISJUNCTION                 ::= DISJUNCTION:left OR CONJUNCTION:right 
+                                    {: RESULT =  new OperBin(OperBin.Operators.OR, left, right); :}
+                                | CONJUNCTION:expr 
+                                    {: RESULT = expr; :};
+                
+CONJUNCTION                 ::= CONJUNCTION:left AND NEGATION:right
+                                    {: RESULT = new OperBin(OperBin.Operators.AND, left, right); :}
+                                | NEGATION:expr 
+                                    {: RESULT = expr; :};
 
-(new Persona{edad: 20})->edad // Ugly
+NEGATION                    ::= NOT NEGATION:expr
+                                    {: RESULT = new OperUn(OperUn.Operators.NOT, expr); :}
+                                | EQUALITY:expr  
+                                    {: RESULT = expr; :};
 
-self.setNext(new Persona{edad: 20});
-self.next.prev = self;
+EQUALITY                    ::= EQUALITY:left EQUAL COMPARISON:right 
+                                    {: RESULT = new OperBin(OperBin.Operators.EQUALS, left, right); :}
+                                | EQUALITY:left NOT_EQUAL COMPARISON:right 
+                                    {: RESULT = new OperBin(OperBin.Operators.NOTEQUALS, left, right); :}
+                                | COMPARISON:expr 
+                                    {: RESULT = expr; :};
 
-new Persona{edad: 20};
-new [Persona{}; 10];
-new true;
-new 10;
+COMPARISON                  ::= COMPARISON:left LESS TERM:right
+                                    {: RESULT =  new OperBin(OperBin.Operators.LESS, left, right); :}
+                                | COMPARISON:left GREATER TERM:right
+                                    {: RESULT = new OperBin(OperBin.Operators.GREATER, left, right); :} 
+                                | COMPARISON:left LESS_EQUAL TERM:right
+                                    {: RESULT = new OperBin(OperBin.Operators.LESS_EQUAL, left, right); :} 
+                                | COMPARISON:left GREATER_EQUAL TERM:right
+                                    {: RESULT = new OperBin(OperBin.Operators.GREATER_EQUAL, left, right); :} 
+                                | TERM:expr 
+                                    {: RESULT = expr; :};
 
-*/
+TERM                        ::= TERM:left PLUS FACTOR:right
+                                    {: RESULT =  new OperBin(OperBin.Operators.SUM, left, right); :}
+                                | TERM:left MINUS FACTOR:right
+                                    {: RESULT = new OperBin(OperBin.Operators.SUBS, left, right); :} 
+                                | FACTOR:expr
+                                    {: RESULT = expr; :};
 
+FACTOR                      ::= FACTOR:left TIMES UNARY:right
+                                    {: RESULT = new OperBin(OperBin.Operators.MUL, left, right); :}
+                                | FACTOR:left DIV UNARY:right 
+                                    {: RESULT = new OperBin(OperBin.Operators.DIV, left, right); :}
+                                | FACTOR:left MOD UNARY:right
+                                    {: RESULT = new OperBin(OperBin.Operators.MODULO, left, right); :} 
+                                | UNARY:expr
+                                    {: RESULT = expr; :};
 
-DESIGNATION ::= DESIGNATION:d OPEN_BRACKET EXPR:e CLOSE_BRACKET  /* design[expr] */
-             {: RESULT = new ArrayAccess(d, e); :}
-              | DESIGNATION:d DOT IDEN:name                      /* design.iden() */
-             {: RESULT = new StructAccess(d, name); :}
-              | DESIGNATION:d R_ARROW IDEN:name                  /* desig->iden */
-             {: RESULT = new StructAccess(new Deref(d), name); :}
-              | NAME:name
-             {: RESULT = new Var(name); :};                      /* Var should take a binding */                               
-NAME        ::= NAME:more QUADOT IDEN:name                       /* name::iden */
-             {: RESULT = more; more.add(name); :}
-              | IDEN:name
-             {: RESULT = new ArrayList<String>(); RESULT.add(name); :}; 
+UNARY                       ::= MINUS UNARY:expr
+                                    {: RESULT = new OperUn(OperUn.Operators.NEG, expr); :}
+                                | PLUS UNARY:expr 
+                                    {: RESULT = expr; :}
+                                | PTR UNARY:expr
+                                    {: RESULT = new OperUn(OperUn.Operators.REF, expr); :}
+                                | AT UNARY:expr
+                                    {: RESULT = new OperUn(OperUn.Operators.DEREF, expr); :}
+                                | PRIMARY:expr
+                                    {: RESULT = expr; :};
 
-LITERAL     ::= NAT:n           {: RESULT = n; :}
-              | TRUE:t          {: RESULT = t; :}
-              | FALSE:f         {: RESULT = f; :}
-              | ARRAY_LITERAL:a {: RESULT = a; :};
-LITERALs    ::= LITERALs:more COMMA LITERAL:l {: RESULT = more; more.add(l); :}
-              | LITERAL:l {: RESULT = new ArrayList<Literal>(); RESULT.add(l); :};
-ARRAY_LITERAL ::= OPEN_BRACKET CLOSE_BRACKET        
-             {: RESULT = new ArrayLiteral(new ArrayList<Literal>()); :}  /* [] // empty array */
-              |   OPEN_BRACKET LITERALs:ls CLOSE_BRACKET              
-             {: RESULT = new ArrayLiteral(ls); :}                        /* [elem1, elem2, elem3, ...]*/
-              |   OPEN_BRACKET LITERAL:def SEMICOLON NAT:size CLOSE_BRACKET 
-             {: RESULT = new ArrayLiteral(def,size); :};             /* [default; size] */
-STRUCT_LITERAL ::= IDEN:name OPEN_CURLY ATRIBUTE_ASSIGNMENTs:assigs CLOSE_CURLY
-             {: RESULT = new StructLiteral(name, assigs); :};
-ATRIBUTE_ASSIGNMENTs ::= AT_LEAST_ONE_ATR_ASSIGMENT:assigs {: RESULT = assigs; :}
-                    | {: RESULT = new HashMap<String, Expr>(); :}; 
-AT_LEAST_ONE_ATR_ASSIGMENT ::= AT_LEAST_ONE_ATR_ASSIGMENT:more COMMA IDEN:name COLON EXPR:expr {: RESULT = more; more.put(name, expr); :}
-                            | IDEN:name COLON EXPR:expr {: RESULT = new HashMap<String, Expr>(); RESULT.put(name, expr); :};
+PRIMARY                     ::= LITERAL:e 
+                                    {: RESULT = e; :}
+                                | NEW STRUCT_LITERAL:s 
+                                    {: RESULT = new New(s); :}
+                                | NEW ARRAY_LITERAL:a  
+                                    {: RESULT = new New(a); :}
+                                | DESIGNATION:d 
+                                    {: RESULT = (Expr) d; :}
+                                | FUNC_CALL:x 
+                                    {: RESULT = (Expr) x; :}
+                                | OPEN_PAR EXPR:e CLOSE_PAR 
+                                    {: RESULT = (Expr) e; :};
 
-/* TODO: Quiza luego hay problema, porque estamos modificando la misma referencia de ArrayList */
-STMTs       ::= STMTs:statements STMT:st {: RESULT = statements; statements.add(st); :}
-           | {: RESULT = new ArrayList<Statement>(); :};
+FUNC_CALL                   ::= DESIGNATION:d OPEN_PAR EXPRs:e CLOSE_PAR /* design(arg, ...) // Llamada con algún argumento */
+                                    {: RESULT = new Call(d, e); :}
+                                | DESIGNATION:d OPEN_PAR CLOSE_PAR;      /* design()         // Llamada sin ningún argumento */
+                                    {: RESULT = new Call(d); :}
 
-STMT        ::= EXPR:e SEMICOLON {: RESULT = e; :}
-              | ASSIGNMENT:a {: RESULT = a; :}
-              | VAR_DEF:v {: RESULT = v; :}     // No ponemos funciones u otras declaraciones porque no las queremos en el cuerpo de una función
-              | IF_STMT:i {: RESULT = i; :}
-              | FOR_STMT:f {: RESULT = f; :}
-              | WHILE_STMT:w {: RESULT = w; :}
-              | MATCH_STMT:m {: RESULT = m; :}
-              | RETURN_STMT:r {: RESULT = r; :};
+EXPRs                       ::= EXPRs:more COMMA EXPR:e 
+                                    {: RESULT = more; more.add((Expr) e); :}
+                                | EXPR:e 
+                                    {: RESULT = new ArrayList<Expr>(); RESULT.add((Expr) e); :};
 
+/* GRAMÁTICA DE DESIGNADORES */
+DESIGNATION                 ::= DESIGNATION:d OPEN_BRACKET EXPR:e CLOSE_BRACKET  /* design[expr] */
+                                    {: RESULT = new ArrayAccess(d, e); :}
+                                | DESIGNATION:d DOT IDEN:name                      /* design.iden() */
+                                    {: RESULT = new StructAccess(d, name); :}
+                                | DESIGNATION:d R_ARROW IDEN:name                  /* desig->iden */
+                                    {: RESULT = new StructAccess(new Deref(d), name); :}
+                                | NAME:name
+                                    {: RESULT = new Var(name); :};                      /* Var should take a binding */ 
 
-ASSIGNMENT  ::= DESIGNATION:name ASSIGN EXPR: e SEMICOLON 
-             {: RESULT = new Assign(name, e); :};
+NAME                        ::= NAME:more QUADOT IDEN:name                       /* name::iden */
+                                    {: RESULT = more; more.add(name); :}
+                                | IDEN:name
+                                    {: RESULT = new ArrayList<String>(); RESULT.add(name); :}; 
 
-VAR_DEF    ::= TYPE:t IDEN:name SEMICOLON
-             {: RESULT = new DefVar(t, name); :}
-              | TYPE:t ASSIGNMENT:a
-             {: RESULT = new DefVar(t, ((Var)((Assign)a).getPlace()).getName(), ((Assign)a).getExpr()); :};
-TYPE        ::= IDEN:name
-             {: RESULT = new StructType(name); :} // By default, if it's not a primitive type, it's a struct. TODO: Link to the struct definition
-              | INT {: RESULT = IntegerType.getInstance(); :}
-              | BOOL {: RESULT = BoolType.getInstance(); :}
-              | PTR TYPE:t 
-             {: RESULT = new PointerType(t); :}
-              | ARRAY TYPE:t
-             {: RESULT = new ArrayType(t); :}   // Esta descripción de tipo array solo se permite en argumentos de funciones A lo mejor si ponemos `array int a := [1,2]`, podemos "inferir" el tamaño de `a`con el tamaño del array literal */
-              | ARRAY NAT:size TYPE:t           // TODO: Estudiar si es mejor otra sintaxis
-             {: RESULT = new ArrayType(t, size); :};
+LITERAL                     ::= NAT:n
+                                    {: RESULT = n; :}
+                                | TRUE:t
+                                    {: RESULT = t; :}
+                                | FALSE:f
+                                    {: RESULT = f; :}
+                                | ARRAY_LITERAL:a
+                                    {: RESULT = a; :};
 
-IF_STMT     ::= IF EXPR:cond THEN STMTs:then END
-               {: RESULT = new If(cond, then); :}
-              | IF EXPR:cond THEN STMTs:then ELSE STMTs:els END
-              {: RESULT = new If(cond, then, els); :};
+LITERALs                    ::= LITERALs:more COMMA LITERAL:l 
+                                    {: RESULT = more; more.add(l); :}
+                                | LITERAL:l 
+                                    {: RESULT = new ArrayList<Literal>(); RESULT.add(l); :};
 
-FOR_STMT    ::= FOR IDEN:index FROM EXPR:from TO EXPR:to DO STMTs:statements END
-               {: RESULT = new For(index, from, to, statements); :}
-              | FOR IDEN:index FROM EXPR:from TO EXPR:to BY EXPR:by DO STMTs:statements END
-              {: RESULT = new For(index, from, to, by, statements); :};
+ARRAY_LITERAL               ::= OPEN_BRACKET CLOSE_BRACKET        
+                                    {: RESULT = new ArrayLiteral(new ArrayList<Literal>()); :}  /* [] // empty array */
+                                | OPEN_BRACKET LITERALs:ls CLOSE_BRACKET              
+                                    {: RESULT = new ArrayLiteral(ls); :}                        /* [elem1, elem2, elem3, ...]*/
+                                | OPEN_BRACKET LITERAL:def SEMICOLON NAT:size CLOSE_BRACKET 
+                                    {: RESULT = new ArrayLiteral(def,size); :};             /* [default; size] */
 
-WHILE_STMT  ::= WHILE EXPR:cond DO STMTs:statements END
-              {: RESULT = new While(cond, statements); :};
+STRUCT_LITERAL              ::= IDEN:name OPEN_CURLY ATRIBUTE_ASSIGNMENTs:assigs CLOSE_CURLY
+                                    {: RESULT = new StructLiteral(name, assigs); :};
 
-/*Sintaxis del match*/
+ATRIBUTE_ASSIGNMENTs        ::= AT_LEAST_ONE_ATR_ASSIGMENT:assigs 
+                                    {: RESULT = assigs; :}
+                                | 
+                                    {: RESULT = new HashMap<String, Expr>(); :}; 
 
-MATCH_STMT  ::= MATCH EXPR:expr CASE_STMTs:cases OTHERWISE STMTs:otherwise END
-                {: RESULT = new Match(expr, cases, otherwise);  :}
-              | MATCH EXPR:expr CASE_STMTs:cases END
-                {: RESULT = new Match(expr, cases); :};
+AT_LEAST_ONE_ATR_ASSIGMENT  ::= AT_LEAST_ONE_ATR_ASSIGMENT:more COMMA IDEN:name COLON EXPR:expr 
+                                    {: RESULT = more; more.put(name, expr); :}
+                                | IDEN:name COLON EXPR:expr 
+                                    {: RESULT = new HashMap<String, Expr>(); RESULT.put(name, expr); :};
 
+/* GRAMÁTICA DE SENTENCIAS */
+/* NOTA: Quiza luego hay problema, porque estamos modificando la misma referencia de ArrayList */
+STMTs                       ::= STMTs:statements STMT:st 
+                                    {: RESULT = statements; statements.add(st); :}
+                                |
+                                    {: RESULT = new ArrayList<Statement>(); :};
 
-CASE_STMTs  ::= CASE EXPR:expr IS STMTs:body CASE_STMTs:rest
-                {: rest.add(new Match.Case(expr, body)); RESULT = rest; :}
-                | {: RESULT = new ArrayList<Match.Case>(); :};
+STMT                        ::= EXPR:e SEMICOLON 
+                                    {: RESULT = e; :}
+                                | ASSIGNMENT:a 
+                                    {: RESULT = a; :}
+                                | VAR_DEF:v 
+                                    {: RESULT = v; :}     // No ponemos funciones u otras declaraciones porque no las queremos en el cuerpo de una función
+                                | IF_STMT:i 
+                                    {: RESULT = i; :}
+                                | FOR_STMT:f 
+                                    {: RESULT = f; :}
+                                | WHILE_STMT:w 
+                                    {: RESULT = w; :}
+                                | MATCH_STMT:m 
+                                    {: RESULT = m; :}
+                                | RETURN_STMT:r 
+                                    {: RESULT = r; :};
 
-RETURN_STMT ::= RETURN EXPR:expr SEMICOLON
-                {: RESULT = new Return(expr); :}
-              | RETURN SEMICOLON
-                {: RESULT = new Return(); :};
+ASSIGNMENT                  ::= DESIGNATION:name ASSIGN EXPR: e SEMICOLON 
+                                    {: RESULT = new Assign(name, e); :};
+
+VAR_DEF                     ::= TYPE:t IDEN:name SEMICOLON
+                                    {: RESULT = new DefVar(t, name); :}
+                                | TYPE:t ASSIGNMENT:a
+                                    {: RESULT = new DefVar(t, ((Var)((Assign)a).getPlace()).getName(), ((Assign)a).getExpr()); :};
+
+TYPE                        ::= IDEN:name 
+                                    {: RESULT = new StructType(name); :} // By default, if it's not a primitive type, it's a struct. TODO: Link to the struct definition
+                                | INT 
+                                    {: RESULT = IntegerType.getInstance(); :}
+                                | BOOL 
+                                    {: RESULT = BoolType.getInstance(); :}
+                                | PTR TYPE:t 
+                                    {: RESULT = new PointerType(t); :}
+                                | ARRAY TYPE:t
+                                    {: RESULT = new ArrayType(t); :}   // Esta descripción de tipo array solo se permite en argumentos de funciones A lo mejor si ponemos `array int a := [1,2]`, podemos "inferir" el tamaño de `a`con el tamaño del array literal */
+                                | ARRAY NAT:size TYPE:t           // TODO: Estudiar si es mejor otra sintaxis
+                                    {: RESULT = new ArrayType(t, size); :};
+
+IF_STMT                     ::= IF EXPR:cond THEN STMTs:then END
+                                    {: RESULT = new If(cond, then); :}
+                                | IF EXPR:cond THEN STMTs:then ELSE STMTs:els END
+                                    {: RESULT = new If(cond, then, els); :};
+
+FOR_STMT                    ::= FOR IDEN:index FROM EXPR:from TO EXPR:to DO STMTs:statements END
+                                    {: RESULT = new For(index, from, to, statements); :}
+                                | FOR IDEN:index FROM EXPR:from TO EXPR:to BY EXPR:by DO STMTs:statements END
+                                    {: RESULT = new For(index, from, to, by, statements); :};
+
+WHILE_STMT                  ::= WHILE EXPR:cond DO STMTs:statements END
+                                    {: RESULT = new While(cond, statements); :};
+
+/* Sintaxis del match */
+MATCH_STMT                  ::= MATCH EXPR:expr CASE_STMTs:cases OTHERWISE STMTs:otherwise END
+                                    {: RESULT = new Match(expr, cases, otherwise); :}
+                                | MATCH EXPR:expr CASE_STMTs:cases END
+                                    {: RESULT = new Match(expr, cases); :};
+
+CASE_STMTs                  ::= CASE EXPR:expr IS STMTs:body CASE_STMTs:rest
+                                    {: rest.add(new Match.Case(expr, body)); RESULT = rest; :}
+                                | 
+                                    {: RESULT = new ArrayList<Match.Case>(); :};
+
+RETURN_STMT                 ::= RETURN EXPR:expr SEMICOLON
+                                    {: RESULT = new Return(expr); :}
+                                | RETURN SEMICOLON
+                                    {: RESULT = new Return(); :};

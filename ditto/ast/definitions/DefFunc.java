@@ -31,27 +31,32 @@ public class DefFunc extends Node {
     }
 
     @Override
-    public List<Object> getAstArguments() { return Arrays.asList(id, params, result, body); }
-    
+    public List<Object> getAstArguments() {
+        return Arrays.asList(id, params, result, body);
+    }
+
     static public class Param {
         public final Type type;
         public final String name;
         public final Boolean isRef;
-    
+
         public Param(Type type, String name) {
             /// Por valor por defecto
             this(type, name, false);
         }
-    
+
         public Param(Type type, String name, Boolean isRef) {
             this.type = type;
             this.name = name;
             this.isRef = isRef;
         }
-    
+
         @Override
         public String toString() {
-            return type + " " + name;
+            if (this.isRef)
+                return "REF " + type + " " + name;
+            else
+                return type + " " + name;
         }
     }
 }

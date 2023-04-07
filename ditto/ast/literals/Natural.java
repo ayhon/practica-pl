@@ -1,6 +1,7 @@
 package ditto.ast.literals;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import ditto.ast.Node;
@@ -33,6 +34,6 @@ public class Natural extends Node implements Literal {
 
     @Override
     public List<Object> getAstArguments() {
-        return new ArrayList<Object>(value);
+        return Arrays.asList(value);
     }
 }

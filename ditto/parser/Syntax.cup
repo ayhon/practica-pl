@@ -261,7 +261,8 @@ ASSIGNMENT  ::= DESIGNATION:name ASSIGN EXPR: e SEMICOLON
 
 VAR_DEF    ::= TYPE:t IDEN:name SEMICOLON
              {: RESULT = new DefVar(t, name); :}
-              | TYPE ASSIGNMENT;
+              | TYPE:t ASSIGNMENT:a
+             {: RESULT = new DefVar(t, ((Var)((Assign)a).getPlace()).getName(), ((Assign)a).getExpr()); :};
 TYPE        ::= IDEN:name
              {: RESULT = new StructType(name); :} // By default, if it's not a primitive type, it's a struct. TODO: Link to the struct definition
               | INT {: RESULT = IntegerType.getInstance(); :}

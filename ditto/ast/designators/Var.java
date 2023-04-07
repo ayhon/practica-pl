@@ -8,6 +8,9 @@ import ditto.ast.types.Type;
 
 public class Var extends Node implements Designator {
     public String name;
+    public String getName() {
+        return name;
+    }
 
     @Override
     public String getAstString() {

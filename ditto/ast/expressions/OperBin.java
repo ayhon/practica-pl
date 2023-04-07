@@ -56,17 +56,6 @@ public class OperBin extends Node implements Expr {
                     throw new IllegalArgumentException("Invalid operator");
             }
         }
-
-        public boolean isDesignator() {
-            switch (this) {
-                case ACCESS:
-                    return true;
-                case ACCESS_ARR:
-                    return true;
-                default:
-                    return false;
-            }
-        }
     }
 
     private final Operators op;

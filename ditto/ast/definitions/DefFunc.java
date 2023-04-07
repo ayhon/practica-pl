@@ -27,11 +27,6 @@ public class DefFunc extends Node {
     }
 
     @Override
-    public String toString() {
-        return "(fun " + id + " " + params + " " + result + " " + body + ")";
-    }
-
-    @Override
     public String getAstString() {
         return "def-func";
     }

@@ -1,9 +1,13 @@
 package ditto.ast.statements;
 
+import java.util.Arrays;
+import java.util.List;
+
+import ditto.ast.Node;
 import ditto.ast.designators.Designator;
 import ditto.ast.expressions.Expr;
 
-public class Assign implements Statement {
+public class Assign extends Node implements Statement {
     private final Designator place;
     private final Expr expr;
 
@@ -21,7 +25,8 @@ public class Assign implements Statement {
     }
 
     @Override
-    public String toString() {
-        return "(assign " + place + " " + expr + ")";
-    }
+    public String getAstString() { return "assgin"; }
+
+    @Override
+    public List<Object> getAstArguments() { return Arrays.asList(place, expr); }
 }

@@ -11,6 +11,7 @@ public abstract class Node {
     public abstract List<Object> getAstArguments();
 
     @Override
+    @SuppressWarnings("unchecked")
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append('(');
@@ -21,6 +22,7 @@ public abstract class Node {
                 sb.append('"');
                 sb.append(arg);
                 sb.append('"');
+
             } else if (arg instanceof List) {
                 sb.append(listAsString((List<Object>) arg));
             } else {
@@ -36,7 +38,7 @@ public abstract class Node {
         sb.append('[');
         int idx = 0;
         for (Object item : list) {
-            if(item == null){
+            if (item == null) {
                 sb.append("NULL");
                 continue;
             } else {

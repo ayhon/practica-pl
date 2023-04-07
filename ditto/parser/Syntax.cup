@@ -299,4 +299,5 @@ CASE_STMTs  ::= CASE EXPR:expr IS STMTs:cuerpoCase CASE_STMTs:restoMatch
                 {: newCase = new Case(expr, cuerpoCase); restoMatch.add(newCase); RESULT = restoMatch:}
                 | {: RESULT = new ArrayList<Case>(); :};
 
-RETURN_STMT ::= RETURN EXPR SEMICOLON;
+RETURN_STMT ::= RETURN EXPR:expr SEMICOLON
+                {: RESULT = expr; :};

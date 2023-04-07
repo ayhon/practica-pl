@@ -54,33 +54,37 @@ terminal True   TRUE;
 terminal False FALSE;
 terminal String IDEN;
 
-non terminal S;
-non terminal List<Statement> STMTs;
+non terminal Literal LITERAL;
+non terminal List<Literal> LITERALs;
+non terminal ArrayLiteral ARRAY_LITERAL;
+non terminal StructLiteral STRUCT_LITERAL;
+non terminal Map<String, Expr> ATRIBUTE_ASSIGNMENTs, AT_LEAST_ONE_ATR_ASSIGMENT;    /* Asignación de atributos en un literal de struct */
 
-non terminal List<Expr> EXPRs;
+non terminal Node S;      /* Programa principal */
+non terminal List<Statement> STMTs; /* Lista de sentencias */
 
+/* EXPRESIONES */
+non terminal List<Expr> EXPRs;      
 non terminal Expr EXPR, PRIMARY;
 non terminal Expr DISJUNCTION, CONJUNCTION, EQUALITY, COMPARISON, TERM, FACTOR;
 non terminal Expr NEGATION, UNARY;
 non terminal Call FUNC_CALL;
 
-non terminal Literal LITERAL;
-non terminal ArrayLiteral ARRAY_LITERAL;
-non terminal StructLiteral STRUCT_LITERAL;
-non terminal Map<String, Expr> ATRIBUTE_ASSIGNMENTs, AT_LEAST_ONE_ATR_ASSIGMENT;
-
+/* DESIGNADOR */
 non terminal Designator DESIGNATION;
 
+/* SENTENCIAS */
 non terminal Statement STMT, ASSIGNMENT, IF_STMT, FOR_STMT, WHILE_STMT, MATCH_STMT, RETURN_STMT;
+non terminal List<Match.Case> CASE_STMTs;
 
+/* DEFINICIONES */
 non terminal DefVar VAR_DEF;
 non terminal DefFunc FUN_DEF;
 non terminal DefStruct STRUCT_DEF;
 
 non terminal Type TYPE;
 non terminal List<String> NAME;
-non terminal List<Match.Case> CASE_STMTs;
-non terminal List<Literal> LITERALs;
+
 non terminal List<DefFunc.Param> FUNC_PARAMs, AT_LEAST_ONE_PARAM, NO_PARAM;
 non terminal DefFunc.Param PARAM;
 
@@ -117,9 +121,9 @@ AT_LEAST_ONE_PARAM ::= AT_LEAST_ONE_PARAM:params COMMA PARAM:p
                      PARAM:p
                      {: RESULT = new ArrayList<DefFunc.Param>(); RESULT.add(p); :};
 
-PARAM       ::= TYPE:t IDEN:id                      /*Por valor*/
+PARAM       ::= TYPE:t IDEN:id                      /* Por valor */
                {: RESULT = new DefFunc.Param(t, id); :} | 
-               REF TYPE:t IDEN:id                   /*Por referencia*/
+               REF TYPE:t IDEN:id                   /* Por referencia */
                {: RESULT = new DefFunc.Param(t, id, true); :};
 
 NO_PARAM    ::= {: RESULT = new ArrayList<DefFunc.Param>(); :};

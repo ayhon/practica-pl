@@ -1,0 +1,43 @@
+struct Node is
+    ptr Node next;
+    int val;
+end
+
+struct List is
+    ptr Node head;
+    int size;
+end
+
+function reverse(ptr List ls)
+    function reverse_nodes(ptr Node curr)
+        if curr != null then
+            reverse_nodes(curr->next);
+            if curr->next != null then
+                curr->next->next := &curr;
+                curr->next := null;
+            end
+        end
+    end
+    reverse_nodes(ls.head);
+end
+
+function push(ptr List ls, int elem)
+    Node new_head := allocate(sizeof(Node));
+    new_head->val := elem;
+    new_head->next := ls.head;
+    ls.head := new_head;
+    ls.size := ls.size + 1;
+end
+
+function pop(ptr List ls) -> int
+    if ls.head != null then
+        ptr Node new_head := ls.head->next;
+        int head_value := ls.head->val;
+        free(ls.head);
+        ls.head := new_head;
+        ls.size := ls.size - 1;
+        return head_value;
+    else 
+        return 0;
+    end
+end

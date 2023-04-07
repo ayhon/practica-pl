@@ -1,0 +1,10 @@
+func main() -> int
+    array int numeros = [0; 10];
+
+    for i from 0 to 9 do
+        // Leer número de entrada estándar y guardarlo en numeros[i]
+        scan(numeros[i]);
+    end
+
+    return 0;
+end

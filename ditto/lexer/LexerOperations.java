@@ -136,6 +136,14 @@ public class LexerOperations {
         return new Token(lexer.col(), lexer.row(), lexer.lexeme(), TokenKind.ASSIGN);
     }
     /** PALABRAS RESERVADAS **/
+    Token scanInt(){
+        System.out.println("Token Int");
+        return new Token(lexer.col(), lexer.row(), lexer.lexeme(), TokenKind.INT);
+    }
+    Token scanBool(){
+        System.out.println("Token Bool");
+        return new Token(lexer.col(), lexer.row(), lexer.lexeme(), TokenKind.BOOL);
+    }
     Token scanNot(){
         System.out.println("Token Not");
         return new Token(lexer.col(), lexer.row(), lexer.lexeme(), TokenKind.NOT);

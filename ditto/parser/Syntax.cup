@@ -45,8 +45,8 @@ terminal PLUS, MINUS, TIMES, DIV, MOD, NOT_EQUAL, EQUAL, GREATER, LESS, GREATER_
          SEMICOLON, COLON, COMMA, DOT, QUADOT, AT, R_ARROW, ASSIGN;
 
 /* KEYWORDS */
-terminal AND, OR, NOT, FUNC, IF, ELSE, FOR, WHILE, IMPORT, RETURN, MATCH, CASE, IS, OTHERWISE, END, DO, THEN, MODULE, STRUCT, PUBLIC, FROM, TO, BY,
-         PTR, REF, ARRAY, NEW;
+terminal AND, OR, NOT, FUNC, IF, ELSE, FOR, WHILE, IMPORT, RETURN, MATCH, CASE, IS, OTHERWISE,
+         END, DO, THEN, MODULE, INT, BOOL, ARRAY, PTR, STRUCT, PUBLIC, FROM, TO, BY, REF, NEW;
 
 /* LITERALS */
 terminal Natural NAT;
@@ -246,14 +246,14 @@ AT_LEAST_ONE_ATR_ASSIGMENT ::= AT_LEAST_ONE_ATR_ASSIGMENT:more COMMA IDEN:name C
 STMTs       ::= STMTs:statements STMT:st {: RESULT = statements; statements.add(st); :}
            | {: RESULT = new ArrayList<Statement>(); :};
 
-STMT        ::= EXPR SEMICOLON 
-              | ASSIGNMENT
-              | VAR_DEF     // No ponemos funciones u otras declaraciones porque no las queremos en el cuerpo de una función
-              | IF_STMT
-              | FOR_STMT
-              | WHILE_STMT
-              | MATCH_STMT
-              | RETURN_STMT;
+STMT        ::= EXPR:e SEMICOLON {: RESULT = e; :}
+              | ASSIGNMENT:a {: RESULT = a; :}
+              | VAR_DEF:v {: RESULT = v; :}     // No ponemos funciones u otras declaraciones porque no las queremos en el cuerpo de una función
+              | IF_STMT:i {: RESULT = i; :}
+              | FOR_STMT:f {: RESULT = f; :}
+              | WHILE_STMT:w {: RESULT = w; :}
+              | MATCH_STMT:m {: RESULT = m; :}
+              | RETURN_STMT:r {: RESULT = r; :};
 
 
 ASSIGNMENT  ::= DESIGNATION:name ASSIGN EXPR: e SEMICOLON 
@@ -264,6 +264,8 @@ VAR_DEF    ::= TYPE:t IDEN:name SEMICOLON
               | TYPE ASSIGNMENT;
 TYPE        ::= IDEN:name
              {: RESULT = new StructType(name); :} // By default, if it's not a primitive type, it's a struct. TODO: Link to the struct definition
+              | INT {: RESULT = IntegerType.getInstance(); :}
+              | BOOL {: RESULT = BoolType.getInstance(); :}
               | PTR TYPE:t 
              {: RESULT = new PointerType(t); :}
               | ARRAY TYPE:t

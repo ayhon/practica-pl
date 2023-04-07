@@ -28,11 +28,6 @@ public class Match extends Node implements Statement{
         public final Expr expr;
         public final List<Statement> body;
     
-        public Case(){
-            this.expr = null;
-            this.body = null;
-        }
-    
         public Case(Expr expr, List<Statement> body) {
             this.expr = expr;
             this.body = body;

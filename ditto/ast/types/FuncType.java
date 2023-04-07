@@ -19,4 +19,9 @@ public class FuncType implements Type {
         this.returnType = returnType;
         this.argumentTypes = argumentTypes;
     }
+
+    @Override
+    public String toString() {
+        return "FUNC";
+    }
 }

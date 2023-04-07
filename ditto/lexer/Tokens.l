@@ -85,6 +85,8 @@ dot = \.
 at = @
 
 /* Keywords */
+int = int
+bool = bool
 func = func
 if = if
 else = else
@@ -125,8 +127,8 @@ new = new
 {closePar}                    {return ops.scanClosePar();}
 {openBracket}                 {return ops.scanOpenBracket();}
 {closeBracket}                {return ops.scanCloseBracket();}
-{openCurly}                 {return ops.scanOpenCurly();}
-{closeCurly}                {return ops.scanCloseCurly();}
+{openCurly}                   {return ops.scanOpenCurly();}
+{closeCurly}                  {return ops.scanCloseCurly();}
 {greaterThan}                 {return ops.scanGreaterThan();}
 {greaterEqual}                {return ops.scanGreaterEqual();}
 {lessThan}                    {return ops.scanLessThan();}
@@ -146,8 +148,10 @@ new = new
 {quadot}                      {return ops.scanQuadot();}
 {dot}                         {return ops.scanDot();}
 {at}                          {return ops.scanAt();}
-
 {assign}                      {return ops.scanAssign();}
+
+{int}                         {return ops.scanInt();}
+{bool}                         {return ops.scanBool();}
 {func}                        {return ops.scanFunc();}
 {if}                          {return ops.scanIf();}
 {else}                        {return ops.scanElse();}

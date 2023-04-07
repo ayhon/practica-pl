@@ -260,8 +260,16 @@ FOR_STMT    ::= FOR IDEN:index FROM EXPR:from TO EXPR:to DO STMTs:statements END
 WHILE_STMT  ::= WHILE EXPR:cond DO STMTs:statements END
               {: RESULT = new While(cond, statements); :};
 
-MATCH_STMT  ::= MATCH EXPR CASE_STMTs OTHERWISE STMTs END
-              | MATCH EXPR CASE_STMTs END;
-CASE_STMTs  ::= CASE EXPR IS STMTs CASE_STMTs | ;
+/*Sintaxis del match*/
+
+MATCH_STMT  ::= MATCH EXPR:expr CASE_STMTs:arrayCases OTHERWISE STMTs:otherwise END
+                {: RESULT = new Match(expr, cases, otherwise);  :}
+              | MATCH EXPR:expr CASE_STMTs:arrayCases END
+                {: RESULT = new Match(expr, arrayCases):};
+
+
+CASE_STMTs  ::= CASE EXPR:expr IS STMTs:cuerpoCase CASE_STMTs:restoMatch
+                {: newCase = new Case(expr, cuerpoCase); restoMatch.add(newCase); RESULT = restoMatch:}
+                | {: RESULT = new ArrayList<Case>(); :};
 
 RETURN_STMT ::= RETURN EXPR SEMICOLON;

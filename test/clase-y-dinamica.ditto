@@ -1,0 +1,16 @@
+struct Persona is
+    int edad;
+    int altura;
+    int peso;
+end;
+
+func main() -> int 
+    ptr Persona p := allocate(sizeof(Persona));
+    scan(p->edad);
+
+    scan(p->altura);
+
+    scan(p->peso);
+    
+    free(p);    /// Liberar la memoria dinámica
+end

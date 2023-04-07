@@ -67,6 +67,9 @@ closePar = \)
 openBracket = \[
 closeBracket = \]
 
+openCurly  = \{
+closeCurly = \}
+
 rArrow = ->
 
 /* Variables */
@@ -76,7 +79,7 @@ identifier = {letter}({letter}|{digit})*
 assign = :\=
 semicolon = \;
 comma = ,
-//colon = :
+colon = :
 quadot = ::
 dot = \.
 at = @
@@ -122,6 +125,8 @@ new = new
 {closePar}                    {return ops.scanClosePar();}
 {openBracket}                 {return ops.scanOpenBracket();}
 {closeBracket}                {return ops.scanCloseBracket();}
+{openCurly}                 {return ops.scanOpenCurly();}
+{closeCurly}                {return ops.scanCloseCurly();}
 {greaterThan}                 {return ops.scanGreaterThan();}
 {greaterEqual}                {return ops.scanGreaterEqual();}
 {lessThan}                    {return ops.scanLessThan();}
@@ -135,6 +140,7 @@ new = new
 {false}                       {return ops.scanFalse();}
 
 {semicolon}                   {return ops.scanSemicolon();}
+{colon}                       {return ops.scanColon();}
 {comma}                       {return ops.scanComma();}
 {rArrow}                      {return ops.scanRArrow();}
 {quadot}                      {return ops.scanQuadot();}

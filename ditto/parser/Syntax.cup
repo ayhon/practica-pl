@@ -6,8 +6,10 @@ import ditto.lexer.Token;
 import ditto.errors.ErrorHandler;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Map;
+import java.util.HashMap;
 
-
+import ditto.ast.Module;
 import ditto.ast.definitions.*;
 import ditto.ast.designators.*;
 import ditto.ast.expressions.*;
@@ -30,8 +32,8 @@ init with {:
 
 /* PUNTUATION */
 terminal PLUS, MINUS, TIMES, DIV, MOD, NOT_EQUAL, EQUAL, GREATER, LESS, GREATER_EQUAL, LESS_EQUAL,
-         OPEN_PAR, CLOSE_PAR, OPEN_BRACKET, CLOSE_BRACKET,
-         SEMICOLON, COMMA, DOT, QUADOT, AT, R_ARROW, ASSIGN;
+         OPEN_PAR, CLOSE_PAR, OPEN_BRACKET, CLOSE_BRACKET, OPEN_CURLY, CLOSE_CURLY,
+         SEMICOLON, COLON, COMMA, DOT, QUADOT, AT, R_ARROW, ASSIGN;
 
 /* KEYWORDS */
 terminal AND, OR, NOT, FUNC, IF, ELSE, FOR, WHILE, IMPORT, RETURN, MATCH, CASE, IS, OTHERWISE, END, DO, THEN, MODULE, STRUCT, PUBLIC, FROM, TO, BY,
@@ -46,23 +48,25 @@ terminal String IDEN;
 non terminal S;
 non terminal ArrayList<Statement> STMTs;
 
+non terminal List<Expr> EXPRs;
+
 non terminal Expr EXPR, PRIMARY;
 non terminal Expr DISJUNCTION, CONJUNCTION, EQUALITY, COMPARISON, TERM, FACTOR;
 non terminal Expr NEGATION, UNARY;
-
-non terminal ArrayLiteral ARRAY_LITERAL;
 non terminal Call FUNC_CALL;
 
 non terminal Literal LITERAL;
+non terminal ArrayLiteral ARRAY_LITERAL;
+non terminal StructLiteral STRUCT_LITERAL;
+non terminal Map<String, Expr> ATRIBUTE_ASSIGNMENTs, AT_LEAST_ONE_ATR_ASSIGMENT;
+
 non terminal Designator DESIGNATION;
-non terminal List<Expr> EXPRs;
 
 non terminal Statement STMT, ASSIGNMENT, IF_STMT, FOR_STMT, WHILE_STMT, MATCH_STMT, RETURN_STMT;
 
-non terminal DefVar VAR_DECL;
-non terminal DefFunc FUN_DECL;
-non terminal DefStruct STRUCT_DECL;
-non terminal MODULE_DECL;
+non terminal DefVar VAR_DEF;
+non terminal DefFunc FUN_DEF;
+non terminal DefStruct STRUCT_DEF;
 
 non terminal Type TYPE;
 non terminal List<String> NAME;
@@ -70,23 +74,27 @@ non terminal CASE_STMTs;
 non terminal List<Literal> LITERALs;
 non terminal List<Param> FUNC_PARAMs, AT_LEAST_ONE_PARAM, NO_PARAM;
 non terminal Param PARAM;
-non terminal IMPORTs, DECLARATIONs, DECLARATION, DECLARATIONs_WITH_VISIBILITY, VISIBILITY;
+
+non terminal List<DefModule> IMPORTs;
+non terminal DefinitionCollection DEFINITIONs;
 
 /* Nuestro programa empieza con un conjunto de imports, y luego declaraciones */
-S ::= IMPORTs DECLARATIONs;
+S ::= IMPORTs:imports DEFINITIONs:declarations
+      {: RESULT = new Module(imports, declarations); :};
 
-IMPORTs ::= IMPORTs IMPORT NAME SEMICOLON | ;
+IMPORTs ::= IMPORTs:imports IMPORT NAME:name SEMICOLON
+         {: RESULT = imports; imports.add(new DefModule(name)); :} |
+         {: RESULT = new ArrayList<DefModule>(); :};
 
-DECLARATIONs ::= DECLARATIONs DECLARATION | ;
-DECLARATION ::= STRUCT_DECL | MODULE_DECL | FUN_DECL | VAR_DECL;
-DECLARATIONs_WITH_VISIBILITY ::= DECLARATIONs_WITH_VISIBILITY VISIBILITY DECLARATION | DECLARATION;
-VISIBILITY ::= PUBLIC | ;
+STRUCT_DEF ::= STRUCT IDEN:name IS DEFINITIONs:ds END
+            {: RESULT = new DefStruct(name, ds.getVariables(), ds.getFunctions()); :};
+             
+DEFINITIONs ::= DEFINITIONs:defs STRUCT_DEF:defStruct {: RESULT = defs; defs.add(defStruct); :} | 
+                DEFINITIONs:defs FUN_DEF:defFun {: RESULT = defs; defs.add(defFun); :} | 
+                DEFINITIONs:defs VAR_DEF:defVar {: RESULT = defs; defs.add(defVar); :} |
+                {: RESULT = new DefinitionCollection(); :};
 
-STRUCT_DECL ::= STRUCT IDEN IS DECLARATIONs END;
-
-MODULE_DECL ::= MODULE IDEN IS DECLARATIONs_WITH_VISIBILITY END;
-
-FUN_DECL    ::= FUNC IDEN:id OPEN_PAR FUNC_PARAMs:params CLOSE_PAR STMTs:statements END
+FUN_DEF    ::= FUNC IDEN:id OPEN_PAR FUNC_PARAMs:params CLOSE_PAR STMTs:statements END
                {: RESULT = new DefFunc(id, params, statements); :} | 
                 FUNC IDEN:id OPEN_PAR FUNC_PARAMs:params CLOSE_PAR R_ARROW TYPE:type STMTs:statements END
                {: RESULT = new DefFunc(id, params, type, statements); :};
@@ -108,46 +116,46 @@ PARAM       ::= TYPE:t IDEN:id                      /*Por valor*/
 NO_PARAM    ::= {: RESULT = new ArrayList<Param>(); :};
 
 EXPR        ::= DISJUNCTION:d {: RESULT = d; :};
-DISJUNCTION ::= DISJUNCTION:left OR CONJUNCTION:rigth 
-                {: RESULT =  new OperBin(OperBin.Operators.OR, left, rigth); :}
+DISJUNCTION ::= DISJUNCTION:left OR CONJUNCTION:right 
+                {: RESULT =  new OperBin(OperBin.Operators.OR, left, right); :}
               | CONJUNCTION:expr 
                 {: RESULT = expr; :};
-CONJUNCTION ::= CONJUNCTION:left AND NEGATION:rigth
-                {: RESULT = new OperBin(OperBin.Operators.AND, left, rigth); :}
+CONJUNCTION ::= CONJUNCTION:left AND NEGATION:right
+                {: RESULT = new OperBin(OperBin.Operators.AND, left, right); :}
               | NEGATION:expr 
                 {: RESULT = expr; :};
 NEGATION    ::= NOT NEGATION:expr
                 {: RESULT = new OperUn(OperUn.Operators.NOT, expr); :}
               | EQUALITY:expr  
                 {: RESULT = expr; :};
-EQUALITY    ::= EQUALITY:left EQUAL COMPARISON:rigth 
-                {: RESULT = new OperBin(OperBin.Operators.EQUALS, left, rigth); :}
-              | EQUALITY:left NOT_EQUAL COMPARISON:rigth 
-                {: RESULT = new OperBin(OperBin.Operators.NOTEQUALS, left, rigth); :}
+EQUALITY    ::= EQUALITY:left EQUAL COMPARISON:right 
+                {: RESULT = new OperBin(OperBin.Operators.EQUALS, left, right); :}
+              | EQUALITY:left NOT_EQUAL COMPARISON:right 
+                {: RESULT = new OperBin(OperBin.Operators.NOTEQUALS, left, right); :}
               | COMPARISON:expr 
                 {: RESULT = expr; :};
-COMPARISON  ::= COMPARISON:left LESS TERM:rigth
-                {: RESULT =  new OperBin(OperBin.Operators.LESS, left, rigth); :}
-              | COMPARISON:left GREATER TERM:rigth
-                {: RESULT = new OperBin(OperBin.Operators.GREATER, left, rigth); :} 
-              | COMPARISON:left LESS_EQUAL TERM:rigth
-                {: RESULT = new OperBin(OperBin.Operators.LESS_EQUAL, left, rigth); :} 
-              | COMPARISON:left GREATER_EQUAL TERM:rigth
-                {: RESULT = new OperBin(OperBin.Operators.GREATER_EQUAL, left, rigth); :} 
+COMPARISON  ::= COMPARISON:left LESS TERM:right
+                {: RESULT =  new OperBin(OperBin.Operators.LESS, left, right); :}
+              | COMPARISON:left GREATER TERM:right
+                {: RESULT = new OperBin(OperBin.Operators.GREATER, left, right); :} 
+              | COMPARISON:left LESS_EQUAL TERM:right
+                {: RESULT = new OperBin(OperBin.Operators.LESS_EQUAL, left, right); :} 
+              | COMPARISON:left GREATER_EQUAL TERM:right
+                {: RESULT = new OperBin(OperBin.Operators.GREATER_EQUAL, left, right); :} 
               | TERM:expr
                 {: RESULT = expr; :};
-TERM        ::= TERM:left PLUS FACTOR:rigth
-                {: RESULT =  new OperBin(OperBin.Operators.SUM, left, rigth); :}
-              | TERM:left MINUS FACTOR:rigth
-                {: RESULT = new OperBin(OperBin.Operators.SUBS, left, rigth); :} 
+TERM        ::= TERM:left PLUS FACTOR:right
+                {: RESULT =  new OperBin(OperBin.Operators.SUM, left, right); :}
+              | TERM:left MINUS FACTOR:right
+                {: RESULT = new OperBin(OperBin.Operators.SUBS, left, right); :} 
               | FACTOR:expr
                 {: RESULT = expr; :};
-FACTOR      ::= FACTOR:left TIMES UNARY:rigth
-                {: RESULT = new OperBin(OperBin.Operators.MUL, left, rigth); :}
-              | FACTOR:left DIV UNARY:rigth 
-                {: RESULT = new OperBin(OperBin.Operators.DIV, left, rigth); :}
-              | FACTOR:left MOD UNARY:rigth
-                {: RESULT = new OperBin(OperBin.Operators.MODULO, left, rigth); :} 
+FACTOR      ::= FACTOR:left TIMES UNARY:right
+                {: RESULT = new OperBin(OperBin.Operators.MUL, left, right); :}
+              | FACTOR:left DIV UNARY:right 
+                {: RESULT = new OperBin(OperBin.Operators.DIV, left, right); :}
+              | FACTOR:left MOD UNARY:right
+                {: RESULT = new OperBin(OperBin.Operators.MODULO, left, right); :} 
               | UNARY:expr
                 {: RESULT = expr; :};
 UNARY       ::= MINUS UNARY:expr
@@ -161,8 +169,8 @@ UNARY       ::= MINUS UNARY:expr
               | PRIMARY:expr
                 {: RESULT = expr; :};
 PRIMARY     ::= LITERAL:e {: RESULT = e; :}
-              //| NEW LITERAL:expr
-              //{: RESULT = new OperUn(OperUn.Operators.NEW, expr); :}
+              | NEW STRUCT_LITERAL:s {: RESULT = new New(s); :}
+              | NEW ARRAY_LITERAL:a  {: RESULT = new New(a); :}
               | DESIGNATION:d {: RESULT = (Expr) d; :}
               | FUNC_CALL:x {: RESULT = (Expr) x; :}
               | OPEN_PAR EXPR:e CLOSE_PAR {: RESULT = (Expr) e; :};
@@ -193,11 +201,11 @@ new 10;
 */
 
 
-DESIGNATION ::= DESIGNATION:d OPEN_BRACKET EXPR:e CLOSE_BRACKET  /* design[expr]   */
+DESIGNATION ::= DESIGNATION:d OPEN_BRACKET EXPR:e CLOSE_BRACKET  /* design[expr] */
              {: RESULT = new ArrayAccess(d, e); :}
-              | DESIGNATION:d DOT IDEN:name                      /* design.iden()   */
+              | DESIGNATION:d DOT IDEN:name                      /* design.iden() */
              {: RESULT = new StructAccess(d, name); :}
-              | DESIGNATION:d R_ARROW IDEN:name                         /* desig->iden    */
+              | DESIGNATION:d R_ARROW IDEN:name                  /* desig->iden */
              {: RESULT = new StructAccess(new Deref(d), name); :}
               | NAME:name
              {: RESULT = new Var(name); :};                      /* Var should take a binding */                               
@@ -218,6 +226,12 @@ ARRAY_LITERAL ::= OPEN_BRACKET CLOSE_BRACKET
              {: RESULT = new ArrayLiteral(ls); :}                        /* [elem1, elem2, elem3, ...]*/
               |   OPEN_BRACKET LITERAL:def SEMICOLON NAT:size CLOSE_BRACKET 
              {: RESULT = new ArrayLiteral(def,size); :};             /* [default; size] */
+STRUCT_LITERAL ::= IDEN:name OPEN_CURLY ATRIBUTE_ASSIGNMENTs:assigs CLOSE_CURLY
+             {: RESULT = new StructLiteral(name, assigs); :};
+ATRIBUTE_ASSIGNMENTs ::= AT_LEAST_ONE_ATR_ASSIGMENT:assigs {: RESULT = assigs; :}
+                    | {: RESULT = new HashMap<String, Expr>(); :}; 
+AT_LEAST_ONE_ATR_ASSIGMENT ::= AT_LEAST_ONE_ATR_ASSIGMENT:more COMMA IDEN:name COLON EXPR:expr {: RESULT = more; more.put(name, expr); :}
+                            | IDEN:name COLON EXPR:expr {: RESULT = new HashMap<String, Expr>(); RESULT.put(name, expr); :};
 
 /* TODO: Quiza luego hay problema, porque estamos modificando la misma referencia de ArrayList */
 STMTs       ::= STMTs:statements STMT:st {: RESULT = statements; statements.add(st); :}
@@ -225,17 +239,26 @@ STMTs       ::= STMTs:statements STMT:st {: RESULT = statements; statements.add(
 
 STMT        ::= EXPR SEMICOLON 
               | ASSIGNMENT
-              | VAR_DECL     // No ponemos funciones u otras declaraciones porque no las queremos en el cuerpo de una función
+              | VAR_DEF     // No ponemos funciones u otras declaraciones porque no las queremos en el cuerpo de una función
               | IF_STMT
               | FOR_STMT
               | WHILE_STMT
               | MATCH_STMT
               | RETURN_STMT;
 
+MATCH_STMT  ::= MATCH EXPR CASE_STMTs OTHERWISE STMTs END
+              | MATCH EXPR CASE_STMTs END;
+CASE_STMTs  ::= CASE EXPR IS STMTs CASE_STMTs | ;
+
+RETURN_STMT ::= RETURN EXPR SEMICOLON;
+
+WHILE_STMT  ::= WHILE EXPR:cond DO STMTs:statements END
+              {: RESULT = new While(cond, statements); :};
+
 ASSIGNMENT  ::= DESIGNATION:name ASSIGN EXPR: e SEMICOLON 
              {: RESULT = new Assign(name, e); :};
 
-VAR_DECL    ::= TYPE:t IDEN:name SEMICOLON
+VAR_DEF    ::= TYPE:t IDEN:name SEMICOLON
              {: RESULT = new DefVar(t, name); :}
               | TYPE ASSIGNMENT;
 TYPE        ::= IDEN:name
@@ -256,12 +279,3 @@ FOR_STMT    ::= FOR IDEN:index FROM EXPR:from TO EXPR:to DO STMTs:statements END
                {: RESULT = new For(index, from, to, statements); :}
               | FOR IDEN:index FROM EXPR:from TO EXPR:to BY EXPR:by DO STMTs:statements END
               {: RESULT = new For(index, from, to, by, statements); :};
-
-WHILE_STMT  ::= WHILE EXPR:cond DO STMTs:statements END
-              {: RESULT = new While(cond, statements); :};
-
-MATCH_STMT  ::= MATCH EXPR CASE_STMTs OTHERWISE STMTs END
-              | MATCH EXPR CASE_STMTs END;
-CASE_STMTs  ::= CASE EXPR IS STMTs CASE_STMTs | ;
-
-RETURN_STMT ::= RETURN EXPR SEMICOLON;

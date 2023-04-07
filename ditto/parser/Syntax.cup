@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.HashMap;
 
+import ditto.ast.Node;
 import ditto.ast.Module;
 import ditto.ast.definitions.*;
 import ditto.ast.designators.*;
@@ -26,6 +27,10 @@ parser code {:
    private Node root;
    public Node getRoot() {
      return root;
+   }
+   public Node setRoot(Node root){
+      this.root = root;
+      return root;
    }
 :};
 init with {: 
@@ -50,7 +55,7 @@ terminal False FALSE;
 terminal String IDEN;
 
 non terminal S;
-non terminal ArrayList<Statement> STMTs;
+non terminal List<Statement> STMTs;
 
 non terminal List<Expr> EXPRs;
 
@@ -74,17 +79,17 @@ non terminal DefStruct STRUCT_DEF;
 
 non terminal Type TYPE;
 non terminal List<String> NAME;
-non terminal CASE_STMTs;
+non terminal List<Match.Case> CASE_STMTs;
 non terminal List<Literal> LITERALs;
-non terminal List<Param> FUNC_PARAMs, AT_LEAST_ONE_PARAM, NO_PARAM;
-non terminal Param PARAM;
+non terminal List<DefFunc.Param> FUNC_PARAMs, AT_LEAST_ONE_PARAM, NO_PARAM;
+non terminal DefFunc.Param PARAM;
 
 non terminal List<DefModule> IMPORTs;
 non terminal DefinitionCollection DEFINITIONs;
 
 /* Nuestro programa empieza con un conjunto de imports, y luego declaraciones */
 S ::= IMPORTs:imports DEFINITIONs:declarations
-      {: RESULT = new Module(imports, declarations); root = RESULT :};
+      {: RESULT = parser.setRoot(new Module(imports, declarations)); :};
 
 IMPORTs ::= IMPORTs:imports IMPORT NAME:name SEMICOLON
          {: RESULT = imports; imports.add(new DefModule(name)); :} |
@@ -110,14 +115,14 @@ FUNC_PARAMs ::= AT_LEAST_ONE_PARAM:l {: RESULT = l; :}
 AT_LEAST_ONE_PARAM ::= AT_LEAST_ONE_PARAM:params COMMA PARAM:p 
                      {: RESULT = params; params.add(p); :} | 
                      PARAM:p
-                     {: RESULT = new ArrayList<Param>(); RESULT.add(p); :};
+                     {: RESULT = new ArrayList<DefFunc.Param>(); RESULT.add(p); :};
 
 PARAM       ::= TYPE:t IDEN:id                      /*Por valor*/
-               {: RESULT = new Param(t, id); :} | 
+               {: RESULT = new DefFunc.Param(t, id); :} | 
                REF TYPE:t IDEN:id                   /*Por referencia*/
-               {: RESULT = new Param(t, id, true); :};
+               {: RESULT = new DefFunc.Param(t, id, true); :};
 
-NO_PARAM    ::= {: RESULT = new ArrayList<Param>(); :};
+NO_PARAM    ::= {: RESULT = new ArrayList<DefFunc.Param>(); :};
 
 EXPR        ::= DISJUNCTION:d {: RESULT = d; :};
 DISJUNCTION ::= DISJUNCTION:left OR CONJUNCTION:right 
@@ -250,14 +255,6 @@ STMT        ::= EXPR SEMICOLON
               | MATCH_STMT
               | RETURN_STMT;
 
-MATCH_STMT  ::= MATCH EXPR CASE_STMTs OTHERWISE STMTs END
-              | MATCH EXPR CASE_STMTs END;
-CASE_STMTs  ::= CASE EXPR IS STMTs CASE_STMTs | ;
-
-RETURN_STMT ::= RETURN EXPR SEMICOLON;
-
-WHILE_STMT  ::= WHILE EXPR:cond DO STMTs:statements END
-              {: RESULT = new While(cond, statements); :};
 
 ASSIGNMENT  ::= DESIGNATION:name ASSIGN EXPR: e SEMICOLON 
              {: RESULT = new Assign(name, e); :};
@@ -289,15 +286,17 @@ WHILE_STMT  ::= WHILE EXPR:cond DO STMTs:statements END
 
 /*Sintaxis del match*/
 
-MATCH_STMT  ::= MATCH EXPR:expr CASE_STMTs:arrayCases OTHERWISE STMTs:otherwise END
+MATCH_STMT  ::= MATCH EXPR:expr CASE_STMTs:cases OTHERWISE STMTs:otherwise END
                 {: RESULT = new Match(expr, cases, otherwise);  :}
-              | MATCH EXPR:expr CASE_STMTs:arrayCases END
-                {: RESULT = new Match(expr, arrayCases):};
+              | MATCH EXPR:expr CASE_STMTs:cases END
+                {: RESULT = new Match(expr, cases); :};
 
 
-CASE_STMTs  ::= CASE EXPR:expr IS STMTs:cuerpoCase CASE_STMTs:restoMatch
-                {: newCase = new Case(expr, cuerpoCase); restoMatch.add(newCase); RESULT = restoMatch:}
-                | {: RESULT = new ArrayList<Case>(); :};
+CASE_STMTs  ::= CASE EXPR:expr IS STMTs:body CASE_STMTs:rest
+                {: rest.add(new Match.Case(expr, body)); RESULT = rest; :}
+                | {: RESULT = new ArrayList<Match.Case>(); :};
 
 RETURN_STMT ::= RETURN EXPR:expr SEMICOLON
-                {: RESULT = expr; :};
+                {: RESULT = new Return(expr); :}
+              | RETURN SEMICOLON
+                {: RESULT = new Return(); :};

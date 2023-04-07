@@ -9,19 +9,19 @@ import ditto.ast.expressions.Expr;
 
 public class If extends Node implements Statement {
     private Expr cond;
-    private ArrayList<Statement> then;
-    private ArrayList<Statement> els;
+    private List<Statement> then;
+    private List<Statement> els;
 
-    public If(Expr cond, ArrayList<Statement> then) {
+    public If(Expr cond, List<Statement> then) {
         this.cond = cond;
         this.then = then;
-        this.els =  new ArrayList<Statement>();
+        this.els  = new ArrayList<Statement>();
     }
 
     public If(Expr cond, List<Statement> then, List<Statement> els) {
         this.cond = cond;
-        this.then = (ArrayList) then;
-        this.els = (ArrayList) els;
+        this.then = then;
+        this.els  = els;
     }
 
 

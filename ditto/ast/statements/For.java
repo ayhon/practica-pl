@@ -1,8 +1,7 @@
 package ditto.ast.statements;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
+import java.util.Arrays;
 
 import ditto.ast.Node;
 import ditto.ast.expressions.Expr;
@@ -13,9 +12,9 @@ public class For extends Node implements Statement {
     public final Expr from;
     public final Expr to;
     public final Expr by;
-    public final ArrayList<Statement> body;
+    public final List<Statement> body;
 
-    public For(String index, Expr from, Expr to, Expr by, ArrayList<Statement> body) {
+    public For(String index, Expr from, Expr to, Expr by, List<Statement> body) {
         this.index = index;
         this.from = from;
         this.to = to;
@@ -23,7 +22,7 @@ public class For extends Node implements Statement {
         this.body = body;
     }
 
-    public For(String index, Expr from, Expr to, ArrayList<Statement> body) {
+    public For(String index, Expr from, Expr to, List<Statement> body) {
         this(index, from, to, new Natural(1), body);
     }
 

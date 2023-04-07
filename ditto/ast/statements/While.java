@@ -1,17 +1,16 @@
 package ditto.ast.statements;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
+import java.util.Arrays;
 
 import ditto.ast.Node;
 import ditto.ast.expressions.Expr;
 
 public class While extends Node implements Statement {
     public final Expr cond;
-    public final ArrayList<Statement> statements;
+    public final List<Statement> statements;
 
-    public While(Expr cond, ArrayList<Statement> statements) {
+    public While(Expr cond, List<Statement> statements) {
         this.cond = cond;
         this.statements = statements;
     }

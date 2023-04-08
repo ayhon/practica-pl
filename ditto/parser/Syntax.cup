@@ -59,7 +59,6 @@ terminal Null  NULL;
 terminal String IDEN;
 
 non terminal Literal LITERAL;
-non terminal List<Literal> LITERALs;
 non terminal ArrayLiteral ARRAY_LITERAL;
 non terminal StructLiteral STRUCT_LITERAL;
 non terminal Map<String, Expr> ATRIBUTE_ASSIGNMENTs, AT_LEAST_ONE_ATR_ASSIGMENT;    /* Asignación de atributos en un literal de struct */
@@ -255,11 +254,6 @@ LITERAL                     ::= NAT:n
                                     {: RESULT = s; :}
                                 | NULL:n
                                     {: RESULT = n; :};
-
-LITERALs                    ::= LITERALs:more COMMA LITERAL:l 
-                                    {: RESULT = more; more.add(l); :}
-                                | LITERAL:l 
-                                    {: RESULT = new ArrayList<Literal>(); RESULT.add(l); :};
 
 ARRAY_LITERAL               ::= OPEN_BRACKET CLOSE_BRACKET        
                                     {: RESULT = new ArrayLiteral(new ArrayList<Expr>()); :}  /* [] // empty array */

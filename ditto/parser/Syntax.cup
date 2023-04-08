@@ -55,6 +55,7 @@ non terminal Node S;
 terminal Natural NAT;
 terminal True   TRUE;
 terminal False FALSE;
+terminal NULL  NULL;
 terminal String IDEN;
 
 non terminal Literal LITERAL;
@@ -250,6 +251,8 @@ LITERAL                     ::= NAT:n
                                     {: RESULT = f; :}
                                 | ARRAY_LITERAL:a
                                     {: RESULT = a; :};
+                                | NULL_LITERAL:n
+                                    {: RESULT = n; :};
 
 LITERALs                    ::= LITERALs:more COMMA LITERAL:l 
                                     {: RESULT = more; more.add(l); :}

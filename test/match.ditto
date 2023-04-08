@@ -1,0 +1,13 @@
+func main() -> int
+    int x;
+    scan(x);
+    match x is
+        case 1 do
+            print(1);
+        case 2 do
+            print(2);
+        otherwise
+            print(x);
+    end
+    print(0);
+end

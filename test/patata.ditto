@@ -9,5 +9,3 @@ func patata(int a)
         end
     end
 end
-
-// (module [] [(def-func "patata" [INT a] ditto.ast.types.VoidType@27c170f0 [(let "x" INT),(call (var "input") [(var "x")]),(if (== (var "x") (nat)) [(call (var "print") [(var "x")])] [(while (true) [(call (var "print") [(var "x")])])])])] [] [])

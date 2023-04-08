@@ -34,7 +34,6 @@ func pop(ptr List ls) -> int
     if ls.head != null then
         ptr Node new_head := ls.head->next;
         int head_value := ls.head->val;
-        free(ls.head);
         ls.head := new_head;
         ls.size := ls.size - 1;
         return head_value;

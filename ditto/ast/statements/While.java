@@ -16,11 +16,6 @@ public class While extends Node implements Statement {
     }
 
     @Override
-    public String toString() {
-        return "(while " + cond + " " + statements + ")";
-    }
-
-    @Override
     public String getAstString() { return "while"; }
 
     @Override

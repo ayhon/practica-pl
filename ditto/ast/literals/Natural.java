@@ -13,7 +13,7 @@ public class Natural extends Node implements Literal {
     public Natural(int value) {
         this.value = value;
     }
-    
+
     public Natural(String lexeme) {
         value = Integer.parseInt(lexeme);
     }
@@ -22,10 +22,11 @@ public class Natural extends Node implements Literal {
     public String getAstString() {
         return "nat";
     }
+
     public Object getValue() {
         return value;
     }
-    
+
     @Override
     public Type getType() {
         return IntegerType.getInstance();

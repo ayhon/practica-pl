@@ -15,7 +15,7 @@ func subarray(array int ls, int offset, int size) -> array int
     array int sub := new [0; size];
     for i from 0 to size - 1 do 
         if i + offset < ls.size then
-            sub[i] = ls[i + offset];
+            sub[i] := ls[i + offset];
         else 
             return sub;
         end

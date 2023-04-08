@@ -25,8 +25,12 @@ public class Assign extends Node implements Statement {
     }
 
     @Override
-    public String getAstString() { return "assing"; }
+    public String getAstString() {
+        return "assign";
+    }
 
     @Override
-    public List<Object> getAstArguments() { return Arrays.asList(place, expr); }
+    public List<Object> getAstArguments() {
+        return Arrays.asList(place, expr);
+    }
 }

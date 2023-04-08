@@ -1,6 +1,7 @@
 package ditto.ast;
 
 import java.util.List;
+import java.util.StringJoiner;
 
 public abstract class Node {
     // public ?? type() // for the future
@@ -16,38 +17,43 @@ public abstract class Node {
         StringBuilder sb = new StringBuilder();
         sb.append('(');
         sb.append(getAstString());
-        for (Object arg : getAstArguments()) {
-            sb.append(' ');
-            if (arg instanceof String) {
-                sb.append('"');
-                sb.append(arg);
-                sb.append('"');
+        sb.append("\n");
 
+        StringJoiner args = new StringJoiner(",\n");
+        for (Object arg : getAstArguments()) {
+            if (arg instanceof String) {
+                args.add('"' + (String) arg + '"');
             } else if (arg instanceof List) {
-                sb.append(listAsString((List<Object>) arg));
+                args.add(listAsString((List<Object>) arg));
             } else {
-                sb.append(arg.toString());
+                args.add(arg.toString());
             }
         }
+        sb.append(args.toString().indent(4));
         sb.append(')');
+
         return sb.toString();
     }
 
     private static String listAsString(List<Object> list) {
+        if (list.isEmpty()) {
+            return "[]";
+        }
+
         StringBuilder sb = new StringBuilder();
-        sb.append('[');
-        int idx = 0;
+        sb.append("[");
+        sb.append("\n");
+
+        StringJoiner args = new StringJoiner(",\n");
         for (Object item : list) {
             if (item == null) {
-                sb.append("NULL");
-                continue;
+                args.add("NULL");
             } else {
-                sb.append(item.toString());
+                args.add(item.toString());
             }
-            if (idx != list.size() - 1)
-                sb.append(',');
-            idx += 1;
         }
+
+        sb.append(args.toString().indent(4));
         sb.append(']');
         return sb.toString();
     }

@@ -1,51 +1,47 @@
 package ditto.ast.literals;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import ditto.ast.Node;
+import ditto.ast.expressions.Expr;
 import ditto.ast.types.ArrayType;
 import ditto.ast.types.Type;
 
 public class ArrayLiteral extends Node implements Literal {
-    private final List<Literal> elements;
-    private final ArrayType array_type;
+    private final List<Expr> elements;
+    private final Expr size;
     private final List<Object> ast_args;
 
-    public List<Literal> getElements() {
+    public List<Expr> getElements() {
         return elements;
     }
 
-    public ArrayLiteral(List<Literal> elements) {
+    public ArrayLiteral(List<Expr> elements) {
         this.elements = elements;
-
-        this.ast_args = new ArrayList<Object>();
-        for (Literal l : elements) { // ast_args es elements pero como List<Object> en vez de List<Literal>
-            ast_args.add(l);
-        }
-
-        this.array_type = new ArrayType(elements.get(0).getType(), new Natural(elements.size()));
+        this.ast_args = Arrays.asList(elements); // ast_args es elements pero como List<Object> en vez de List<Expr>
+        this.size = new Natural(elements.size());
     }
 
     public ArrayLiteral() {
-        this(new ArrayList<Literal>());
+        this(new ArrayList<Expr>());
     }
 
-    public ArrayLiteral(Literal fill, Natural size) {
-        int length = (int) size.getValue();
-        this.elements = new ArrayList<Literal>(length);
+    public ArrayLiteral(Expr fill, Expr size) {
+        /// Cuando tenemos un array de tamaño variable y un valor por defecto para cada
+        /// elemento
+        /// Anotamos el valor por defecto y el tamaño del array
+        /// Pero no vamos a crear un ArrayList aqui en Java, porque el tamaño del array
+        /// no lo sabemos, y se conoce en momento de ejecución
+        this.size = size;
 
-        for (int i = 0; i < length; i++) {
-            elements.add(fill);         //El valor por defecto es siempre el mismo
-        }
+        this.elements = new ArrayList<>();
+        this.elements.add(fill);
 
-        this.ast_args = new ArrayList<Object>();
-        
-        for (Literal l : elements) { // ast_args es elements pero como List<Object> en vez de List<Literal>
-            ast_args.add(l);
-        }
-
-        this.array_type = new ArrayType(elements.get(0).getType(), new Natural(elements.size()));
+        this.ast_args = new ArrayList<>();
+        this.ast_args.add("fill = " + fill.toString());
+        this.ast_args.add("size = " + size.toString());
     }
 
     @Override
@@ -60,12 +56,11 @@ public class ArrayLiteral extends Node implements Literal {
 
     @Override
     public Type getType() {
-        return this.array_type;
+        return new ArrayType(elements.get(0).getType(), new Natural(elements.size()));
     }
 
     @Override
     public Object getValue() {
         return this.elements;
     }
-
 }

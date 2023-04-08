@@ -257,10 +257,10 @@ LITERALs                    ::= LITERALs:more COMMA LITERAL:l
                                     {: RESULT = new ArrayList<Literal>(); RESULT.add(l); :};
 
 ARRAY_LITERAL               ::= OPEN_BRACKET CLOSE_BRACKET        
-                                    {: RESULT = new ArrayLiteral(new ArrayList<Literal>()); :}  /* [] // empty array */
-                                | OPEN_BRACKET LITERALs:ls CLOSE_BRACKET              
-                                    {: RESULT = new ArrayLiteral(ls); :}                        /* [elem1, elem2, elem3, ...]*/
-                                | OPEN_BRACKET LITERAL:def SEMICOLON NAT:size CLOSE_BRACKET 
+                                    {: RESULT = new ArrayLiteral(new ArrayList<Expr>()); :}  /* [] // empty array */
+                                | OPEN_BRACKET EXPRs:exprs CLOSE_BRACKET              
+                                    {: RESULT = new ArrayLiteral(exprs); :}                        /* [elem1, elem2, elem3, ...]*/
+                                | OPEN_BRACKET EXPR:def SEMICOLON EXPR:size CLOSE_BRACKET 
                                     {: RESULT = new ArrayLiteral(def,size); :};             /* [default; size] */
 
 STRUCT_LITERAL              ::= IDEN:name OPEN_CURLY ATRIBUTE_ASSIGNMENTs:assigs CLOSE_CURLY
@@ -298,7 +298,8 @@ STMT                        ::= EXPR:e SEMICOLON
                                 | MATCH_STMT:m 
                                     {: RESULT = m; :}
                                 | RETURN_STMT:r 
-                                    {: RESULT = r; :};
+                                    {: RESULT = r; :}
+                                | error;
 
 ASSIGNMENT                  ::= DESIGNATION:name ASSIGN EXPR: e SEMICOLON 
                                     {: RESULT = new Assign(name, e); :};

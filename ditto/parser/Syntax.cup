@@ -251,6 +251,8 @@ LITERAL                     ::= NAT:n
                                     {: RESULT = f; :}
                                 | ARRAY_LITERAL:a
                                     {: RESULT = a; :}
+                                | STRUCT_LITERAL:s
+                                    {: RESULT = s; :}
                                 | NULL:n
                                     {: RESULT = n; :};
 

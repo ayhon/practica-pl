@@ -266,11 +266,11 @@ ARRAY_LITERAL               ::= OPEN_BRACKET CLOSE_BRACKET
                                 | OPEN_BRACKET EXPR:def SEMICOLON EXPR:size CLOSE_BRACKET 
                                     {: RESULT = new ArrayLiteral(def,size); :};             /* [default; size] */
 
-STRUCT_LITERAL              ::= IDEN:name OPEN_CURLY ATRIBUTE_ASSIGNMENTs:assigs CLOSE_CURLY
-                                    {: RESULT = new StructLiteral(name, assigs); :};
+STRUCT_LITERAL              ::= IDEN:name OPEN_CURLY ATRIBUTE_ASSIGNMENTs:assigns CLOSE_CURLY
+                                    {: RESULT = new StructLiteral(name, assigns); :};
 
-ATRIBUTE_ASSIGNMENTs        ::= AT_LEAST_ONE_ATR_ASSIGMENT:assigs 
-                                    {: RESULT = assigs; :}
+ATRIBUTE_ASSIGNMENTs        ::= AT_LEAST_ONE_ATR_ASSIGMENT:assigns 
+                                    {: RESULT = assigns; :}
                                 | 
                                     {: RESULT = new HashMap<String, Expr>(); :}; 
 

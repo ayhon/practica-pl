@@ -5,12 +5,14 @@ struct Persona is
 end
 
 func main() -> int 
-    ptr Persona p := allocate(sizeof(Persona));
-    scan(p->edad);
-
-    scan(p->altura);
-
-    scan(p->peso);
     
-    free(p);    /// Liberar la memoria dinámica
+    Persona pers := new Persona{edad:13, altura:174, peso:63};
+
+    ptr Persona p := ptr pers;
+    
+    print(p->edad);
+
+    print(p->altura);
+
+    print(p->peso);
 end

@@ -24,6 +24,11 @@ public class LexerOperations {
         return new Token(lexer.col(), lexer.row(), lexer.lexeme(), TokenKind.FALSE, False.getInstance());
         // Pasamos aquí una instancia de `False` para que el parser pueda recibir un `False` cuando detecte el terminal
     }
+    Token scanNull(){
+        System.out.println("Token NULL");
+        return new Token(lexer.col(), lexer.row(), lexer.lexeme(), TokenKind.NULL, Null.getInstance());
+        // Pasamos aquí una instancia de `Null` para que el parser pueda recibir un `False` cuando detecte el terminal
+    }
     Token scanIdentifier(){
         System.out.println("Token Identifier");
         return new Token(lexer.col(), lexer.row(), lexer.lexeme(), TokenKind.IDEN, lexer.lexeme());

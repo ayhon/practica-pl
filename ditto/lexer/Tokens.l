@@ -111,6 +111,7 @@ ptr = ptr
 ref = ref
 array = array
 new = new
+null = null
 
 
 %%
@@ -140,6 +141,7 @@ new = new
 {or}                          {return ops.scanOr();}
 {true}                        {return ops.scanTrue();}
 {false}                       {return ops.scanFalse();}
+{null}                        {return ops.scanNull();  }
 
 {semicolon}                   {return ops.scanSemicolon();}
 {colon}                       {return ops.scanColon();}

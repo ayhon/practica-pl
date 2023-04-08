@@ -2,7 +2,7 @@ struct Persona is
     int edad;
     int altura;
     int peso;
-end;
+end
 
 func main() -> int 
     ptr Persona p := allocate(sizeof(Persona));

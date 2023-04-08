@@ -1,16 +1,16 @@
-    import Random;
+import Random;
 
-    func main() -> int
-        int guess;
-        int secret_number := Random::integer(0,100);
-        scan(guess);
-        while guess != secret_number do
-            if guess < secrent number then
-                print(1);
-            else
-                print(-1);
-            end
-            scan(guess);
+func main() -> int
+    int guess;
+    int secret_number := Random::integer(0,100);
+    scan(guess);
+    while guess != secret_number do
+        if guess < secret_number then
+            print(1);
+        else
+            print(-1);
         end
-        print(0);
-    ends
+        scan(guess);
+    end
+    print(0);
+end

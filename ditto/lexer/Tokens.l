@@ -151,7 +151,7 @@ new = new
 {assign}                      {return ops.scanAssign();}
 
 {int}                         {return ops.scanInt();}
-{bool}                         {return ops.scanBool();}
+{bool}                        {return ops.scanBool();}
 {func}                        {return ops.scanFunc();}
 {if}                          {return ops.scanIf();}
 {else}                        {return ops.scanElse();}

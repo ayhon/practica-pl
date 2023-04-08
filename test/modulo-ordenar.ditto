@@ -1,43 +1,41 @@
-module Algorithms is
-    public function sort(array int ls) -> array int ls
-        if ls.size <= 1 then
-            return ls;
-        else
-            int mid := ls.size / 2;
-            array int lhs := subarray(ls, 0, mid);
-            array int rhs := subarray(ls, mid, ls.size - mid);
-            lhs := sort(lhs);
-            rhs := sort(rhs);
-            return merge(lhs, rhs);
-        end
-    end
-    function subarray(array int ls, int offset, int size) -> array int
-        array int sub = allocate(sizeof(int)*size);
-        for i from 0 to size-1 do 
-            if i + offset < ls.size then
-                sub[i] = ls[i+offset];
-            else 
-                return sub;
-            end
-        end
-        return sub;
-    end
-    function merge(array int rhs, array int lhs) -> array int
-        int size := rhs.size + lhs.size;
-        array int ls = allocate(sizeof(int)*size);
-        int r := 0;
-        int l := 0;
-        for i from 0 to size-1 do
-            if rhs[r] <= lhs[l] then
-                ls[i] := rhs[r];
-                r := r + 1;
-            else
-                ls[i] := lhs[l];
-                l := l + 1;
-            end
-        end
-        free(rhs);
-        free(lhs);
+func sort(array int ls) -> array int
+    if ls.size <= 1 then
         return ls;
+    else
+        int mid := ls.size / 2;
+        array int lhs := subarray(ls, 0, mid);
+        array int rhs := subarray(ls, mid, ls.size - mid);
+        lhs := sort(lhs);
+        rhs := sort(rhs);
+        return merge(lhs, rhs);
     end
+end
+
+func subarray(array int ls, int offset, int size) -> array int
+    array int sub := new [0; size];
+    for i from 0 to size - 1 do 
+        if i + offset < ls.size then
+            sub[i] = ls[i + offset];
+        else 
+            return sub;
+        end
+    end
+    return sub;
+end
+
+func merge(array int rhs, array int lhs) -> array int
+    int size := rhs.size + lhs.size;
+    array int ls := new [0; size];
+    int r := 0;
+    int l := 0;
+    for i from 0 to size - 1 do
+        if rhs[r] <= lhs[l] then
+            ls[i] := rhs[r];
+            r := r + 1;
+        else
+            ls[i] := lhs[l];
+            l := l + 1;
+        end
+    end
+    return ls;
 end

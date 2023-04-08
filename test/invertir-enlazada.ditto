@@ -23,7 +23,7 @@ func reverse (ptr List ls)
 end
 
 func push(ptr List ls, int elem)
-    Node new_head := allocate(sizeof(Node));
+    Node new_head := new Node {};
     new_head->val := elem;
     new_head->next := ls.head;
     ls.head := new_head;

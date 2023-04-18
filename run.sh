@@ -29,6 +29,15 @@ case $1 in
                 ;;
         esac
         ;;
+    test) 
+        # Iterar sobre los archivos de la carpeta test e invocar ast
+        for file in test/*.ditto; do
+            # Solo pasamos el nombre del fichero, sin extension
+            echo "Mostrando AST sobre $file"
+            $0 $2 `basename $file .ditto`
+            echo "============================"
+        done
+        ;;
     lexer)
         javac -cp "$JAR_PATH/*:." ditto/lexer/*.java \
          && java -cp "$JAR_PATH/*:." ditto.lexer.Test test/expr-input.txt
@@ -42,14 +51,11 @@ case $1 in
         javac -cp "$JAR_PATH/*:." ditto/*/*.java \
          && java -cp "$JAR_PATH/*:." ditto.ast.Test $file
         ;;
-    test-ast)
-        # Iterar sobre los archivos de la carpeta test e invocar ast
-        for file in test/*.ditto; do
-            # Solo pasamos el nombre del fichero, sin extension
-            echo "Mostrando AST sobre $file"
-            $0 ast `basename $file .ditto`
-            echo "============================"
-        done
+    bind)
+        ;;
+    type)
+        ;;
+    compile)
         ;;
     *)
         echo "Nou entiendo"

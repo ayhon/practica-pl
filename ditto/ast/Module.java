@@ -41,6 +41,9 @@ public class Module extends Node {
     @Override
     public List<Object> getAstArguments() { return Arrays.asList(imports, functions, structs, globals); }
 
+    public void bind() {
+        bind(new GlobalScope(), new LocalContext());
+    }
     @Override
     public Type type() {
         // TODO Auto-generated method stub

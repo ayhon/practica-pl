@@ -24,11 +24,12 @@ parser code {:
    public void syntax_error(Symbol token) {
      errors.syntaxError((Token)token);
    }
-   private Node root;
-   public Node getRoot() {
+   private Module root;
+   public Module getRoot() {
+     // Podríamos añadir un `this.parse()` aquí, no tiene sentido hacer `getRoot` sino
      return root;
    }
-   public Node setRoot(Node root){
+   public Module setRoot(Module root){
       this.root = root;
       return root;
    }
@@ -49,7 +50,7 @@ terminal AND, OR, NOT, FUNC, IF, ELSE, FOR, WHILE, IMPORT, RETURN, MATCH, CASE, 
          END, DO, THEN, MODULE, INT, BOOL, ARRAY, PTR, STRUCT, PUBLIC, FROM, TO, BY, REF, NEW;
 
 /* Programa principal */
-non terminal Node S;      
+non terminal Module S;      
 
 /* LITERALS */
 terminal Natural NAT;

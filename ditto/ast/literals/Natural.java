@@ -3,11 +3,11 @@ package ditto.ast.literals;
 import java.util.Arrays;
 import java.util.List;
 
-import ditto.ast.Node;
+import ditto.ast.ProgramOutput;
 import ditto.ast.types.IntegerType;
 import ditto.ast.types.Type;
 
-public class Natural extends Node implements Literal {
+public class Natural extends Literal {
     private final int value;
 
     public Natural(int value) {
@@ -26,14 +26,20 @@ public class Natural extends Node implements Literal {
     public Object getValue() {
         return value;
     }
+    @Override
+    public List<Object> getAstArguments() {
+        return Arrays.asList(value);
+    }
 
     @Override
-    public Type getType() {
+    public Type type() {
+        // TODO Auto-generated method stub
         return IntegerType.getInstance();
     }
 
     @Override
-    public List<Object> getAstArguments() {
-        return Arrays.asList(value);
+    public void generateCode(ProgramOutput out) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'generateCode'");
     }
 }

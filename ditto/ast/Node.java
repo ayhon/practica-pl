@@ -3,6 +3,11 @@ package ditto.ast;
 import java.util.List;
 import java.util.StringJoiner;
 
+import ditto.ast.LocalContext;
+import ditto.ast.GlobalScope;
+import ditto.ast.ProgramOutput;
+import ditto.ast.types.Type;
+
 public abstract class Node {
     /*
     type LocalScopes = Map<String, (DefVar | DefFunc | DefStruct | DefModule)>;
@@ -20,9 +25,9 @@ public abstract class Node {
     }
     */
     // type GlobalScope = Map<String, DefVar>;
-    public abstract void bind(GlobalScope globalScope, List<LocalScopes> localScopes) {
+    public void bind(GlobalScope global, LocalContext local) {
         for(Node child : getAstArguments()){
-            child.bind();
+            child.bind(global, local);
         }
     }
     // Vincular: uso de variables (Var), tanto simpes identificadores como modulo::iden, con definición (DefVar)

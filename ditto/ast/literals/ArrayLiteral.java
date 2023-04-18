@@ -4,12 +4,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import ditto.ast.Node;
+import ditto.ast.ProgramOutput;
 import ditto.ast.expressions.Expr;
 import ditto.ast.types.ArrayType;
 import ditto.ast.types.Type;
 
-public class ArrayLiteral extends Node implements Literal {
+public class ArrayLiteral extends Literal {
     private final List<Expr> elements;
     private final Expr size;
     private final List<Object> ast_args;
@@ -55,12 +55,19 @@ public class ArrayLiteral extends Node implements Literal {
     }
 
     @Override
-    public Type getType() {
-        return new ArrayType(elements.get(0).getType(), new Natural(elements.size()));
+    public Type type() {
+
+        return new ArrayType(elements.get(0).type(), new Natural(elements.size()));
     }
 
     @Override
     public Object getValue() {
         return this.elements;
+    }
+
+    @Override
+    public void generateCode(ProgramOutput out) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'generateCode'");
     }
 }

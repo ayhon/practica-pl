@@ -3,14 +3,13 @@ package ditto.ast.literals;
 import java.util.Arrays;
 import java.util.List;
 
-import ditto.ast.Node;
+import ditto.ast.ProgramOutput;
 import ditto.ast.types.BoolType;
 import ditto.ast.types.Type;
 
 // Singleton
-public class False extends Node implements Literal {
+public class False extends Literal {
     private static False instance = new False();
-    private static Type type = BoolType.getInstance();
     private False() {
     }
 
@@ -19,8 +18,8 @@ public class False extends Node implements Literal {
     }
 
     @Override
-    public Type getType() {
-        return type;
+    public Type type() {
+        return BoolType.getInstance();
     }
 
     @Override
@@ -31,4 +30,10 @@ public class False extends Node implements Literal {
 
     @Override
     public Object getValue() {  return false;   }
+
+    @Override
+    public void generateCode(ProgramOutput out) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'generateCode'");
+    }
 }

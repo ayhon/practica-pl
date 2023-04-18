@@ -3,10 +3,11 @@ package ditto.ast.statements;
 import java.util.ArrayList;
 import java.util.List;
 
-import ditto.ast.Node;
+import ditto.ast.ProgramOutput;
 import ditto.ast.expressions.Expr;
+import ditto.ast.types.Type;
 
-public class Return extends Node implements Statement {
+public class Return extends Statement {
     private final Expr expr;
     public Return() {
         this.expr = null;
@@ -25,6 +26,16 @@ public class Return extends Node implements Statement {
             args.add(expr);
         }    
         return args;
+    }
+    @Override
+    public Type type() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'type'");
+    }
+    @Override
+    public void generateCode(ProgramOutput out) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'generateCode'");
     }
     
 }

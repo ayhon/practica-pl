@@ -1,3 +1,5 @@
 package ditto.ast.statements;
 
-public interface Statement {}
+import ditto.ast.Node;
+
+public abstract class Statement extends Node {}

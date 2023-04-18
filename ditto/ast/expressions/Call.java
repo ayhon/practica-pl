@@ -4,13 +4,15 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import ditto.ast.Node;
+import ditto.ast.ProgramOutput;
+import ditto.ast.definitions.DefFunc;
 import ditto.ast.designators.Designator;
 import ditto.ast.types.Type;
 
-public class Call extends Node implements Expr {
+public class Call extends Expr {
     private final Designator func;
     private final List<Expr> args;
+    private DefFunc funcDef;
 
     public Call(Designator func) {
         this.func = func;
@@ -41,9 +43,14 @@ public class Call extends Node implements Expr {
     }
 
     @Override
-    public Type getType() {
-        /// Deberia ser el tipo de retorno de la funcion
-        return this.func.getType();
+    public Type type() {
+        return funcDef.getResult();
+    }
+
+    @Override
+    public void generateCode(ProgramOutput out) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'generateCode'");
     }
 
 }

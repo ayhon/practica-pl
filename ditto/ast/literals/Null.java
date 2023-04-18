@@ -3,13 +3,13 @@ package ditto.ast.literals;
 import java.util.Arrays;
 import java.util.List;
 
-import ditto.ast.Node;
+import ditto.ast.ProgramOutput;
 import ditto.ast.types.PointerType;
 import ditto.ast.types.Type;
 
 
 //Singleton
-public class Null extends Node implements Literal {
+public class Null extends Literal {
     private static PointerType type = new PointerType(null);
     private static Null instance = new Null();
 
@@ -20,7 +20,7 @@ public class Null extends Node implements Literal {
     }
     
     @Override
-    public Type getType() {
+    public Type type() {
         return type;
     }
 
@@ -33,5 +33,11 @@ public class Null extends Node implements Literal {
     @Override
     public Object getValue() {
         return true;
+    }
+
+    @Override
+    public void generateCode(ProgramOutput out) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'generateCode'");
     }
 }

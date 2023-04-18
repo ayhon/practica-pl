@@ -3,13 +3,14 @@ package ditto.ast.expressions;
 import java.util.Arrays;
 import java.util.List;
 
-import ditto.ast.Node;
+import ditto.ast.ProgramOutput;
 import ditto.ast.types.BoolType;
 import ditto.ast.types.IntegerType;
 import ditto.ast.types.PointerType;
 import ditto.ast.types.Type;
+import ditto.errors.SemanticError;
 
-public class OperUn extends Node implements Expr {
+public class OperUn extends Expr {
     public enum Operators {
         NOT, NEG, POS, REF, DEREF;
 
@@ -48,7 +49,7 @@ public class OperUn extends Node implements Expr {
     }
 
     @Override
-    public Type getType() {
+    public Type type() {
         switch (this.op) {
             case NOT:
                 return BoolType.getInstance();
@@ -59,13 +60,16 @@ public class OperUn extends Node implements Expr {
             case REF:
                 /// Se da con expresion `ptr x`,
                 /// que sirve para obtener el puntero a la variable x
-                return new PointerType(expr.getType());
+                return new PointerType(expr.type());
             case DEREF: 
                 /// Se da con expresion `@x`,
                 /// que sirve para obtener el valor apuntado por el puntero x
-                return ((PointerType) expr.getType()).getElementType();
+                if (expr.type() instanceof PointerType){
+                    return ((PointerType) expr.type()).getElementType();
+                }
+                else throw new SemanticError("Cannot dereference non-pointer type");
             default:
-                throw new IllegalArgumentException("Invalid operator");
+                throw new IllegalArgumentException("Invalid operator '" + op + "'");
         }
     }
 
@@ -77,5 +81,11 @@ public class OperUn extends Node implements Expr {
     @Override
     public List<Object> getAstArguments() {
         return Arrays.asList(expr);
+    }
+
+    @Override
+    public void generateCode(ProgramOutput out) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'generateCode'");
     }
 }

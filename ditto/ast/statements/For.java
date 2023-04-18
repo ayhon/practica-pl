@@ -3,11 +3,12 @@ package ditto.ast.statements;
 import java.util.List;
 import java.util.Arrays;
 
-import ditto.ast.Node;
+import ditto.ast.ProgramOutput;
 import ditto.ast.expressions.Expr;
 import ditto.ast.literals.Natural;
+import ditto.ast.types.Type;
 
-public class For extends Node implements Statement {
+public class For extends Statement {
     public final String index;
     public final Expr from;
     public final Expr to;
@@ -31,5 +32,17 @@ public class For extends Node implements Statement {
 
     @Override
     public List<Object> getAstArguments() { return Arrays.asList(index, from, to, by, body); }
+
+    @Override
+    public Type type() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'type'");
+    }
+
+    @Override
+    public void generateCode(ProgramOutput out) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'generateCode'");
+    }
 
 }

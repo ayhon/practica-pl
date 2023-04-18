@@ -1821,7 +1821,7 @@ class CUP$Parser$actions {
               DefVar RESULT =null;
 		Type t = (Type)((java_cup.runtime.Symbol) CUP$Parser$stack.elementAt(CUP$Parser$top-1)).value;
 		Statement a = (Statement)((java_cup.runtime.Symbol) CUP$Parser$stack.peek()).value;
-		 RESULT = new DefVar(t, ((Var)((Assign)a).getPlace()).getName(), ((Assign)a).getExpr()); 
+		 RESULT = new DefVar(t, ((Var)((Assign)a).getPlace()).getIden(), ((Assign)a).getExpr()); 
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("VAR_DEF",28, RESULT);
             }
           return CUP$Parser$result;

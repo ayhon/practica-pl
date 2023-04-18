@@ -4,12 +4,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import ditto.ast.Node;
+import ditto.ast.ProgramOutput;
 import ditto.ast.expressions.Expr;
 import ditto.ast.types.StructType;
 import ditto.ast.types.Type;
 
-public class StructLiteral extends Node implements Literal {
+public class StructLiteral extends Literal {
 
     private final String name;
     private final Map<String,Expr> fieldValues;
@@ -31,10 +31,16 @@ public class StructLiteral extends Node implements Literal {
     }
 
     @Override
-    public Type getType() { return new StructType(name); } 
+    public Type type() { return new StructType(name); } 
 
     @Override
     public Object getValue() {
         return fieldValues;
+    }
+
+    @Override
+    public void generateCode(ProgramOutput out) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'generateCode'");
     }
 }

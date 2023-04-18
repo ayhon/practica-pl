@@ -3,6 +3,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import ditto.ast.definitions.*;
+import ditto.ast.types.Type;
 
 
 public class Module extends Node {
@@ -39,4 +40,16 @@ public class Module extends Node {
 
     @Override
     public List<Object> getAstArguments() { return Arrays.asList(imports, functions, structs, globals); }
+
+    @Override
+    public Type type() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'type'");
+    }
+
+    @Override
+    public void generateCode(ProgramOutput out) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'generateCode'");
+    }
 }

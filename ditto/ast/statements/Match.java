@@ -5,9 +5,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 import ditto.ast.Node;
+import ditto.ast.ProgramOutput;
 import ditto.ast.expressions.Expr;
+import ditto.ast.types.Type;
 
-public class Match extends Node implements Statement {
+public class Match extends Statement {
     private Expr expr;
     private List<Case> cases;
     private List<Statement> otherwise;
@@ -43,6 +45,18 @@ public class Match extends Node implements Statement {
             return Arrays.asList(expr, body);
         }
 
+        @Override
+        public Type type() {
+            // TODO Auto-generated method stub
+            throw new UnsupportedOperationException("Unimplemented method 'type'");
+        }
+
+        @Override
+        public void generateCode(ProgramOutput out) {
+            // TODO Auto-generated method stub
+            throw new UnsupportedOperationException("Unimplemented method 'generateCode'");
+        }
+
     }
 
     @Override
@@ -56,5 +70,17 @@ public class Match extends Node implements Statement {
             return Arrays.asList(expr, cases, otherwise);
         else
             return Arrays.asList(expr, cases);
+    }
+
+    @Override
+    public Type type() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'type'");
+    }
+
+    @Override
+    public void generateCode(ProgramOutput out) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'generateCode'");
     }
 }

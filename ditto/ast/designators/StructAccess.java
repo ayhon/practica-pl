@@ -2,33 +2,20 @@ package ditto.ast.designators;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
-import ditto.ast.Node;
+import ditto.ast.ProgramOutput;
+import ditto.ast.types.StructType;
 import ditto.ast.types.Type;
+import ditto.errors.SemanticError;
 
-public class StructAccess extends Node implements Designator {
+public class StructAccess extends Designator {
     private final Designator struct;
     private final String name;
-    private final Type type;
 
     public StructAccess(Designator struct, String name) {
         this.name = name;
         this.struct = struct;
-        this.type = null;
-
-        /* Para cuando implementamos el chequeo de tipos 
-        Type struct_type = struct.getType();
-        if (struct_type instanceof StructType) {
-            this.struct = struct;
-            Map<String, Type> field_types = ((StructType) struct_type).getFieldTypes();
-            if ((field_types.containsKey(name))) {
-                this.type = field_types.get(name);
-            } else
-                throw new IllegalArgumentException(
-                        "Struct " + ((StructType) struct_type).getName() + " does not have a field named " + name);
-        } else
-            throw new IllegalArgumentException("Cannot access a field of a non-struct type");
-        */
     }
 
     public Designator getStruct() {
@@ -40,8 +27,17 @@ public class StructAccess extends Node implements Designator {
     }
 
     @Override
-    public Type getType() {
-        return type;
+    public Type type() {
+        Type struct_type = struct.type();
+        if (struct_type instanceof StructType) {
+            Map<String, Type> field_types = ((StructType) struct_type).getFieldTypes();
+            if ((field_types.containsKey(name))) {
+                return field_types.get(name);
+            } else
+                throw new SemanticError(
+                        "Struct " + ((StructType) struct_type).getName() + " does not have a field named " + name);
+        } else
+            throw new SemanticError("Cannot access a field of a non-struct type");
     }
 
     @Override
@@ -52,6 +48,12 @@ public class StructAccess extends Node implements Designator {
     @Override
     public List<Object> getAstArguments() {
         return Arrays.asList(struct, name);
+    }
+
+    @Override
+    public void generateCode(ProgramOutput out) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'generateCode'");
     }
 
 }

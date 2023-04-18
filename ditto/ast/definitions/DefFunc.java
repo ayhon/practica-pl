@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import ditto.ast.Node;
+import ditto.ast.ProgramOutput;
 import ditto.ast.statements.Statement;
 import ditto.ast.types.Type;
 import ditto.ast.types.VoidType;
@@ -12,6 +13,10 @@ public class DefFunc extends Node {
     private final String id;
     private final List<Param> params;
     private final Type result;
+    public Type getResult() {
+        return result;
+    }
+
     private final List<Statement> body;
 
     public DefFunc(String id, List<Param> params, List<Statement> body) {
@@ -58,5 +63,17 @@ public class DefFunc extends Node {
             else
                 return type + " " + name;
         }
+    }
+
+    @Override
+    public Type type() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'type'");
+    }
+
+    @Override
+    public void generateCode(ProgramOutput out) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'generateCode'");
     }
 }

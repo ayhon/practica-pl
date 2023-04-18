@@ -5,6 +5,8 @@ import java.util.Arrays;
 import java.util.List;
 
 import ditto.ast.Node;
+import ditto.ast.ProgramOutput;
+import ditto.ast.types.Type;
 
 public class DefStruct extends Node {
     private final String name;
@@ -31,5 +33,17 @@ public class DefStruct extends Node {
     @Override
     public List<Object> getAstArguments() {
         return Arrays.asList(name, attributes, methods);
+    }
+
+    @Override
+    public Type type() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'type'");
+    }
+
+    @Override
+    public void generateCode(ProgramOutput out) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'generateCode'");
     }
 }

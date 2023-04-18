@@ -4,10 +4,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import ditto.ast.Node;
+import ditto.ast.ProgramOutput;
 import ditto.ast.expressions.Expr;
+import ditto.ast.types.Type;
 
-public class If extends Node implements Statement {
+public class If extends Statement {
     private Expr cond;
     private List<Statement> then;
     private List<Statement> els;
@@ -30,4 +31,16 @@ public class If extends Node implements Statement {
 
     @Override
     public List<Object> getAstArguments() { return Arrays.asList(cond, then, els); }
+
+    @Override
+    public Type type() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'type'");
+    }
+
+    @Override
+    public void generateCode(ProgramOutput out) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'generateCode'");
+    }
 }

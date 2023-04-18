@@ -3,10 +3,10 @@ package ditto.ast.expressions;
 import java.util.Arrays;
 import java.util.List;
 
-import ditto.ast.Node;
+import ditto.ast.ProgramOutput;
 import ditto.ast.types.Type;
 
-public class OperBin extends Node implements Expr {
+public class OperBin extends Expr {
     public enum Operators {
         SUM,
         SUBS,
@@ -81,14 +81,14 @@ public class OperBin extends Node implements Expr {
     }
 
     @Override
-    public Type getType() {
+    public Type type() {
         /// El tipo resultante será el tipo de ambas expresiones
         /// (tiene que ser el mismo)
-        if (left.getType() != right.getType()) {
+        if (left.type() != right.type()) {
             throw new IllegalArgumentException("OperBin: left and right types must be the same");
         }
 
-        return left.getType();
+        return left.type();
     }
 
     @Override
@@ -99,5 +99,11 @@ public class OperBin extends Node implements Expr {
     @Override
     public List<Object> getAstArguments() {
         return Arrays.asList(left, right);
+    }
+
+    @Override
+    public void generateCode(ProgramOutput out) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'generateCode'");
     }
 }

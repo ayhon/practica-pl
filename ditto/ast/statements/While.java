@@ -3,10 +3,11 @@ package ditto.ast.statements;
 import java.util.List;
 import java.util.Arrays;
 
-import ditto.ast.Node;
+import ditto.ast.ProgramOutput;
 import ditto.ast.expressions.Expr;
+import ditto.ast.types.Type;
 
-public class While extends Node implements Statement {
+public class While extends Statement {
     public final Expr cond;
     public final List<Statement> statements;
 
@@ -20,4 +21,16 @@ public class While extends Node implements Statement {
 
     @Override
     public List<Object> getAstArguments() { return Arrays.asList(cond, statements); }
+
+    @Override
+    public Type type() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'type'");
+    }
+
+    @Override
+    public void generateCode(ProgramOutput out) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'generateCode'");
+    }
 }

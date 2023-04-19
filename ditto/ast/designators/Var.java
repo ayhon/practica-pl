@@ -7,13 +7,13 @@ import java.util.List;
 import ditto.ast.GlobalScope;
 import ditto.ast.LocalContext;
 import ditto.ast.ProgramOutput;
-import ditto.ast.definitions.DefVar;
+import ditto.ast.definitions.Definition;
 import ditto.ast.types.Type;
 
 public class Var extends Designator {
     public final String iden;
     public final List<String> module; // If it's empty, it's defined in the current module
-    public DefVar definition = null;
+    public Definition definition = null;
     public String getIden() {
         return iden;
     }
@@ -42,7 +42,11 @@ public class Var extends Designator {
 
     @Override
     public void bind(GlobalScope globalScope, LocalContext localContext) {
-        definition = localContext.getDefOrGlobal(iden, globalScope);
+        if(module.isEmpty()) {
+            definition = localContext.getDefOrGlobal(iden, globalScope);
+        } else {
+            definition = globalScope.getImportedGlobal(module, iden);
+        }
     }
 
     @Override

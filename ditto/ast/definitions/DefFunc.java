@@ -3,13 +3,12 @@ package ditto.ast.definitions;
 import java.util.Arrays;
 import java.util.List;
 
-import ditto.ast.Node;
 import ditto.ast.ProgramOutput;
 import ditto.ast.statements.Statement;
 import ditto.ast.types.Type;
 import ditto.ast.types.VoidType;
 
-public class DefFunc extends Node {
+public class DefFunc extends Definition {
     private final String id;
     private final List<Param> params;
     private final Type result;

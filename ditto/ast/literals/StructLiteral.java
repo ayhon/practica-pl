@@ -10,12 +10,13 @@ import ditto.ast.types.StructType;
 import ditto.ast.types.Type;
 
 public class StructLiteral extends Literal {
-
-    private final String name;
+    private final String iden;
+    private final List<String> module;
     private final Map<String,Expr> fieldValues;
 
-    public StructLiteral(String name, Map<String,Expr> fieldValues) {
-        this.name = name;
+    public StructLiteral(List<String> name, Map<String,Expr> fieldValues) {
+        this.iden = name.get(name.size() - 1);
+        this.module = name.subList(0, name.size() - 1);
         this.fieldValues = fieldValues;
     }
     
@@ -25,13 +26,13 @@ public class StructLiteral extends Literal {
     @Override
     public List<Object> getAstArguments() { 
         ArrayList<Object> res = new ArrayList<Object>();
-        res.add(name);
+        res.add(iden);
         res.add(fieldValues);
         return res; 
     }
 
     @Override
-    public Type type() { return new StructType(name); } 
+    public Type type() { return new StructType(iden, module); } 
 
     @Override
     public Object getValue() {

@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import ditto.ast.definitions.DefVar;
+import ditto.ast.definitions.Definition;
 import ditto.errors.SemanticError;
 
 public class LocalContext {
@@ -52,8 +53,8 @@ public class LocalContext {
      * @throws SemanticError
      * @return The definition of the variable in the local or global context.
      */
-    public DefVar getDefOrGlobal(String iden, GlobalScope globalScope) {
-        DefVar def = getDef(iden);
+    public Definition getDefOrGlobal(String iden, GlobalScope globalScope) {
+        Definition def = getDef(iden);
         if (def == null) // Couldn't find in local context, try global 
             def = globalScope.getGlobalVariable(iden);
         if (def == null) // Couldn't find in global context, throw error since it wasn't defined

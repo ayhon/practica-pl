@@ -5,10 +5,9 @@ import java.util.List;
 
 import ditto.ast.ProgramOutput;
 import ditto.ast.expressions.Expr;
-import ditto.ast.statements.Statement;
 import ditto.ast.types.Type;
 
-public class DefVar extends Statement {
+public class DefVar extends Definition {
     private final String iden;
     public String getIden() {
         return iden;

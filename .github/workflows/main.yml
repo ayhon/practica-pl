@@ -40,4 +40,4 @@ jobs:
         run: ./run.sh build all
         
       - name: Test AST
-        run: ./run.sh test-ast
+        run: ./run.sh test

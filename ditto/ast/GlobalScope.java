@@ -1,9 +1,8 @@
 package ditto.ast;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
+import ditto.ast.definitions.DefStruct;
 import ditto.ast.definitions.Definition;
 
 public class GlobalScope {
@@ -29,4 +28,13 @@ public class GlobalScope {
         return null;
     }
 
+    /**
+     * Devuelve la estructura `name` en el módulo `module`.
+     * @param module Lista vacía si es el módulo actual.
+     * @param name
+     * @return null si no existe.
+     */
+    public DefStruct getStruct(List<String> module, String name) {
+        return null;
+    } 
 }

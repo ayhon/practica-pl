@@ -56,7 +56,6 @@ public class ArrayLiteral extends Literal {
 
     @Override
     public Type type() {
-
         return new ArrayType(elements.get(0).type(), new Natural(elements.size()));
     }
 

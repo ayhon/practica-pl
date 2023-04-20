@@ -26,8 +26,8 @@ public abstract class Node {
     */
     // type GlobalScope = Map<String, DefVar>;
     public void bind(GlobalScope global, LocalContext local) {
-        for(Node child : getAstArguments()){
-            child.bind(global, local);
+        for (Object child : getAstArguments()) {
+            ((Node) child).bind(global, local);
         }
     }
     // Vincular: uso de variables (Var), tanto simpes identificadores como modulo::iden, con definición (DefVar)

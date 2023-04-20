@@ -39,7 +39,7 @@ public class StructLiteral extends Literal {
 
     @Override
     public Type type() {
-        return new StructType(iden, module);
+        return this.definition.type();
     }
 
     @Override

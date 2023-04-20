@@ -1,6 +1,7 @@
 package ditto.ast.types;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -9,6 +10,12 @@ public class StructType implements Type {
     private final List<String> module;
     private final Map<String, Type> fieldTypes;
     private final Map<String, Type> methodTypes;
+
+    public StructType(List<String> name) {
+        /// Este constructor se utiliza para CUP
+        /// Para cuando declaramos una variable del tipo struct
+        this(name.subList(0, name.size() - 1), name.get(name.size() - 1), new HashMap<>(), new HashMap<>());
+    }
 
     public StructType(String name, Map<String, Type> fieldTypes, Map<String, Type> methodTypes) {
         this(new ArrayList<>(), name, fieldTypes, methodTypes);

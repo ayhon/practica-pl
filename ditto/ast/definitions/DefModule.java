@@ -8,6 +8,7 @@ import ditto.ast.LocalContext;
 import ditto.ast.Node;
 import ditto.ast.ProgramOutput;
 import ditto.ast.types.Type;
+import ditto.ast.types.VoidType;
 
 public class DefModule extends Node {
     private final String name;
@@ -32,8 +33,7 @@ public class DefModule extends Node {
 
     @Override
     public Type type() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'type'");
+        return VoidType.getInstance();
     }
 
     @Override

@@ -1,10 +1,12 @@
 package ditto.ast.definitions;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import ditto.ast.ProgramOutput;
 import ditto.ast.statements.Statement;
+import ditto.ast.types.FuncType;
 import ditto.ast.types.Type;
 import ditto.ast.types.VoidType;
 
@@ -12,6 +14,7 @@ public class DefFunc extends Definition {
     private final String id;
     private final List<Param> params;
     private final Type result;
+
     public Type getResult() {
         return result;
     }
@@ -27,6 +30,10 @@ public class DefFunc extends Definition {
         this.params = params;
         this.result = result;
         this.body = body;
+    }
+
+    public String getId() {
+        return id;
     }
 
     @Override
@@ -66,8 +73,11 @@ public class DefFunc extends Definition {
 
     @Override
     public Type type() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'type'");
+        List<Type> paramTypes = new ArrayList<>();
+        for (Param param : params) {
+            paramTypes.add(param.type);
+        }
+        return new FuncType(result, paramTypes);
     }
 
     @Override

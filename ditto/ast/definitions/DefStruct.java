@@ -2,10 +2,13 @@ package ditto.ast.definitions;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import ditto.ast.Node;
 import ditto.ast.ProgramOutput;
+import ditto.ast.types.StructType;
 import ditto.ast.types.Type;
 
 public class DefStruct extends Node {
@@ -37,8 +40,18 @@ public class DefStruct extends Node {
 
     @Override
     public Type type() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'type'");
+        Map<String, Type> fieldTypes = new HashMap<>();
+        Map<String, Type> methodTypes = new HashMap<>();
+
+        for (DefVar attribute : attributes) {
+            fieldTypes.put(attribute.getIden(), attribute.type());
+        }
+
+        for (DefFunc method : methods) {
+            methodTypes.put(method.getId(), method.type());
+        }
+
+        return new StructType(name, fieldTypes, methodTypes);
     }
 
     @Override

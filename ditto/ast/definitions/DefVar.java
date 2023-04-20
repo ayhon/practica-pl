@@ -9,9 +9,6 @@ import ditto.ast.types.Type;
 
 public class DefVar extends Definition {
     private final String iden;
-    public String getIden() {
-        return iden;
-    }
     private final Expr expr;
     private final Type type;
 
@@ -43,8 +40,11 @@ public class DefVar extends Definition {
 
     @Override
     public Type type() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'type'");
+        return type;
+    }
+
+    public String getIden() {
+        return iden;
     }
 
     @Override

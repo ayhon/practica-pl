@@ -42,4 +42,16 @@ public class StructType implements Type {
     public String toString() {
         return "STRUCT";
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        /// Dos structs son iguales si tienen el mismo nombre
+        /// Porque no aceptamos Duck Typing
+        if (obj instanceof StructType) {
+            StructType other = (StructType) obj;
+            return name.equals(other.name);
+        } else {
+            return false;
+        }
+    }
 }

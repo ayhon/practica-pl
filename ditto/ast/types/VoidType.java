@@ -15,4 +15,9 @@ public class VoidType implements Type {
     public String toString() {
         return "VOID";
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        return obj instanceof VoidType;
+    }
 }

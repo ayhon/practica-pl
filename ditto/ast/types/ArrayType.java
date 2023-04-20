@@ -29,4 +29,15 @@ public class ArrayType implements Type {
     public String toString() {
         return "ARRAY";
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        /// Dos arrays son del mismo tipo si tienen el mismo tipo de elementos
+        if (obj instanceof ArrayType) {
+            ArrayType other = (ArrayType) obj;
+            return elementType.equals(other.elementType);
+        } else {
+            return false;
+        }
+    }
 }

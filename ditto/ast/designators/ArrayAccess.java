@@ -8,6 +8,7 @@ import ditto.ast.expressions.Expr;
 import ditto.ast.types.ArrayType;
 import ditto.ast.types.IntegerType;
 import ditto.ast.types.Type;
+import ditto.errors.SemanticError;
 
 public class ArrayAccess extends Designator {
     private final Designator array;
@@ -16,10 +17,6 @@ public class ArrayAccess extends Designator {
     public ArrayAccess(Designator array, Expr index) {
         this.array = array;
         this.index = index;
-
-        /* Para cuando implementamos el chequeo de tipos
-
-        */
     }
 
     public Designator getArray() {
@@ -32,13 +29,16 @@ public class ArrayAccess extends Designator {
 
     @Override
     public Type type() {
-        if (index.type() != IntegerType.getInstance()) { // Podemos usar != pues es un singleton
-            throw new IllegalArgumentException("Array index must be an integer");
+        if (!index.type().equals(IntegerType.getInstance())) {
+            throw new SemanticError("Array index must be an integer");
         }
+
         Type arr_type = array.type();
-        if (arr_type instanceof ArrayType) { // Podemos usar == pues es un singleton
+        if (arr_type instanceof ArrayType) {
             return ((ArrayType) arr_type).getElementType();
-        } else throw new IllegalArgumentException("Cannot index a non-array type");
+        } else {
+            throw new SemanticError("Cannot index a non-array type");
+        }
     }
 
     @Override

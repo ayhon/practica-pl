@@ -14,6 +14,20 @@ public class Var extends Designator {
     public final String iden;
     public final List<String> module; // If it's empty, it's defined in the current module
     public Definition definition = null;
+
+    public Var(String iden, List<String> module) {
+        this.iden = iden;
+        this.module = module;
+    }
+
+    public Var(List<String> name) {
+        this(name.get(name.size() - 1), name.subList(0, name.size() - 1));
+    }
+
+    public Var(String iden) {
+        this(iden, new ArrayList<>());
+    }
+
     public String getIden() {
         return iden;
     }
@@ -28,21 +42,9 @@ public class Var extends Designator {
         return Arrays.asList(iden);
     }
 
-    public Var(String iden, List<String> module) {
-        this.iden = iden;
-        this.module = module;
-    }
-    public Var(List<String> name) {
-        this(name.get(name.size() - 1), name.subList(0, name.size() - 1));
-    }
-
-    public Var(String iden) {
-        this(iden, new ArrayList<>());
-    }
-
     @Override
     public void bind(GlobalScope globalScope, LocalContext localContext) {
-        if(module.isEmpty()) {
+        if (module.isEmpty()) {
             definition = localContext.getDefOrGlobal(iden, globalScope);
         } else {
             definition = globalScope.getImportedGlobal(module, iden);
@@ -51,8 +53,7 @@ public class Var extends Designator {
 
     @Override
     public Type type() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'type'");
+        return definition.type();
     }
 
     @Override

@@ -24,8 +24,9 @@ public class Deref extends Designator {
 
         if (ptr_type instanceof PointerType) {
             return ((PointerType) ptr_type).getElementType();
-        } else
+        } else {
             throw new IllegalArgumentException("Cannot dereference a non-pointer type");
+        }
     }
 
     @Override

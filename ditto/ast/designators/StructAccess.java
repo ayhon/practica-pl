@@ -29,15 +29,17 @@ public class StructAccess extends Designator {
     @Override
     public Type type() {
         Type struct_type = struct.type();
+        
         if (struct_type instanceof StructType) {
-            Map<String, Type> field_types = ((StructType) struct_type).getFieldTypes();
-            if ((field_types.containsKey(name))) {
-                return field_types.get(name);
-            } else
-                throw new SemanticError(
-                        "Struct " + ((StructType) struct_type).getName() + " does not have a field named " + name);
-        } else
+            Type type = ((StructType) struct_type).getFieldOrMethodType(name);
+            if (type == null) {
+                throw new SemanticError("Struct " + struct_type + " has no field named " + name);
+            }
+            return type;
+
+        } else {
             throw new SemanticError("Cannot access a field of a non-struct type");
+        }
     }
 
     @Override

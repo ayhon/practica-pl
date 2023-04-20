@@ -1,7 +1,6 @@
 package ditto.ast.types;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -22,20 +21,22 @@ public class StructType implements Type {
         this.methodTypes = methodTypes;
     }
 
-    public Map<String, Type> getFieldTypes() {
-        return Collections.unmodifiableMap(fieldTypes);
-    }
-
-    public Map<String, Type> getMethodTypes() {
-        return Collections.unmodifiableMap(methodTypes);
-    }
-
     public String getName() {
         return name;
     }
 
     public List<String> getModule() {
         return module;
+    }
+
+    public Type getFieldOrMethodType(String name) {
+        if (fieldTypes.containsKey(name)) {
+            return fieldTypes.get(name);
+        } else if (methodTypes.containsKey(name)) {
+            return methodTypes.get(name);
+        } else {
+            return null;
+        }
     }
 
     @Override

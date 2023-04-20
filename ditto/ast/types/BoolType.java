@@ -20,4 +20,9 @@ public class BoolType implements Type {
     public boolean equals(Object obj) {
         return obj instanceof BoolType;
     }
+
+    @Override
+    public int size() {
+        return 1;
+    }
 }

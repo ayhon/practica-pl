@@ -20,4 +20,9 @@ public class VoidType implements Type {
     public boolean equals(Object obj) {
         return obj instanceof VoidType;
     }
+
+    @Override
+    public int size() {
+        return 0;
+    }
 }

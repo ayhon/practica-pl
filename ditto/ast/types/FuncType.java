@@ -35,4 +35,10 @@ public class FuncType implements Type {
             return false;
         }
     }
+
+    @Override
+    public int size() {
+        /// TODO: No se si esto es cierto
+        return 0;
+    }
 }

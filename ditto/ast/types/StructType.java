@@ -55,4 +55,15 @@ public class StructType implements Type {
             return false;
         }
     }
+
+    @Override
+    public int size() {
+        /// Lo que ocupa un struct es la suma de lo que ocupan sus campos
+        /// TODO: las funciones no ocupan nada?
+        int size = 0;
+        for (Type type : fieldTypes.values()) {
+            size += type.size();
+        }
+        return size;
+    }
 }

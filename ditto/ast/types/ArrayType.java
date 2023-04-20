@@ -40,4 +40,9 @@ public class ArrayType implements Type {
             return false;
         }
     }
+
+    @Override
+    public int size() {
+        return size * elementType.size();
+    }
 }

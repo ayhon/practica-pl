@@ -21,4 +21,9 @@ public class IntegerType implements Type {
     public boolean equals(Object obj) {
         return obj instanceof IntegerType;
     }
+
+    @Override
+    public int size() {
+        return 1;       /// Cada int ocupa un espacio en memoria de 4 bytes
+    }
 }

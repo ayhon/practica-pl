@@ -36,5 +36,9 @@ public class GlobalScope {
      */
     public DefStruct getStruct(List<String> module, String name) {
         return null;
-    } 
+    }
+
+    public void addModule(String name) {
+        
+    }
 }

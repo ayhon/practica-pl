@@ -3,6 +3,7 @@ package ditto.ast.literals;
 import java.util.Arrays;
 import java.util.List;
 
+import ditto.ast.Node;
 import ditto.ast.ProgramOutput;
 import ditto.ast.types.PointerType;
 import ditto.ast.types.Type;
@@ -39,5 +40,10 @@ public class Null extends Literal {
     public void generateCode(ProgramOutput out) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'generateCode'");
+    }
+
+    @Override
+    public List<Node> getAstChildren() {
+        return Arrays.asList();
     }
 }

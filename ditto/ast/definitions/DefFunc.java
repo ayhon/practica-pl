@@ -4,6 +4,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import ditto.ast.GlobalContext;
+import ditto.ast.LocalContext;
+import ditto.ast.Node;
 import ditto.ast.ProgramOutput;
 import ditto.ast.statements.Statement;
 import ditto.ast.types.FuncType;
@@ -32,7 +35,7 @@ public class DefFunc extends Definition {
         this.body = body;
     }
 
-    public String getId() {
+    public String getIden() {
         return id;
     }
 
@@ -72,6 +75,12 @@ public class DefFunc extends Definition {
     }
 
     @Override
+    public void bind(GlobalContext global, LocalContext local) {
+        /// Add the function to the global scope
+        global.addGlobalFunction(this);
+    }
+
+    @Override
     public Type type() {
         List<Type> paramTypes = new ArrayList<>();
         for (Param param : params) {
@@ -84,5 +93,12 @@ public class DefFunc extends Definition {
     public void generateCode(ProgramOutput out) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'generateCode'");
+    }
+
+    @Override
+    public List<Node> getAstChildren() {
+        List<Node> children = new ArrayList<>();
+        children.addAll(body);
+        return children;
     }
 }

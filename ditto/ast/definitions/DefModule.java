@@ -3,7 +3,7 @@ package ditto.ast.definitions;
 import java.util.Arrays;
 import java.util.List;
 
-import ditto.ast.GlobalScope;
+import ditto.ast.GlobalContext;
 import ditto.ast.LocalContext;
 import ditto.ast.Node;
 import ditto.ast.ProgramOutput;
@@ -43,8 +43,17 @@ public class DefModule extends Node {
     }
 
     @Override
-    public void bind(GlobalScope global, LocalContext local) {
+    public void bind(GlobalContext global, LocalContext local) {
         /// Add the module to the global scope
-        global.addModule(name);
+        global.addGlobalModule(this);
+    }
+
+    public String getIden() {
+        return name;
+    }
+
+    @Override
+    public List<Node> getAstChildren() {
+        return Arrays.asList();
     }
 }

@@ -3,9 +3,6 @@ package ditto.ast;
 import java.util.List;
 import java.util.StringJoiner;
 
-import ditto.ast.LocalContext;
-import ditto.ast.GlobalScope;
-import ditto.ast.ProgramOutput;
 import ditto.ast.types.Type;
 
 public abstract class Node {
@@ -24,11 +21,10 @@ public abstract class Node {
             inst.bind(gl, new ArrayList<>());
     }
     */
-    // type GlobalScope = Map<String, DefVar>;
-    public void bind(GlobalScope global, LocalContext local) {
-        for (Object child : getAstArguments()) {
-            ((Node) child).bind(global, local);
-        }
+
+    public void bind(GlobalContext global, LocalContext local) {
+        for (Node child : getAstChildren()) 
+            child.bind(global, local);
     }
     // Vincular: uso de variables (Var), tanto simpes identificadores como modulo::iden, con definición (DefVar)
     //           uso de funciones (Call) con definición (DefFunc)
@@ -44,6 +40,7 @@ public abstract class Node {
     
     public abstract String getAstString();
     public abstract List<Object> getAstArguments();
+    public abstract List<Node> getAstChildren();
 
     @Override
     @SuppressWarnings("unchecked")
@@ -54,11 +51,9 @@ public abstract class Node {
         sb.append("\n");
 
         StringJoiner args = new StringJoiner(",\n");
-        for (Object arg : getAstArguments()) {
-            if (arg instanceof String) {
-                args.add('"' + (String) arg + '"');
-            } else if (arg instanceof List) {
-                args.add(listAsString((List<Object>) arg));
+        for (Node arg : getAstChildren()) {
+            if (arg instanceof List) {
+                args.add(listAsString((List<Node>) arg));
             } else {
                 args.add(arg.toString());
             }
@@ -69,7 +64,7 @@ public abstract class Node {
         return sb.toString();
     }
 
-    private static String listAsString(List<Object> list) {
+    private static String listAsString(List<Node> list) {
         if (list.isEmpty()) {
             return "[]";
         }

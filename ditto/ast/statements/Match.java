@@ -57,6 +57,14 @@ public class Match extends Statement {
             throw new UnsupportedOperationException("Unimplemented method 'generateCode'");
         }
 
+        @Override
+        public List<Node> getAstChildren() {
+            List<Node> children = new ArrayList<Node>();
+            children.add(expr);
+            children.addAll(body);
+            return children;
+        }
+
     }
 
     @Override
@@ -82,5 +90,14 @@ public class Match extends Statement {
     public void generateCode(ProgramOutput out) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'generateCode'");
+    }
+
+    @Override
+    public List<Node> getAstChildren() {
+        List<Node> children = new ArrayList<Node>();
+        children.add(expr);
+        children.addAll(cases);
+        children.addAll(otherwise);
+        return children;
     }
 }

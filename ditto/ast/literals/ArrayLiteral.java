@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import ditto.ast.Node;
 import ditto.ast.ProgramOutput;
 import ditto.ast.expressions.Expr;
 import ditto.ast.types.ArrayType;
@@ -68,5 +69,13 @@ public class ArrayLiteral extends Literal {
     public void generateCode(ProgramOutput out) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'generateCode'");
+    }
+
+    @Override
+    public List<Node> getAstChildren() {
+        List<Node> children = new ArrayList<Node>();
+        children.addAll(elements);
+        children.add(size);
+        return children;
     }
 }

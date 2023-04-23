@@ -3,6 +3,7 @@ package ditto.ast.designators;
 import java.util.Arrays;
 import java.util.List;
 
+import ditto.ast.Node;
 import ditto.ast.ProgramOutput;
 import ditto.ast.types.PointerType;
 import ditto.ast.types.Type;
@@ -43,6 +44,11 @@ public class Deref extends Designator {
     public void generateCode(ProgramOutput out) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'generateCode'");
+    }
+
+    @Override
+    public List<Node> getAstChildren() {
+        return Arrays.asList(pointer);
     }
 
 }

@@ -3,6 +3,7 @@ package ditto.ast.statements;
 import java.util.Arrays;
 import java.util.List;
 
+import ditto.ast.Node;
 import ditto.ast.ProgramOutput;
 import ditto.ast.designators.Designator;
 import ditto.ast.expressions.Expr;
@@ -45,5 +46,10 @@ public class Assign extends Statement {
     public void generateCode(ProgramOutput out) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'generateCode'");
+    }
+
+    @Override
+    public List<Node> getAstChildren() {
+        return Arrays.asList(place, expr);
     }
 }

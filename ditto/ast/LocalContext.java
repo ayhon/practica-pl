@@ -1,6 +1,5 @@
 package ditto.ast;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -12,31 +11,40 @@ import ditto.errors.SemanticError;
 
 public class LocalContext {
     private List<LocalScope> scopes;
+
     private class LocalScope {
         private Map<String, DefVar> vars;
+        
         public LocalScope() {
             vars = new HashMap<>();
         }
+        
         public void addDef(DefVar var) {
             vars.put(var.getIden(), var);
         }
+        
         public DefVar getDef(String iden) {
             return vars.get(iden);
         }
     }
+
     public LocalContext() {
         scopes = Arrays.asList(new LocalScope());
     }
+
     public void pushLightScope() {
         scopes.add(new LocalScope());
     }
+
     public void popLightScope(){
         assert(scopes.size() > 1);
         scopes.remove(scopes.size() - 1);
     }
+
     public void addDef(DefVar var) {
         scopes.get(scopes.size() - 1).addDef(var);
     }
+
     public DefVar getDef(String iden){
         DefVar def = null;
         for(int i = scopes.size() - 1; i >= 0 && def == null; i--){
@@ -53,7 +61,7 @@ public class LocalContext {
      * @throws SemanticError
      * @return The definition of the variable in the local or global context.
      */
-    public Definition getDefOrGlobal(String iden, GlobalScope globalScope) {
+    public Definition getDefOrGlobal(String iden, GlobalContext globalScope) {
         Definition def = getDef(iden);
         if (def == null) // Couldn't find in local context, try global 
             def = globalScope.getGlobalVariable(iden);

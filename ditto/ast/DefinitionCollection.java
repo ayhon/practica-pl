@@ -1,6 +1,11 @@
-package ditto.ast.definitions;
+package ditto.ast;
 
 import java.util.List;
+
+import ditto.ast.definitions.DefFunc;
+import ditto.ast.definitions.DefStruct;
+import ditto.ast.definitions.DefVar;
+
 import java.util.ArrayList;
 
 public class DefinitionCollection {

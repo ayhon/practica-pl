@@ -1,8 +1,10 @@
 package ditto.ast.statements;
 
 import java.util.List;
+import java.util.ArrayList;
 import java.util.Arrays;
 
+import ditto.ast.Node;
 import ditto.ast.ProgramOutput;
 import ditto.ast.expressions.Expr;
 import ditto.ast.types.Type;
@@ -32,5 +34,13 @@ public class While extends Statement {
     public void generateCode(ProgramOutput out) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'generateCode'");
+    }
+
+    @Override
+    public List<Node> getAstChildren() {
+        List<Node> children = new ArrayList<Node>();
+        children.add(cond);
+        children.addAll(statements);
+        return children;
     }
 }

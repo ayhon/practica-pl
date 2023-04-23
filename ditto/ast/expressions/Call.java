@@ -4,6 +4,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import ditto.ast.GlobalContext;
+import ditto.ast.LocalContext;
+import ditto.ast.Node;
 import ditto.ast.ProgramOutput;
 import ditto.ast.definitions.DefFunc;
 import ditto.ast.designators.Designator;
@@ -43,6 +46,15 @@ public class Call extends Expr {
     }
 
     @Override
+    public void bind(GlobalContext global, LocalContext local) {
+        this.funcDef = global.getGlobalFunction(func.toString());
+        
+        for (Expr arg : args) {
+            arg.bind(global, local);
+        }
+    }
+
+    @Override
     public Type type() {
         return funcDef.getResult();
     }
@@ -51,6 +63,14 @@ public class Call extends Expr {
     public void generateCode(ProgramOutput out) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'generateCode'");
+    }
+
+    @Override
+    public List<Node> getAstChildren() {
+        List<Node> children = new ArrayList<Node>();
+        children.add(func);
+        children.addAll(args);
+        return children;
     }
 
 }

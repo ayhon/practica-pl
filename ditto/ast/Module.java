@@ -1,4 +1,5 @@
 package ditto.ast;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -42,7 +43,7 @@ public class Module extends Node {
     public List<Object> getAstArguments() { return Arrays.asList(imports, functions, structs, globals); }
 
     public void bind() {
-        bind(new GlobalScope(), new LocalContext());
+        bind(new GlobalContext(), new LocalContext());
     }
     @Override
     public Type type() {
@@ -54,5 +55,29 @@ public class Module extends Node {
     public void generateCode(ProgramOutput out) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'generateCode'");
+    }
+
+    @Override
+    public List<Node> getAstChildren() {
+
+        List<Node> children = new ArrayList<Node>();
+
+        for (DefModule imp : imports) {
+            children.add(imp);
+        }
+
+        for (DefFunc func : functions) {
+            children.add(func);
+        }
+
+        for (DefStruct struct : structs) {
+            children.add(struct);
+        }
+
+        for (DefVar var : globals) {
+            children.add(var);
+        }
+
+        return children;
     }
 }

@@ -9,4 +9,9 @@ public abstract class Definition extends Statement {/*
     necesario hacer esta guarrada. Confio en que el problema
     de que no haya definiciones a funciones en mitad de una 
     función se arregla desde la sintaxis.
-*/}
+*/
+    public String getIden(){
+        // Devuelve el identificador de la definición
+        return null;
+    }
+}

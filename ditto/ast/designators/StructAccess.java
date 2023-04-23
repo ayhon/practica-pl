@@ -2,8 +2,8 @@ package ditto.ast.designators;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 
+import ditto.ast.Node;
 import ditto.ast.ProgramOutput;
 import ditto.ast.types.StructType;
 import ditto.ast.types.Type;
@@ -56,6 +56,11 @@ public class StructAccess extends Designator {
     public void generateCode(ProgramOutput out) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'generateCode'");
+    }
+
+    @Override
+    public List<Node> getAstChildren() {
+        return Arrays.asList(struct);
     }
 
 }

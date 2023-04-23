@@ -48,7 +48,7 @@ public class DefStruct extends Node {
         }
 
         for (DefFunc method : methods) {
-            methodTypes.put(method.getId(), method.type());
+            methodTypes.put(method.getIden(), method.type());
         }
 
         return new StructType(name, fieldTypes, methodTypes);
@@ -58,5 +58,17 @@ public class DefStruct extends Node {
     public void generateCode(ProgramOutput out) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'generateCode'");
+    }
+
+    public String getIden(){
+        return this.name;
+    }
+
+    @Override
+    public List<Node> getAstChildren() {
+        List<Node> children = new ArrayList<>();
+        children.addAll(attributes);
+        children.addAll(methods);
+        return children;
     }
 }

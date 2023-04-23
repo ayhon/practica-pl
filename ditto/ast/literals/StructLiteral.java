@@ -4,12 +4,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import ditto.ast.GlobalScope;
+import ditto.ast.GlobalContext;
 import ditto.ast.LocalContext;
+import ditto.ast.Node;
 import ditto.ast.ProgramOutput;
 import ditto.ast.definitions.DefStruct;
 import ditto.ast.expressions.Expr;
-import ditto.ast.types.StructType;
 import ditto.ast.types.Type;
 
 public class StructLiteral extends Literal {
@@ -54,7 +54,7 @@ public class StructLiteral extends Literal {
     }
 
     @Override
-    public void bind(GlobalScope global, LocalContext local) {
+    public void bind(GlobalContext global, LocalContext local) {
         /**
          * Para StructLiteral, tengo que asociar:
          * 1. Su definición
@@ -65,5 +65,12 @@ public class StructLiteral extends Literal {
         for (Expr e : fieldValues.values()) {
             e.bind(global, local);
         }
+    }
+
+    @Override
+    public List<Node> getAstChildren() {
+        List<Node> children = new ArrayList<Node>();
+        children.addAll(fieldValues.values());
+        return children;
     }
 }

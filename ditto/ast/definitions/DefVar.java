@@ -3,6 +3,7 @@ package ditto.ast.definitions;
 import java.util.ArrayList;
 import java.util.List;
 
+import ditto.ast.Node;
 import ditto.ast.ProgramOutput;
 import ditto.ast.expressions.Expr;
 import ditto.ast.types.Type;
@@ -43,6 +44,7 @@ public class DefVar extends Definition {
         return type;
     }
 
+    @Override
     public String getIden() {
         return iden;
     }
@@ -51,5 +53,13 @@ public class DefVar extends Definition {
     public void generateCode(ProgramOutput out) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'generateCode'");
+    }
+
+    @Override
+    public List<Node> getAstChildren() {
+        List<Node> children = new ArrayList<Node>();
+        if (this.expr != null)
+            children.add(expr);
+        return children;
     }
 }

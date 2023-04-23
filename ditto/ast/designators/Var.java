@@ -4,8 +4,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import ditto.ast.GlobalScope;
+import ditto.ast.GlobalContext;
 import ditto.ast.LocalContext;
+import ditto.ast.Node;
 import ditto.ast.ProgramOutput;
 import ditto.ast.definitions.Definition;
 import ditto.ast.types.Type;
@@ -43,7 +44,7 @@ public class Var extends Designator {
     }
 
     @Override
-    public void bind(GlobalScope globalScope, LocalContext localContext) {
+    public void bind(GlobalContext globalScope, LocalContext localContext) {
         if (module.isEmpty()) {
             definition = localContext.getDefOrGlobal(iden, globalScope);
         } else {
@@ -60,5 +61,10 @@ public class Var extends Designator {
     public void generateCode(ProgramOutput out) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'generateCode'");
+    }
+
+    @Override
+    public List<Node> getAstChildren() {
+        return Arrays.asList();
     }
 }

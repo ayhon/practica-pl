@@ -22,14 +22,11 @@ public abstract class Node {
     }
     */
 
+    // Vincularmos cada uso de una definición con su definición
     public void bind(GlobalContext global, LocalContext local) {
         for (Node child : getAstChildren()) 
             child.bind(global, local);
     }
-    // Vincular: uso de variables (Var), tanto simpes identificadores como modulo::iden, con definición (DefVar)
-    //           uso de funciones (Call) con definición (DefFunc)
-    //           uso de estructuras (StructLiteral) con definición (DefStruct)
-    //           use de módulos (DefModule) con definición (Module) que tendríamos que parsear
     
     public abstract Type type(); // Desde Module se llama antes a `bind`. El árbol debe estar vinculado paque se pueda tipar
     // Te devuelve el tipo de expreisiones

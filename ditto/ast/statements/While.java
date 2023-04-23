@@ -26,8 +26,9 @@ public class While extends Statement {
 
     @Override
     public Type type() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'type'");
+        cond.type();
+
+        return null;
     }
 
     @Override

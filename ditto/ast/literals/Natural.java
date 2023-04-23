@@ -11,6 +11,8 @@ import ditto.ast.types.Type;
 public class Natural extends Literal {
     private final int value;
 
+    private Type type = null;
+
     public Natural(int value) {
         this.value = value;
     }
@@ -34,8 +36,8 @@ public class Natural extends Literal {
 
     @Override
     public Type type() {
-        // TODO Auto-generated method stub
-        return IntegerType.getInstance();
+        this.type = IntegerType.getInstance();
+        return this.type;
     }
 
     @Override

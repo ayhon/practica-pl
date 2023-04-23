@@ -14,6 +14,8 @@ public class Match extends Statement {
     private List<Case> cases;
     private List<Statement> otherwise;
 
+    private Type type = null;
+
     public Match(Expr expr, List<Case> cases) {
         this.expr = expr;
         this.cases = cases;
@@ -29,6 +31,8 @@ public class Match extends Statement {
     static public class Case extends Node {
         public final Expr expr;
         public final List<Statement> body;
+
+        private Type type = null;
 
         public Case(Expr expr, List<Statement> body) {
             this.expr = expr;
@@ -47,8 +51,8 @@ public class Match extends Statement {
 
         @Override
         public Type type() {
-            // TODO Auto-generated method stub
-            throw new UnsupportedOperationException("Unimplemented method 'type'");
+            this.type = expr.type();
+            return this.type;
         }
 
         @Override
@@ -82,8 +86,14 @@ public class Match extends Statement {
 
     @Override
     public Type type() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'type'");
+        Type aux = expr.type();
+        for(Case c : this.cases){
+            if(!aux.equals(c.expr.type())){
+                throw new RuntimeException("Type mismatch in case");
+            }
+        }
+        this.type = aux;
+        return this.type;
     }
 
     @Override

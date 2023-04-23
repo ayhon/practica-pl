@@ -41,17 +41,12 @@ public class DefStruct extends Node {
     @Override
     public Type type() {
         Map<String, Type> fieldTypes = new HashMap<>();
-        Map<String, Type> methodTypes = new HashMap<>();
 
         for (DefVar attribute : attributes) {
             fieldTypes.put(attribute.getIden(), attribute.type());
         }
 
-        for (DefFunc method : methods) {
-            methodTypes.put(method.getIden(), method.type());
-        }
-
-        return new StructType(name, fieldTypes, methodTypes);
+        return new StructType(name, fieldTypes);
     }
 
     @Override

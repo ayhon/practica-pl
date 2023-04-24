@@ -91,7 +91,7 @@ non terminal List<DefFunc.Param> FUNC_PARAMs, AT_LEAST_ONE_PARAM, NO_PARAM;
 non terminal DefFunc.Param PARAM;
 
 non terminal List<DefModule> IMPORTs;
-non terminal DefinitionCollection DEFINITIONs;
+non terminal Module.DefinitionCollection DEFINITIONs;
 
 /*** GRAMÁTICA DEL PROGRAMA ***/
 
@@ -116,7 +116,7 @@ DEFINITIONs                 ::= DEFINITIONs:defs STRUCT_DEF:defStruct
                                 | DEFINITIONs:defs VAR_DEF:defVar 
                                     {: RESULT = defs; defs.add(defVar); :}
                                 | 
-                                    {: RESULT = new DefinitionCollection(); :};
+                                    {: RESULT = new Module.DefinitionCollection(); :};
 
 FUN_DEF                     ::= FUNC IDEN:id OPEN_PAR FUNC_PARAMs:params CLOSE_PAR STMTs:statements END 
                                     {: RESULT = new DefFunc(id, params, statements); :}

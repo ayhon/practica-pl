@@ -13,6 +13,8 @@ public class Assign extends Statement {
     private final Designator place;
     private final Expr expr;
 
+    private Type type = null;
+
     public Assign(Designator place, Expr expr) {
         this.place = place;
         this.expr = expr;
@@ -38,8 +40,12 @@ public class Assign extends Statement {
 
     @Override
     public Type type() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'type'");
+        Type aux = place.type();
+        if(!aux.equals(expr.type())){
+            throw new RuntimeException("Type mismatch in assignment");
+        }
+        this.type = aux;
+        return this.type;
     }
 
     @Override

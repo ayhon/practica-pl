@@ -11,6 +11,9 @@ import ditto.ast.types.Type;
 // Singleton
 public class False extends Literal {
     private static False instance = new False();
+
+    private Type type = null;
+
     private False() {
     }
 
@@ -20,7 +23,8 @@ public class False extends Literal {
 
     @Override
     public Type type() {
-        return BoolType.getInstance();
+        this.type = BoolType.getInstance();
+        return this.type;
     }
 
     @Override

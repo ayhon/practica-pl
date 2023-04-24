@@ -3,6 +3,7 @@ package ditto.ast.literals;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 import ditto.ast.GlobalContext;
 import ditto.ast.LocalContext;
@@ -10,6 +11,7 @@ import ditto.ast.Node;
 import ditto.ast.ProgramOutput;
 import ditto.ast.definitions.DefStruct;
 import ditto.ast.expressions.Expr;
+import ditto.ast.types.StructType;
 import ditto.ast.types.Type;
 
 public class StructLiteral extends Literal {
@@ -17,6 +19,8 @@ public class StructLiteral extends Literal {
     private final List<String> module;
     private final Map<String, Expr> fieldValues;
     private DefStruct definition = null;
+
+    private Type type = null;
 
     public StructLiteral(List<String> name, Map<String, Expr> fieldValues) {
         this.iden = name.get(name.size() - 1);
@@ -39,7 +43,15 @@ public class StructLiteral extends Literal {
 
     @Override
     public Type type() {
-        return this.definition.type();
+        Map<String, Type> fieldTypes = new TreeMap<String, Type>();
+        for (Map.Entry<String, Expr> entry : fieldValues.entrySet()) {
+            Type aux = entry.getValue().type();
+            if(aux.equals(null))
+                throw new RuntimeException("Type of field '" + entry.getKey() + "' is null");
+            fieldTypes.put(entry.getKey(), aux);
+        }
+        this.type = new StructType(iden, fieldTypes);
+        return this.type;
     }
 
     @Override

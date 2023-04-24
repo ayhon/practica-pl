@@ -7,6 +7,7 @@ import java.util.List;
 import ditto.ast.Node;
 import ditto.ast.ProgramOutput;
 import ditto.ast.expressions.Expr;
+import ditto.ast.types.BoolType;
 import ditto.ast.types.Type;
 
 public class If extends Statement {
@@ -35,8 +36,10 @@ public class If extends Statement {
 
     @Override
     public Type type() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'type'");
+        if(cond.type().equals(BoolType.getInstance())) {
+            throw new RuntimeException("Condition in if statement must be boolean");
+        }
+        return null;
     }
 
     @Override

@@ -10,6 +10,9 @@ import ditto.ast.types.Type;
 
 public class Return extends Statement {
     private final Expr expr;
+
+    private Type type = null;
+
     public Return() {
         this.expr = null;
     }
@@ -30,8 +33,8 @@ public class Return extends Statement {
     }
     @Override
     public Type type() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'type'");
+        this.type = expr.type();
+        return this.type;
     }
     @Override
     public void generateCode(ProgramOutput out) {

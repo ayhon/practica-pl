@@ -37,8 +37,14 @@ public class For extends Statement {
 
     @Override
     public Type type() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'type'");
+        Type aux = from.type();
+        if(!aux.equals(to.type())) {
+            throw new RuntimeException("Type mismatch in for loop");
+        }
+        if(aux.equals(by.type())) {
+            throw new RuntimeException("Type mismatch in for loop");
+        }
+        return null;
     }
 
     @Override

@@ -9,23 +9,21 @@ public class StructType implements Type {
     private final String name;
     private final List<String> module;
     private final Map<String, Type> fieldTypes;
-    private final Map<String, Type> methodTypes;
 
     public StructType(List<String> name) {
         /// Este constructor se utiliza para CUP
         /// Para cuando declaramos una variable del tipo struct
-        this(name.subList(0, name.size() - 1), name.get(name.size() - 1), new HashMap<>(), new HashMap<>());
+        this(name.subList(0, name.size() - 1), name.get(name.size() - 1), new HashMap<>());
     }
 
-    public StructType(String name, Map<String, Type> fieldTypes, Map<String, Type> methodTypes) {
-        this(new ArrayList<>(), name, fieldTypes, methodTypes);
+    public StructType(String name, Map<String, Type> fieldTypes) {
+        this(new ArrayList<>(), name, fieldTypes);
     }
 
-    public StructType(List<String> module, String name, Map<String, Type> fieldTypes, Map<String, Type> methodTypes) {
+    public StructType(List<String> module, String name, Map<String, Type> fieldTypes) {
         this.name = name;
         this.module = module;
         this.fieldTypes = fieldTypes;
-        this.methodTypes = methodTypes;
     }
 
     public String getName() {
@@ -39,8 +37,6 @@ public class StructType implements Type {
     public Type getFieldOrMethodType(String name) {
         if (fieldTypes.containsKey(name)) {
             return fieldTypes.get(name);
-        } else if (methodTypes.containsKey(name)) {
-            return methodTypes.get(name);
         } else {
             return null;
         }

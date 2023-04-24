@@ -3,6 +3,9 @@ package ditto.ast.definitions;
 import java.util.ArrayList;
 import java.util.List;
 
+import ditto.ast.GlobalContext;
+import ditto.ast.LocalContext;
+
 import ditto.ast.Node;
 import ditto.ast.ProgramOutput;
 import ditto.ast.expressions.Expr;
@@ -47,6 +50,15 @@ public class DefVar extends Definition {
     @Override
     public String getIden() {
         return iden;
+    }
+
+    @Override
+    public void bind(GlobalContext gl, LocalContext lc) {
+        if(lc != null){
+            lc.addDef(this);
+        } else {
+            gl.addGlobalVariable(this);
+        }
     }
 
     @Override

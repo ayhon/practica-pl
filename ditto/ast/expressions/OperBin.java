@@ -101,13 +101,13 @@ public class OperBin extends Expr {
     public List<Object> getAstArguments() {
         return Arrays.asList(left, right);
     }
-
+    
     @Override
-    public void compile(ProgramOutput out) {
+    public void compileAsExpr(ProgramOutput out) {
         // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'generateCode'");
+        throw new UnsupportedOperationException("Unimplemented method 'compileAsExpr'");
     }
-
+    
     @Override
     public List<Node> getAstChildren() {
         return Arrays.asList(left, right);

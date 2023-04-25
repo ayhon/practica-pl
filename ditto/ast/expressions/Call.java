@@ -60,17 +60,17 @@ public class Call extends Expr {
     }
 
     @Override
-    public void compile(ProgramOutput out) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'generateCode'");
-    }
-
-    @Override
     public List<Node> getAstChildren() {
         List<Node> children = new ArrayList<Node>();
         children.add(func);
         children.addAll(args);
         return children;
+    }
+
+    @Override
+    public void compileAsExpr(ProgramOutput out) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'compileAsExpr'");
     }
 
 }

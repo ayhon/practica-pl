@@ -22,12 +22,15 @@ public class New extends Expr {
         this.value = val;
     }
 
+    @Override
+    public String getAstString() {
+        return "new";
+    }
 
     @Override
-    public String getAstString() { return "new"; }
-
-    @Override
-    public List<Object> getAstArguments() { return Arrays.asList(value); }
+    public List<Object> getAstArguments() {
+        return Arrays.asList(value);
+    }
 
     @Override
     public Type type() {
@@ -35,7 +38,7 @@ public class New extends Expr {
     }
 
     @Override
-    public void compile(ProgramOutput out) {
+    public void compileAsExpr(ProgramOutput out) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'generateCode'");
     }

@@ -53,9 +53,9 @@ public class ArrayAccess extends Designator {
     }
 
     @Override
-    public void compile(ProgramOutput out) {
+    public void compileAsDesig(ProgramOutput out) {
         // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'generateCode'");
+        throw new UnsupportedOperationException("Unimplemented method 'compileAsDesig'");
     }
 
     @Override

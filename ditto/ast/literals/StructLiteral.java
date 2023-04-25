@@ -60,9 +60,9 @@ public class StructLiteral extends Literal {
     }
 
     @Override
-    public void compile(ProgramOutput out) {
+    public void compileAsExpr(ProgramOutput out) {
         // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'generateCode'");
+        throw new UnsupportedOperationException("Unimplemented method 'compileAsExpr'");
     }
 
     @Override

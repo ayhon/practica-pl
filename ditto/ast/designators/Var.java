@@ -58,13 +58,13 @@ public class Var extends Designator {
     }
 
     @Override
-    public void compile(ProgramOutput out) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'generateCode'");
+    public List<Node> getAstChildren() {
+        return Arrays.asList();
     }
 
     @Override
-    public List<Node> getAstChildren() {
-        return Arrays.asList();
+    public void compileAsDesig(ProgramOutput out) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'compileAsDesig'");
     }
 }

@@ -41,14 +41,15 @@ public class Deref extends Designator {
     }
 
     @Override
-    public void compile(ProgramOutput out) {
+    public void compileAsDesig(ProgramOutput out) {
         // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'generateCode'");
+        throw new UnsupportedOperationException("Unimplemented method 'compileAsDesig'");
     }
 
     @Override
     public List<Node> getAstChildren() {
         return Arrays.asList(pointer);
     }
+
 
 }

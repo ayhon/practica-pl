@@ -41,7 +41,7 @@ public class Deref extends Designator {
     }
 
     @Override
-    public void generateCode(ProgramOutput out) {
+    public void compile(ProgramOutput out) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'generateCode'");
     }

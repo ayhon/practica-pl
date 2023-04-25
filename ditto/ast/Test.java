@@ -33,7 +33,7 @@ public class Test {
             case "code":
                 parser.parse();
                 try {
-                    parser.getRoot().generateCode(null);
+                    parser.getRoot().compile(null);
                 } catch (Exception e) {
                     System.out.println(e.getMessage());
                 }

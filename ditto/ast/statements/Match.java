@@ -56,7 +56,7 @@ public class Match extends Statement {
         }
 
         @Override
-        public void generateCode(ProgramOutput out) {
+        public void compile(ProgramOutput out) {
             // TODO Auto-generated method stub
             throw new UnsupportedOperationException("Unimplemented method 'generateCode'");
         }
@@ -97,7 +97,7 @@ public class Match extends Statement {
     }
 
     @Override
-    public void generateCode(ProgramOutput out) {
+    public void compile(ProgramOutput out) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'generateCode'");
     }

@@ -37,7 +37,7 @@ public class False extends Literal {
     public Object getValue() {  return false;   }
 
     @Override
-    public void generateCode(ProgramOutput out) {
+    public void compile(ProgramOutput out) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'generateCode'");
     }

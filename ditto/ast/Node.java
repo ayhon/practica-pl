@@ -32,7 +32,7 @@ public abstract class Node {
     // Te devuelve el tipo de expreisiones
     // si se aplica a un nodo que no es una expresión, devuelve Null.getInstance()
     
-    public abstract void generateCode(ProgramOutput out); // Desde Module llama a `type` antes de recursar,
+    public abstract void compile(ProgramOutput out); // Desde Module llama a `type` antes de recursar,
     // type ProgramOutput = StringBuilder;
     
     public abstract String getAstString();

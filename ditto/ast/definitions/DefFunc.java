@@ -16,6 +16,10 @@ import ditto.ast.types.VoidType;
 public class DefFunc extends Definition {
     private final String id;
     private final List<Param> params;
+    public List<Param> getParams() {
+        return params;
+    }
+
     private final Type result;
 
     public Type getResult() {
@@ -52,6 +56,14 @@ public class DefFunc extends Definition {
     static public class Param {
         public final Type type;
         public final String name;
+        
+        public Type getType() {
+            return type;
+        }
+        public String getName() {
+            return name;
+        }
+
         public final Boolean isRef;
 
         public Param(Type type, String name) {
@@ -91,8 +103,11 @@ public class DefFunc extends Definition {
 
     @Override
     public void compile(ProgramOutput out) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'generateCode'");
+        out.func(this, () -> {
+            for (Statement stmt : body) {
+                stmt.compile(out);
+            }
+        });
     }
 
     @Override

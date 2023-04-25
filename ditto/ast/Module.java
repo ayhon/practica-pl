@@ -35,7 +35,7 @@ public class Module extends Node {
         this.structs = definitions.getStructs();
         this.globals = definitions.getVariables();
     }
-    public class DefinitionCollection {
+    public static class DefinitionCollection {
         private List<DefVar> variables;
     
         public List<DefVar> getVariables() {

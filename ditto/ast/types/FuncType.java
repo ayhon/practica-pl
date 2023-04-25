@@ -38,7 +38,10 @@ public class FuncType implements Type {
 
     @Override
     public int size() {
-        /// TODO: No se si esto es cierto
-        return 0;
+        int cont =  0;
+        for(Type t : argumentTypes){
+            cont += t.size();
+        }
+        return cont;
     }
 }

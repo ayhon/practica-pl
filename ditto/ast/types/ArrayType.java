@@ -4,25 +4,31 @@ import ditto.ast.literals.Natural;
 
 public class ArrayType implements Type {
     private final Type elementType;
-    private final Integer size;
+    private final int size;
 
     /// If size is null, then this type definition is only possible
     /// in the arguments of a function definition.
     public ArrayType(Type elementType) {
-        this(elementType, new Natural(0));
+        this(elementType, -1);
     }
 
     public ArrayType(Type elementType, Natural size) {
+        this(elementType, (int) size.getValue());
+    }
+
+    public ArrayType(Type elementType, int size) {
         this.elementType = elementType;
-        this.size = (int) size.getValue();
+        this.size = size;
     }
 
     public Type getElementType() {
         return elementType;
     }
 
-    public Integer getSize() {
-        return size;
+    public int getSize() {
+        if (this.size == -1)
+            return -1; /// Para caso de que sea un argumento de una funcion
+        return size * this.elementType.size();
     }
 
     @Override

@@ -63,5 +63,11 @@ public class StructAccess extends Designator {
         return Arrays.asList(struct);
     }
 
+    @Override
+    public void compileAsInstruction(ProgramOutput out) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'compileAsInstruction'");
+    }
+
 
 }

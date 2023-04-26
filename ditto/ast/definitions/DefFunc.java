@@ -116,4 +116,10 @@ public class DefFunc extends Definition {
         children.addAll(body);
         return children;
     }
+
+    @Override
+    public void compileAsInstruction(ProgramOutput out) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'compileAsInstruction'");
+    }
 }

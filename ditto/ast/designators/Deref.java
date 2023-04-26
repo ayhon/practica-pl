@@ -51,5 +51,11 @@ public class Deref extends Designator {
         return Arrays.asList(pointer);
     }
 
+    @Override
+    public void compileAsInstruction(ProgramOutput out) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'compileAsInstruction'");
+    }
+
 
 }

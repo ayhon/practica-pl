@@ -85,4 +85,10 @@ public class StructLiteral extends Literal {
         children.addAll(fieldValues.values());
         return children;
     }
+
+    @Override
+    public void compileAsInstruction(ProgramOutput out) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'compileAsInstruction'");
+    }
 }

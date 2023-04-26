@@ -90,4 +90,10 @@ public class ArrayLiteral extends Literal {
         children.add(numberOfElem);
         return children;
     }
+
+    @Override
+    public void compileAsInstruction(ProgramOutput out) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'compileAsInstruction'");
+    }
 }

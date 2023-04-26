@@ -79,4 +79,10 @@ public class DefVar extends Definition {
         //TODO: Implementar
         throw new UnsupportedOperationException("Unimplemented method 'delta'");
     }
+
+    @Override
+    public void compileAsInstruction(ProgramOutput out) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'compileAsInstruction'");
+    }
 }

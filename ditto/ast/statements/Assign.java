@@ -58,4 +58,11 @@ public class Assign extends Statement {
     public List<Node> getAstChildren() {
         return Arrays.asList(place, expr);
     }
+
+    @Override
+    public void compileAsInstruction(ProgramOutput out) {
+        place.compileAsDesig(out);
+        expr.compileAsExpr(out);
+        out.i32_store();
+    }
 }

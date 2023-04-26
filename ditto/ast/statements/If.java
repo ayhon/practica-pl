@@ -56,4 +56,18 @@ public class If extends Statement {
         children.addAll(els);
         return children;
     }
+
+    @Override
+    public void compileAsInstruction(ProgramOutput out) {
+        cond.compileAsExpr(out);
+        out._if();
+        for (Statement s : then) {
+            s.compileAsInstruction(out);
+        }
+        out._else();
+        for (Statement s : els) {
+            s.compileAsInstruction(out);
+        }
+        out._end();
+    }
 }

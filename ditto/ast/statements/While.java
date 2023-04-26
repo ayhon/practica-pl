@@ -44,4 +44,9 @@ public class While extends Statement {
         children.addAll(statements);
         return children;
     }
+
+    @Override
+    public void compileAsInstruction(ProgramOutput out) {
+        out.block(null);
+    }
 }

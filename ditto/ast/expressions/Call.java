@@ -73,4 +73,10 @@ public class Call extends Expr {
         throw new UnsupportedOperationException("Unimplemented method 'compileAsExpr'");
     }
 
+    @Override
+    public void compileAsInstruction(ProgramOutput out) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'compileAsInstruction'");
+    }
+
 }

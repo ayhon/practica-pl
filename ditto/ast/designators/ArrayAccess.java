@@ -63,4 +63,10 @@ public class ArrayAccess extends Designator {
         return Arrays.asList(array, index);
     }
 
+    @Override
+    public void compileAsInstruction(ProgramOutput out) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'compileAsInstruction'");
+    }
+
 }

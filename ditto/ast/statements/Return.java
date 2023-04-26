@@ -49,5 +49,10 @@ public class Return extends Statement {
         }
         return children;
     }
+    @Override
+    public void compileAsInstruction(ProgramOutput out) {
+        expr.compileAsExpr(out);
+        //Dejarlo en la cima de la pila para que el llamador lo saque
+    }
     
 }

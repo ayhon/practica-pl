@@ -303,49 +303,19 @@ public class ProgramOutput {
     //     
     // }
 
-    public void wasm_opbincode(String string) {
-        switch(string){
-            case "+":
-                i32_add();
-                break;
-            case "-":
-                i32_sub();
-                break;
-            case "*":
-                i32_mul();
-                break;
-            case "/":
-                i32_div_s();
-                break;
-            case "%":
-                i32_rem_s();
-                break;
-            case "==":
-                i32_eq();
-                break;
-            case "!=":
-                i32_ne();
-                break;
-            case "<=":
-                i32_le_s();
-                break;
-            case "<":
-                i32_lt_s();
-                break;
-            case ">=":
-                i32_ge_s();
-                break;
-            case ">":
-                i32_gt_s();
-                break;
-            case "and":
-                i32_and();
-                break;
-            case "or":
-                i32_or();
-                break;
-            default:
-                throw new RuntimeException("Operador no soportada: " + string);
-        }
+    public void _if() {
+        append("if");
+        indent();
+    }
+
+    public void _else() {
+        dedent();
+        append("else");
+        indent();
+    }
+
+    public void _end() {
+        dedent();
+        append("end");
     }
 }

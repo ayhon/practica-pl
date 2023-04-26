@@ -39,8 +39,9 @@ public class New extends Expr {
 
     @Override
     public void compileAsExpr(ProgramOutput out) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'generateCode'");
+        //Llama a la funcion que reserva el espacio necesario 
+        // y deja en la cima la dirección de inicio de ese espacio.
+        //TODO: Implementar
     }
 
     @Override

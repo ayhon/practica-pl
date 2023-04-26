@@ -1,8 +1,5 @@
 package ditto.ast;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import ditto.ast.definitions.DefFunc;
 import ditto.ast.types.VoidType;
 
@@ -177,6 +174,21 @@ public class ProgramOutput {
     public void i32_gt_s(String x, String y){
         append("(i32.gt_s (%s) (%s))", x, y);
     }
+    public void i32_and(){
+        append("i32.and");
+    }
+    public void i32_and(String x, String y){
+        append("(i32.and (%s) (%s))", x, y);
+    }
+    public void i32_or(){
+        append("i32.or");
+    }
+    public void i32_or(String x, String y){
+        append("(i32.or (%s) (%s))", x, y);
+    }
+    public void i32_xor() {
+        append("i32.xor");
+    }
 
     /* LOCALS */
     public void local(String name, String type) {
@@ -291,4 +303,49 @@ public class ProgramOutput {
     //     
     // }
 
+    public void wasm_opbincode(String string) {
+        switch(string){
+            case "+":
+                i32_add();
+                break;
+            case "-":
+                i32_sub();
+                break;
+            case "*":
+                i32_mul();
+                break;
+            case "/":
+                i32_div_s();
+                break;
+            case "%":
+                i32_rem_s();
+                break;
+            case "==":
+                i32_eq();
+                break;
+            case "!=":
+                i32_ne();
+                break;
+            case "<=":
+                i32_le_s();
+                break;
+            case "<":
+                i32_lt_s();
+                break;
+            case ">=":
+                i32_ge_s();
+                break;
+            case ">":
+                i32_gt_s();
+                break;
+            case "and":
+                i32_and();
+                break;
+            case "or":
+                i32_or();
+                break;
+            default:
+                throw new RuntimeException("Operador no soportada: " + string);
+        }
+    }
 }

@@ -104,8 +104,51 @@ public class OperBin extends Expr {
     
     @Override
     public void compileAsExpr(ProgramOutput out) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'compileAsExpr'");
+        left.compileAsExpr(out);
+        right.compileAsExpr(out);
+        switch(op){
+            case SUM:
+                out.i32_add();
+                break;
+            case SUBS:
+                out.i32_sub();
+                break;
+            case MUL:
+                out.i32_mul();
+                break;
+            case DIV:
+                out.i32_div_s();
+                break;
+            case MODULO:
+                out.i32_rem_s();
+                break;
+            case EQUALS:
+                out.i32_eq();
+                break;
+            case NOTEQUALS:
+                out.i32_ne();
+                break;
+            case LESS_EQUAL:
+                out.i32_le_s();
+                break;
+            case LESS:
+                out.i32_lt_s();
+                break;
+            case GREATER_EQUAL:
+                out.i32_ge_s();
+                break;
+            case GREATER:
+                out.i32_gt_s();
+                break;
+            case AND:
+                out.i32_and();
+                break;
+            case OR:
+                out.i32_or();
+                break;
+            default:
+                throw new RuntimeException("Operador no soportada: " + op.toString());
+        }
     }
     
     @Override

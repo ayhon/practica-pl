@@ -74,4 +74,9 @@ public class DefVar extends Definition {
             children.add(expr);
         return children;
     }
+
+    public int delta(){
+        //TODO: Implementar
+        throw new UnsupportedOperationException("Unimplemented method 'delta'");
+    }
 }

@@ -5,6 +5,8 @@ import java.util.List;
 
 import ditto.ast.Node;
 import ditto.ast.ProgramOutput;
+import ditto.ast.definitions.DefVar;
+import ditto.ast.designators.Var;
 import ditto.ast.types.BoolType;
 import ditto.ast.types.IntegerType;
 import ditto.ast.types.PointerType;
@@ -86,8 +88,37 @@ public class OperUn extends Expr {
 
     @Override
     public void compileAsExpr(ProgramOutput out) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'generateCode'");
+        switch(this.op){
+            case NOT:
+                // Se da con expresion `not x`,
+                out.i32_const(1);
+                expr.compileAsExpr(out);
+                out.i32_xor();
+                break;
+            case NEG:
+                // Se da con expresion `-x`,
+                expr.compileAsExpr(out);
+                out.i32_const(0);
+                out.i32_sub();
+                break;
+            case POS:
+                // Se da con expresion `+x`,
+                expr.compileAsExpr(out);
+                break;
+            case REF:
+                // Se da con expresion `ptr x`,
+                expr.compileAsDesig(out);
+                out.i32_const(((DefVar) (((Var) expr).getDefinition())).delta());  //Aqui hacemos i32.const delta(*id) (TODO: revisar)
+                out.i32_add();
+                break;
+            case DEREF:
+                // Se da con expresion `@x`,
+                expr.compileAsDesig(out);
+                out.i32_load();
+                break;
+            default:
+                throw new IllegalArgumentException("Invalid operator '" + op + "'");
+        }
     }
 
     @Override

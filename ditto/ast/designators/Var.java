@@ -67,4 +67,8 @@ public class Var extends Designator {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'compileAsDesig'");
     }
+
+    public Definition getDefinition() {
+        return definition;
+    }
 }

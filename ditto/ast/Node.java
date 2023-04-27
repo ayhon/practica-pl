@@ -3,40 +3,55 @@ package ditto.ast;
 import java.util.List;
 import java.util.StringJoiner;
 
+import ditto.ast.types.NullType;
 import ditto.ast.types.Type;
 
 public abstract class Node {
     /*
-    type LocalScopes = Map<String, (DefVar | DefFunc | DefStruct | DefModule)>;
-    type Context = List<LocalScopes>;
-    class Context {
-        GlobalScope globalScope,
-        List<LocalScopes> localScopes;
-        List<List<LocalScopes>> otros;
-        public getDef(String id);
-        public enterFunction();
-    } 
-    void bind(gl, scs){
-        for (Statement inst : this.body)
-            inst.bind(gl, new ArrayList<>());
-    }
-    */
+     * type LocalScopes = Map<String, (DefVar | DefFunc | DefStruct | DefModule)>;
+     * type Context = List<LocalScopes>;
+     * class Context {
+     * GlobalScope globalScope,
+     * List<LocalScopes> localScopes;
+     * List<List<LocalScopes>> otros;
+     * public getDef(String id);
+     * public enterFunction();
+     * }
+     * void bind(gl, scs){
+     * for (Statement inst : this.body)
+     * inst.bind(gl, new ArrayList<>());
+     * }
+     */
 
     // Vincularmos cada uso de una definición con su definición
     public void bind(GlobalContext global, LocalContext local) {
-        for (Node child : getAstChildren()) 
+        for (Node child : getAstChildren())
             child.bind(global, local);
     }
-    
-    public abstract Type type(); // Desde Module se llama antes a `bind`. El árbol debe estar vinculado paque se pueda tipar
-    // Te devuelve el tipo de expreisiones
-    // si se aplica a un nodo que no es una expresión, devuelve Null.getInstance()
-    
+
+    public Type type() {
+        /*
+         * Llamar al type de nodos hijos para que se tipen
+         * Esta definición por defecto devuelve el NullType. Para los nodos que son
+         * expresiones, redefinir este método
+         * Nota: antes de llamar a este método, se debe haber llamado a `bind` para
+         * vincular
+         */
+
+        for (Node child : getAstChildren()) {
+            child.type();
+        }
+
+        return NullType.getInstance();
+    }
+
     public abstract void compile(ProgramOutput out); // Desde Module llama a `type` antes de recursar,
     // type ProgramOutput = StringBuilder;
-    
+
     public abstract String getAstString();
+
     public abstract List<Object> getAstArguments();
+
     public abstract List<Node> getAstChildren();
 
     @Override

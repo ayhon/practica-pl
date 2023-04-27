@@ -1,11 +1,11 @@
 package ditto;
 
+import ditto.lexer.Lexer;
+import ditto.parser.Parser;
+
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
-
-import ditto.lexer.Lexer;
-import ditto.parser.Parser;
 
 public class Test {
     public static void main(String[] args) throws Exception {
@@ -17,30 +17,34 @@ public class Test {
         Parser parser = new Parser(lexer);
 
         switch (task) {
-            case "ast":
+            case "ast" -> {
                 parser.parse();
                 System.out.println(parser.getRoot());
-            case "bind":
+            }
+            case "bind" -> {
                 parser.parse();
                 try {
                     parser.getRoot().bind();
                 } catch (Exception e) {
                     System.out.println(e.getMessage());
                 }
-            case "type":
+            }
+            case "type" -> {
                 parser.parse();
                 try {
                     parser.getRoot().type();
                 } catch (Exception e) {
                     System.out.println(e.getMessage());
                 }
-            case "code":
+            }
+            case "code" -> {
                 parser.parse();
                 try {
                     parser.getRoot().compile(null);
                 } catch (Exception e) {
                     System.out.println(e.getMessage());
                 }
+            }
         }
     }
 }

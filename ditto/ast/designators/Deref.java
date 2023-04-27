@@ -7,6 +7,7 @@ import ditto.ast.Node;
 import ditto.ast.ProgramOutput;
 import ditto.ast.types.PointerType;
 import ditto.ast.types.Type;
+import ditto.errors.TypeError;
 
 public class Deref extends Designator {
     private final Designator pointer;
@@ -21,12 +22,17 @@ public class Deref extends Designator {
 
     @Override
     public Type type() {
+        /// Nota: typecheck() ya se encarga de chequear que pointer sea un puntero
+        Type ptr_type = pointer.type();
+        return ((PointerType) ptr_type).getElementType();
+    }
+
+    @Override
+    public void typecheck() {
         Type ptr_type = pointer.type();
 
-        if (ptr_type instanceof PointerType) {
-            return ((PointerType) ptr_type).getElementType();
-        } else {
-            throw new IllegalArgumentException("Cannot dereference a non-pointer type");
+        if (!(ptr_type instanceof PointerType)) {
+            throw new TypeError(String.format("Cannot dereference a non-pointer type '%s'", ptr_type));
         }
     }
 
@@ -56,6 +62,5 @@ public class Deref extends Designator {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'compileAsInstruction'");
     }
-
 
 }

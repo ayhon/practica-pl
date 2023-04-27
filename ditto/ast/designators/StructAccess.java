@@ -8,6 +8,7 @@ import ditto.ast.ProgramOutput;
 import ditto.ast.types.StructType;
 import ditto.ast.types.Type;
 import ditto.errors.SemanticError;
+import ditto.errors.TypeError;
 
 public class StructAccess extends Designator {
     private final Designator struct;
@@ -28,17 +29,22 @@ public class StructAccess extends Designator {
 
     @Override
     public Type type() {
+        /// Nota: typecheck() tiene que haber sido llamado antes de llamar a este metodo
         Type struct_type = struct.type();
-        
-        if (struct_type instanceof StructType) {
-            Type type = ((StructType) struct_type).getFieldOrMethodType(name);
-            if (type == null) {
-                throw new SemanticError("Struct " + struct_type + " has no field named " + name);
-            }
-            return type;
+        Type type = ((StructType) struct_type).getFieldOrMethodType(name);
+        return type;
+    }
 
-        } else {
-            throw new SemanticError("Cannot access a field of a non-struct type");
+    @Override
+    public void typecheck() {
+        Type struct_type = struct.type();
+        if (!(struct_type instanceof StructType)) {
+            throw new TypeError(String.format("Cannot access a field of a non-struct type '%s'", struct_type));
+        }
+
+        Type type = ((StructType) struct_type).getFieldOrMethodType(name);
+        if (type == null) {
+            throw new TypeError("Struct " + struct_type + " has no field named " + name);
         }
     }
 
@@ -68,6 +74,5 @@ public class StructAccess extends Designator {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'compileAsInstruction'");
     }
-
 
 }

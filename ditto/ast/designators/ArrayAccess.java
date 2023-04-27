@@ -9,7 +9,7 @@ import ditto.ast.expressions.Expr;
 import ditto.ast.types.ArrayType;
 import ditto.ast.types.IntegerType;
 import ditto.ast.types.Type;
-import ditto.errors.SemanticError;
+import ditto.errors.TypeError;
 
 public class ArrayAccess extends Designator {
     private final Designator array;
@@ -30,15 +30,21 @@ public class ArrayAccess extends Designator {
 
     @Override
     public Type type() {
+        /// Nota: el typecheck() ya se encarga de hacer comprobaciones
+        /// Deberia haber sido llamado antes de llamar a este metodo
+        Type arr_type = array.type();
+        return ((ArrayType) arr_type).getElementType();
+    }
+
+    @Override
+    public void typecheck() {
         if (!index.type().equals(IntegerType.getInstance())) {
-            throw new SemanticError("Array index must be an integer");
+            throw new TypeError(String.format("Cannot index with non-integer type '%s'", index.type()));
         }
 
         Type arr_type = array.type();
-        if (arr_type instanceof ArrayType) {
-            return ((ArrayType) arr_type).getElementType();
-        } else {
-            throw new SemanticError("Cannot index a non-array type");
+        if (!(arr_type instanceof ArrayType)) {
+            throw new TypeError(String.format("Cannot index a non-array type '%s'", arr_type));
         }
     }
 

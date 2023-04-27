@@ -11,7 +11,7 @@ import ditto.ast.types.BoolType;
 import ditto.ast.types.IntegerType;
 import ditto.ast.types.PointerType;
 import ditto.ast.types.Type;
-import ditto.errors.SemanticError;
+import ditto.errors.TypeError;
 
 public class OperUn extends Expr {
     public enum Operators {
@@ -64,15 +64,40 @@ public class OperUn extends Expr {
                 /// Se da con expresion `ptr x`,
                 /// que sirve para obtener el puntero a la variable x
                 return new PointerType(expr.type());
-            case DEREF: 
+            case DEREF:
                 /// Se da con expresion `@x`,
                 /// que sirve para obtener el valor apuntado por el puntero x
-                if (expr.type() instanceof PointerType){
-                    return ((PointerType) expr.type()).getElementType();
-                }
-                else throw new SemanticError("Cannot dereference non-pointer type");
+                return ((PointerType) expr.type()).getElementType();
             default:
                 throw new IllegalArgumentException("Invalid operator '" + op + "'");
+        }
+    }
+
+    @Override
+    public void typecheck() {
+        Type expectedType = null;
+        switch (this.op) {
+            case NOT -> {
+                expectedType = BoolType.getInstance();
+            }
+            case NEG, POS -> {
+                expectedType = IntegerType.getInstance();
+            }
+            case REF -> {
+                /// Porque cualquier tipo puede ser referenciado
+                expectedType = null;
+            }
+            case DEREF -> {
+                expectedType = new PointerType(null);
+            }
+            default -> {
+                throw new IllegalArgumentException("Invalid operator '" + op + "'");
+            }
+        }
+
+        if (expectedType != null && expectedType.getClass() != this.expr.type().getClass()) {
+            throw new TypeError(String.format("No se puede aplicar el operador '%s' a una expresión de tipo '%s'",
+                    this.op, this.expr.type()));
         }
     }
 
@@ -88,7 +113,7 @@ public class OperUn extends Expr {
 
     @Override
     public void compileAsExpr(ProgramOutput out) {
-        switch(this.op){
+        switch (this.op) {
             case NOT:
                 // Se da con expresion `not x`,
                 out.i32_const(1);
@@ -108,7 +133,8 @@ public class OperUn extends Expr {
             case REF:
                 // Se da con expresion `ptr x`,
                 expr.compileAsDesig(out);
-                out.i32_const(((DefVar) (((Var) expr).getDefinition())).delta());  //Aqui hacemos i32.const delta(*id) (TODO: revisar)
+                out.i32_const(((DefVar) (((Var) expr).getDefinition())).delta()); // Aqui hacemos i32.const delta(*id)
+                                                                                  // (TODO: revisar)
                 out.i32_add();
                 break;
             case DEREF:

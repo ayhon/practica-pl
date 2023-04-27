@@ -6,6 +6,7 @@ import java.util.List;
 import ditto.ast.Node;
 import ditto.ast.ProgramOutput;
 import ditto.ast.types.Type;
+import ditto.errors.TypeError;
 
 public class OperBin extends Expr {
     public enum Operators {
@@ -83,13 +84,18 @@ public class OperBin extends Expr {
 
     @Override
     public Type type() {
+        return left.type();
+    }
+
+    @Override
+    public void typecheck() {
         /// El tipo resultante será el tipo de ambas expresiones
         /// (tiene que ser el mismo)
-        if (left.type() != right.type()) {
-            throw new IllegalArgumentException("OperBin: left and right types must be the same");
+        if (!left.type().equals(right.type())) {
+            throw new TypeError(String.format(
+                    "El tipo de la expresión izquierda (%s) no coincide con el tipo de la expresión derecha (%s)",
+                    left.type(), right.type()));
         }
-
-        return left.type();
     }
 
     @Override
@@ -101,12 +107,12 @@ public class OperBin extends Expr {
     public List<Object> getAstArguments() {
         return Arrays.asList(left, right);
     }
-    
+
     @Override
     public void compileAsExpr(ProgramOutput out) {
         left.compileAsExpr(out);
         right.compileAsExpr(out);
-        switch(op){
+        switch (op) {
             case SUM:
                 out.i32_add();
                 break;
@@ -150,7 +156,7 @@ public class OperBin extends Expr {
                 throw new RuntimeException("Operador no soportada: " + op.toString());
         }
     }
-    
+
     @Override
     public List<Node> getAstChildren() {
         return Arrays.asList(left, right);

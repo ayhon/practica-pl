@@ -10,7 +10,9 @@ import ditto.ast.Node;
 import ditto.ast.ProgramOutput;
 import ditto.ast.definitions.DefFunc;
 import ditto.ast.designators.Designator;
+import ditto.ast.types.FuncType;
 import ditto.ast.types.Type;
+import ditto.errors.TypeError;
 
 public class Call extends Expr {
     private final Designator func;
@@ -48,7 +50,11 @@ public class Call extends Expr {
     @Override
     public void bind(GlobalContext global, LocalContext local) {
         this.funcDef = global.getGlobalFunction(func.toString());
-        
+
+        if (this.funcDef == null) {
+            throw new TypeError(String.format("'%s' is not a function", this.func));
+        }
+
         for (Expr arg : args) {
             arg.bind(global, local);
         }
@@ -57,6 +63,15 @@ public class Call extends Expr {
     @Override
     public Type type() {
         return funcDef.getResult();
+    }
+
+    @Override
+    public void typecheck() {
+        /// Hay que comprobar que el designator sea una funcion
+        this.func.typecheck();
+        if (!(this.func.type() instanceof FuncType)) {
+            throw new TypeError(String.format("'%s' is not a function", this.func));
+        }
     }
 
     @Override

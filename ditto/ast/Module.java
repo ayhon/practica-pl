@@ -6,6 +6,7 @@ import java.util.List;
 
 import ditto.ast.definitions.*;
 import ditto.ast.types.Type;
+import ditto.ast.types.VoidType;
 
 public class Module extends Node {
     private final List<DefModule> imports;
@@ -89,13 +90,22 @@ public class Module extends Node {
     }
 
     public void bind() {
+        System.out.println("[DEBUG]: Start binding module");
         bind(new GlobalContext(), new LocalContext());
+        System.out.println("[DEBUG]: Finished binding module");
     }
 
     @Override
     public Type type() {
+        return VoidType.getInstance();
+    }
+
+    @Override
+    public void typecheck() {
         this.bind();
-        return super.type();
+        System.out.println("[DEBUG]: Start typechecking module");
+        super.typecheck();
+        System.out.println("[DEBUG]: Finished typechecking module");
     }
 
     @Override

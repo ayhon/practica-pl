@@ -23,27 +23,15 @@ public class Test {
             }
             case "bind" -> {
                 parser.parse();
-                try {
-                    parser.getRoot().bind();
-                } catch (Exception e) {
-                    System.out.println(e.getMessage());
-                }
+                parser.getRoot().bind();
             }
-            case "type" -> {
+            case "typecheck" -> {
                 parser.parse();
-                try {
-                    parser.getRoot().type();
-                } catch (Exception e) {
-                    System.out.println(e.getMessage());
-                }
+                parser.getRoot().typecheck();
             }
             case "code" -> {
                 parser.parse();
-                try {
-                    parser.getRoot().compile(null);
-                } catch (Exception e) {
-                    System.out.println(e.getMessage());
-                }
+                parser.getRoot().compile(null);
             }
         }
     }

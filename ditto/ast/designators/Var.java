@@ -10,6 +10,7 @@ import ditto.ast.Node;
 import ditto.ast.ProgramOutput;
 import ditto.ast.definitions.Definition;
 import ditto.ast.types.Type;
+import ditto.errors.TypeError;
 
 public class Var extends Designator {
     public final String iden;
@@ -49,6 +50,10 @@ public class Var extends Designator {
             definition = localContext.getDefOrGlobal(iden, globalScope);
         } else {
             definition = globalScope.getImportedGlobal(module, iden);
+        }
+
+        if(definition == null) {
+            throw new TypeError("Could not find definition for " + iden);
         }
     }
 

@@ -16,6 +16,7 @@ import ditto.ast.types.VoidType;
 public class DefFunc extends Definition {
     private final String id;
     private final List<Param> params;
+
     public List<Param> getParams() {
         return params;
     }
@@ -56,10 +57,11 @@ public class DefFunc extends Definition {
     static public class Param {
         public final Type type;
         public final String name;
-        
+
         public Type getType() {
             return type;
         }
+
         public String getName() {
             return name;
         }
@@ -90,6 +92,9 @@ public class DefFunc extends Definition {
     public void bind(GlobalContext global, LocalContext local) {
         /// Add the function to the global scope
         global.addGlobalFunction(this);
+
+        /// Llamar a bind de los hijos
+        super.bind(global, local);
     }
 
     @Override

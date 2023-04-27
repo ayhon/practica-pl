@@ -3,7 +3,6 @@ package ditto.ast;
 import java.util.List;
 import java.util.StringJoiner;
 
-import ditto.ast.types.NullType;
 import ditto.ast.types.Type;
 
 public abstract class Node {
@@ -25,24 +24,23 @@ public abstract class Node {
 
     // Vincularmos cada uso de una definición con su definición
     public void bind(GlobalContext global, LocalContext local) {
-        for (Node child : getAstChildren())
+        for (Node child : getAstChildren()) {
+            System.out.println("Node.bind: " + child);
             child.bind(global, local);
+        }
     }
 
-    public Type type() {
+    public abstract Type type();
+
+    public void typecheck() {
         /*
-         * Llamar al type de nodos hijos para que se tipen
-         * Esta definición por defecto devuelve el NullType. Para los nodos que son
-         * expresiones, redefinir este método
+         * Llamar al typecheck de nodos hijos para que comprueben sus tipos
          * Nota: antes de llamar a este método, se debe haber llamado a `bind` para
          * vincular
          */
-
         for (Node child : getAstChildren()) {
-            child.type();
+            child.typecheck();
         }
-
-        return NullType.getInstance();
     }
 
     public abstract void compile(ProgramOutput out); // Desde Module llama a `type` antes de recursar,
@@ -63,7 +61,8 @@ public abstract class Node {
         sb.append("\n");
 
         StringJoiner args = new StringJoiner(",\n");
-        for (Node arg : getAstChildren()) {
+        /// Nota: aqui es getAstArguments, no getAstChildren
+        for (Object arg : getAstArguments()) {
             if (arg instanceof List) {
                 args.add(listAsString((List<Node>) arg));
             } else {

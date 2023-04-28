@@ -10,8 +10,6 @@ import ditto.ast.definitions.DefFunc;
 import ditto.ast.definitions.DefModule;
 import ditto.ast.definitions.DefStruct;
 import ditto.ast.definitions.DefVar;
-import ditto.ast.definitions.Definition;
-import ditto.ast.designators.Var;
 import ditto.ast.types.IntegerType;
 
 public class GlobalContext {
@@ -30,17 +28,26 @@ public class GlobalContext {
         globalFunc = new HashMap<>();
         globalStruct = new HashMap<>();
         globalModule = new HashMap<>();
+        addBuiltins();
+    }
 
+    private void addBuiltins() {
         /// Añadir función scan y print
         /// scan recibe un entero y no devuelve nada
-        var scanFunc = new DefFunc("scan", Arrays.asList(new DefFunc.Param(IntegerType.getInstance(), "dest")),
-                new ArrayList<>());
-        globalFunc.put("scan", scanFunc);
+        globalFunc.put("scan",
+                new DefFunc(
+                        "scan", // Name
+                        Arrays.asList(new DefFunc.Param(IntegerType.getInstance(), "dest")), // Parameters
+                        new ArrayList<>() // Body
+                ));
 
         /// print recibe un entero y devuelve un entero
-        var printFunc = new DefFunc("print", Arrays.asList(new DefFunc.Param(IntegerType.getInstance(), "src")),
-                IntegerType.getInstance(), new ArrayList<>());
-        globalFunc.put("print", printFunc);
+        globalFunc.put("print", 
+            new DefFunc(
+                "print", // Name
+                Arrays.asList(new DefFunc.Param(IntegerType.getInstance(), "src")),IntegerType.getInstance(),  // Parameters
+                new ArrayList<>() // Body
+            ));
     }
 
     /**
@@ -49,7 +56,7 @@ public class GlobalContext {
      * @param iden
      * @return
      */
-    public Definition getGlobalVariable(String iden) {
+    public DefVar getVar(String iden) {
         return globalVar.get(iden);
     }
 
@@ -60,7 +67,7 @@ public class GlobalContext {
      * @param iden
      * @return
      */
-    public Definition getImportedGlobal(String module, String iden) {
+    public DefVar getImported(String module, String iden) {
 
         return null;
     }
@@ -76,7 +83,7 @@ public class GlobalContext {
         return null;
     }
 
-    public void addGlobalModule(DefModule module) {
+    public void addModule(DefModule module) {
         globalModule.put(module.getIden(), module);
     }
 
@@ -84,11 +91,13 @@ public class GlobalContext {
         globalStruct.put(struct.getIden(), struct);
     }
 
-    public void addGlobalVariable(DefVar var) { // TODO: cambiar para que devuelva int
+    public void addVariable(DefVar var) { // TODO: cambiar para que devuelva int
         globalVar.put(var.getIden(), var);
     }
 
-    public void addGlobalFunction(DefFunc func) {
+    public void addFunction(DefFunc func) {
+        if (globalFunc.containsKey(func.getIden()))
+            throw new RuntimeException("Function " + func.getIden() + " already defined");
         globalFunc.put(func.getIden(), func);
     }
 
@@ -96,15 +105,11 @@ public class GlobalContext {
         return globalFunc.get(iden);
     }
 
-    public DefVar getGlobalVar(String iden) {
-        return globalVar.get(iden);
-    }
-
-    public DefModule getGlobalModule(String iden) {
+    public DefModule getModule(String iden) {
         return globalModule.get(iden);
     }
 
-    public DefStruct getGlobalStruct(String iden) {
+    public DefStruct getStruct(String iden) {
         return globalStruct.get(iden);
     }
 }

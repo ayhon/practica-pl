@@ -12,17 +12,28 @@ import ditto.ast.definitions.Definition;
 import ditto.ast.types.Type;
 import ditto.errors.TypeError;
 
-public class Var extends Designator {
+// A name designates a variable or a function.
+public class Name extends Designator {
     private final String iden;
     private final String module;
     private Definition definition = null;
 
-    public Var(String iden, String module) {
+    public Name(List<String> names) {
+        if (names.size() == 1) {
+            this.iden = names.get(0);
+            this.module = null;
+        } else {
+            this.iden = names.get(1);
+            this.module = names.get(0);
+        }
+    }
+
+    public Name(String iden, String module) {
         this.iden = iden;
         this.module = module;
     }
 
-    public Var(String iden) {
+    public Name(String iden) {
         this(iden, null);
     }
 

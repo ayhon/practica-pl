@@ -50,10 +50,4 @@ public class Natural extends Literal {
     public List<Node> getAstChildren() {
         return Arrays.asList();
     }
-
-    @Override
-    public void compileAsInstruction(ProgramOutput out) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'compileAsInstruction'");
-    }
 }

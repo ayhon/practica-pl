@@ -76,10 +76,4 @@ public class Var extends Designator {
     public Definition getDefinition() {
         return definition;
     }
-
-    @Override
-    public void compileAsInstruction(ProgramOutput out) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'compileAsInstruction'");
-    }
 }

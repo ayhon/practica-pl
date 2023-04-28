@@ -161,10 +161,4 @@ public class OperBin extends Expr {
     public List<Node> getAstChildren() {
         return Arrays.asList(left, right);
     }
-
-    @Override
-    public void compileAsInstruction(ProgramOutput out) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'compileAsInstruction'");
-    }
 }

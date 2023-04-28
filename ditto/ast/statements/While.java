@@ -32,12 +32,6 @@ public class While extends Statement {
     }
 
     @Override
-    public void compile(ProgramOutput out) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'generateCode'");
-    }
-
-    @Override
     public List<Node> getAstChildren() {
         List<Node> children = new ArrayList<Node>();
         children.add(cond);

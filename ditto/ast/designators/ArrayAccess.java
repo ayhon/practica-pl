@@ -68,11 +68,4 @@ public class ArrayAccess extends Designator {
     public List<Node> getAstChildren() {
         return Arrays.asList(array, index);
     }
-
-    @Override
-    public void compileAsInstruction(ProgramOutput out) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'compileAsInstruction'");
-    }
-
 }

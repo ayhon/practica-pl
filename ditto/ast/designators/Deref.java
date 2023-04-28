@@ -56,11 +56,4 @@ public class Deref extends Designator {
     public List<Node> getAstChildren() {
         return Arrays.asList(pointer);
     }
-
-    @Override
-    public void compileAsInstruction(ProgramOutput out) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'compileAsInstruction'");
-    }
-
 }

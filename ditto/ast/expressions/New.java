@@ -48,10 +48,4 @@ public class New extends Expr {
     public List<Node> getAstChildren() {
         return Arrays.asList(value);
     }
-
-    @Override
-    public void compileAsInstruction(ProgramOutput out) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'compileAsInstruction'");
-    }
 }

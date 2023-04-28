@@ -151,10 +151,4 @@ public class OperUn extends Expr {
     public List<Node> getAstChildren() {
         return Arrays.asList(expr);
     }
-
-    @Override
-    public void compileAsInstruction(ProgramOutput out) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'compileAsInstruction'");
-    }
 }

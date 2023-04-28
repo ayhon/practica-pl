@@ -8,11 +8,8 @@ public abstract class Expr extends Statement {
     public abstract void compileAsExpr(ProgramOutput out);
 
     @Override
-    public void compile(ProgramOutput out) {
+    public void compileAsInstruction(ProgramOutput out) {
         compileAsExpr(out);
         out.drop();
-    }
-
-    public void compileAsDesig(ProgramOutput out) {
     }
 }

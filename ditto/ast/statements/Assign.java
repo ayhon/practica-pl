@@ -49,12 +49,6 @@ public class Assign extends Statement {
     }
 
     @Override
-    public void compile(ProgramOutput out) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'generateCode'");
-    }
-
-    @Override
     public List<Node> getAstChildren() {
         return Arrays.asList(place, expr);
     }

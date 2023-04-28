@@ -38,6 +38,11 @@ public class DefFunc extends Definition {
         this.params = params;
         this.result = result;
         this.body = body;
+        List<Type> paramTypes = new ArrayList<>();
+        for (Param param : params) {
+            paramTypes.add(param.type);
+        }
+        type = new FuncType(result, paramTypes);
     }
 
     public String getIden() {
@@ -93,20 +98,18 @@ public class DefFunc extends Definition {
         /// Add the function to the global scope
         global.addFunction(this);
 
-        /// Llamar a bind de los hijos
-        super.bind(global, local);
+        /// Llamar a bind de los hijos con nuevo contexto
+        LocalContext newLocal = new LocalContext(this);
+        super.bind(global, newLocal);
+    }
+
+    public Type getType(){
+        return type;
     }
 
     @Override
     public Type type() {
-        if(type == null){
-            List<Type> paramTypes = new ArrayList<>();
-            for (Param param : params) {
-                paramTypes.add(param.type);
-            }
-            type = new FuncType(result, paramTypes);
-        }
-        return type;
+        return getType();
     }
 
     @Override

@@ -13,19 +13,38 @@ import ditto.ast.definitions.DefStruct;
 import ditto.ast.definitions.DefVar;
 import ditto.ast.expressions.Expr;
 import ditto.ast.types.Type;
+import ditto.errors.SemanticError;
 import ditto.errors.TypeError;
 
 public class StructLiteral extends Literal {
     private final String iden;
-    private final List<String> module;
+    private final String module;
     private final Map<String, Expr> fieldValues;
     private DefStruct definition;
 
     public StructLiteral(List<String> name, Map<String, Expr> fieldValues) {
-        this.iden = name.get(name.size() - 1);
-        this.module = name.subList(0, name.size() - 1);
-        this.fieldValues = fieldValues;
+        if(name.size() ==1){
+            this.iden = name.get(0);
+            this.module = null;
+            this.fieldValues = fieldValues;
+        } else if (name.size() == 2){
+            this.iden = name.get(1);
+            this.module = name.get(0);
+            this.fieldValues = fieldValues;
+        } else throw new SemanticError("Nested modules aren't supported yet.");
     }
+
+
+    public boolean hasModule() {
+        return module != null;
+    }
+    public String getIden() {
+        return iden;
+    }
+    public String getModule() {
+        return module;
+    }
+    
 
     @Override
     public String getAstString() {
@@ -79,18 +98,16 @@ public class StructLiteral extends Literal {
 
     @Override
     public void bind(GlobalContext global, LocalContext local) {
-        /**
-         * Para StructLiteral, tengo que asociar:
-         * 1. Su definición
-         * 2. Los valores de sus campos
-         */
-        this.definition = global.getStruct(module, iden);
-        if (definition == null) {
-            throw new TypeError(String.format("No existe struct con identificador %s::%s", module, iden));
+        if(hasModule()){
+            definition = global.getModule(module).getStruct(iden);
+        } else {
+            definition = global.getStruct(iden);
         }
 
-        /// Hacer bind de los campos
-        super.bind(global, local);
+        /// En realidad no hay que hacer bind de los campos. Estos sabemos que se encontrarán en el
+        /// tipo específico del struct, y no en un ámbito local o global. 
+        //  /// Hacer bind de los campos
+        //  super.bind(global, local);
     }
 
     @Override

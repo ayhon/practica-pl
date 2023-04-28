@@ -10,11 +10,14 @@ import ditto.ast.definitions.DefFunc;
 import ditto.ast.definitions.DefModule;
 import ditto.ast.definitions.DefStruct;
 import ditto.ast.definitions.DefVar;
+import ditto.ast.definitions.Definition;
 import ditto.ast.types.IntegerType;
+import ditto.errors.SemanticError;
 
 public class GlobalContext {
     // Aparte de Map<String, Definition> tiene que incluir un mapeo de modulos y de
     // estructuras
+    private final Module mainModule;
     private Map<String, DefVar> globalVar;
     private Map<String, DefFunc> globalFunc;
     private Map<String, DefStruct> globalStruct;
@@ -23,11 +26,12 @@ public class GlobalContext {
     /**
      * Crea un nuevo contexto global.
      */
-    public GlobalContext() {
+    public GlobalContext(Module mainModule) {
         globalVar = new HashMap<>();
         globalFunc = new HashMap<>();
         globalStruct = new HashMap<>();
         globalModule = new HashMap<>();
+        this.mainModule = mainModule;
         addBuiltins();
     }
 
@@ -61,15 +65,22 @@ public class GlobalContext {
     }
 
     /**
-     * Devuelve la variable global `iden` en el módulo `module`.
+     * Devuelve la definición global correspondiente a `iden` del módulo `module`.
      * 
      * @param module
      * @param iden
      * @return
      */
-    public DefVar getImported(String module, String iden) {
-
-        return null;
+    public Definition getImportedDef(String moduleName, String iden) {
+        Module module = getModule(moduleName);
+        Definition def = module.getDefinition(iden);
+        if(def == null) throw new SemanticError("Coldn't find " + iden + " in module " + moduleName);
+        return def;
+    }
+    public Module getModule(String moduleName){
+        DefModule module_def = globalModule.get(moduleName);
+        if(module_def == null) throw new SemanticError("Module " + moduleName + " not found");
+        return  module_def.getModule();
     }
 
     /**
@@ -102,14 +113,26 @@ public class GlobalContext {
     }
 
     public DefFunc getFunction(String iden) {
-        return globalFunc.get(iden);
+        var def =  globalFunc.get(iden);
+        if(def == null) throw new SemanticError("Couldn't find function " + iden);
+        return def;
     }
 
-    public DefModule getModule(String iden) {
-        return globalModule.get(iden);
+    public DefModule getDefModule(String iden) {
+        var def =  globalModule.get(iden);
+        if(def == null) throw new SemanticError("Couldn't find module " + iden);
+        return def;
     }
 
     public DefStruct getStruct(String iden) {
-        return globalStruct.get(iden);
+        var def =  globalStruct.get(iden);
+        if(def == null) throw new SemanticError("Couldn't find struct " + iden);
+        return def;
+    }
+
+    public Definition getDefinition(String iden) {
+        var def =  mainModule.getDefinition(iden);
+        if(def == null) throw new SemanticError("Couldn't find definition " + iden);
+        return def;
     }
 }

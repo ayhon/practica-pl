@@ -11,6 +11,7 @@ import ditto.ast.definitions.DefStruct;
 import ditto.ast.definitions.Definition;
 import ditto.ast.types.StructType;
 import ditto.ast.types.Type;
+import ditto.errors.SemanticError;
 import ditto.errors.TypeError;
 
 public class StructAccess extends Designator {
@@ -18,6 +19,7 @@ public class StructAccess extends Designator {
     private final String name;
     private DefStruct defStruct;
     private Definition definition;
+    private Type type;
 
     public StructAccess(Designator struct, String name) {
         this.name = name;
@@ -49,8 +51,9 @@ public class StructAccess extends Designator {
     @Override
     public Type type() {
         /// Nota: typecheck() tiene que haber sido llamado antes de llamar a este metodo
-        Type struct_type = struct.type();
-        Type type = ((StructType) struct_type).getFieldOrMethodType(name);
+        if (type == null) {
+            throw new SemanticError("Can't get type of struct field before typechecking.");
+        }
         return type;
     }
 

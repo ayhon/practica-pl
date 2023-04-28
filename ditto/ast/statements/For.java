@@ -4,10 +4,14 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import ditto.ast.GlobalContext;
+import ditto.ast.LocalContext;
 import ditto.ast.Node;
 import ditto.ast.ProgramOutput;
+import ditto.ast.definitions.DefVar;
 import ditto.ast.expressions.Expr;
 import ditto.ast.literals.Natural;
+import ditto.ast.types.IntegerType;
 import ditto.ast.types.Type;
 
 public class For extends Statement {
@@ -36,6 +40,18 @@ public class For extends Statement {
     public List<Object> getAstArguments() { return Arrays.asList(index, from, to, by, body); }
 
     @Override
+    public void bind(GlobalContext global, LocalContext local) {
+        local.pushLightScope();
+        local.addDef(new DefVar(IntegerType.getInstance(), index)); // Add the for-loop's index to the new local scope
+        super.bind(global, null);
+        local.popLightScope();
+    }
+
+    private DefVar DefVar(IntegerType instance, String index2) {
+        return null;
+    }
+
+    @Override
     public Type type() {
         Type aux = from.type();
         if(!aux.equals(to.type())) {
@@ -62,5 +78,4 @@ public class For extends Statement {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'compileAsInstruction'");
     }
-
 }

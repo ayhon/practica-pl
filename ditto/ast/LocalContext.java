@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import ditto.ast.definitions.DefFunc;
 import ditto.ast.definitions.DefVar;
 import ditto.ast.definitions.Definition;
 import ditto.errors.SemanticError;
@@ -33,6 +34,15 @@ public class LocalContext {
 
     public LocalContext() {
         scopes = Arrays.asList(new LocalScope());
+    }
+    public LocalContext(DefFunc func) {
+        LocalScope scope = new LocalScope();
+        for(DefFunc.Param param : func.getParams()) {
+            // De alguna manera convendría indicar que son parámetros
+            // Funciona sino cuando tenemos parámetros pasados por referencia?
+            scope.addDef(new DefVar(param.getType(), param.getName()));
+        }
+        scopes = Arrays.asList(scope);
     }
 
     public void pushLightScope() {
@@ -70,12 +80,9 @@ public class LocalContext {
      */
     public Definition getDefOrGlobal(String iden, GlobalContext globalScope) {
         Definition def = getDef(iden);
-        if (def == null) { // Couldn't find in local context, try global
-            def = globalScope.getVar(iden);
-            if (def == null) // If it's not a variable, it must be a function
-                def = globalScope.getFunction(iden);
-            // TODO: Comprobar que no es una función y una variable a la vez
-        }
+        if (def == null)  // Couldn't find in local context, try global
+            def = globalScope.getDefinition(iden);
+           // TODO: Comprobar que no es una función y una variable a la vez
         if (def == null) // Couldn't find in global context, throw error since it wasn't defined
             throw new SemanticError("Can't access undefined variable '" + iden + "'.");
         return def;

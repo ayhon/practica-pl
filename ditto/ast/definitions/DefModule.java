@@ -54,7 +54,8 @@ public class DefModule extends Node {
     @Override
     public void bind(GlobalContext global, LocalContext local) {
         /// Add the module to the global scope
-        global.addGlobalModule(this);
+        global.addModule(this);
+        // We dont' load the module
     }
 
     public String getIden() {
@@ -72,7 +73,7 @@ public class DefModule extends Node {
             Lexer lexer = new Lexer(input);
             Parser parser = new Parser(lexer);
             parser.parse();
-            module = parser.getRoot();
+            this.module = parser.getRoot();
         } catch (IOException e) {
             throw new ModuleImportError("Error IO parsing module " + name);
         } catch (Exception e) {

@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import ditto.ast.GlobalContext;
+import ditto.ast.LocalContext;
 import ditto.ast.Node;
 import ditto.ast.ProgramOutput;
 import ditto.ast.expressions.Expr;
@@ -35,6 +37,13 @@ public class If extends Statement {
     @Override
     public List<Object> getAstArguments() {
         return Arrays.asList(cond, then, els);
+    }
+
+    @Override
+    public void bind(GlobalContext global, LocalContext local) {
+        local.pushLightScope();
+        super.bind(global, local);
+        local.popLightScope();
     }
 
     @Override

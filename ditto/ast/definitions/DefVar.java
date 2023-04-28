@@ -43,9 +43,14 @@ public class DefVar extends Definition {
         return args;
     }
 
+    public Type getType(){
+        // Como type(), pero getType() se puede usar antes del type-checking
+        return type;
+    }
+
     @Override
     public Type type() {
-        return type;
+        return getType();
     }
 
     @Override
@@ -54,11 +59,11 @@ public class DefVar extends Definition {
     }
 
     @Override
-    public void bind(GlobalContext gl, LocalContext lc) {
-        if (lc != null) {
-            lc.addDef(this);
+    public void bind(GlobalContext global, LocalContext local) {
+        if (local != null) {
+            local.addDef(this);
         } else {
-            gl.addVariable(this);
+            global.addVariable(this);
         }
     }
 

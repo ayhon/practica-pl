@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 import ditto.ast.definitions.*;
 import ditto.ast.types.Type;
 import ditto.ast.types.VoidType;
+import ditto.errors.SemanticError;
 
 public class Module extends Node {
     private final Map<String, DefModule> imports;
@@ -30,7 +31,26 @@ public class Module extends Node {
     }
 
     public DefFunc getFunc(String iden) {
-        return this.functions.get(iden);
+        var def =  this.functions.get(iden);
+        if(def == null) throw new SemanticError("Couln't find function " + iden );
+        return def;
+    }
+    public DefStruct getStruct(String iden) {
+        var def =  this.structs.get(iden);
+        if(def == null) throw new SemanticError("Couln't find struct " + iden );
+        return def;
+    }
+    public DefVar getVar(String iden) {
+        var def =  this.globals.get(iden);
+        if(def == null) throw new SemanticError("Couln't find global " + iden );
+        return def;
+    }
+    public Definition getDefinition(String iden) {
+        Definition def = globals.get(iden);
+        if(def == null) 
+            def = functions.get(iden);
+        if(def == null) throw new SemanticError("No global definition found for " + iden);
+        return def;
     }
 
     public static class DefinitionCollection {
@@ -87,7 +107,7 @@ public class Module extends Node {
 
     public void bind() {
         System.out.println("[DEBUG]: Start binding module");
-        bind(new GlobalContext(), new LocalContext());
+        bind(new GlobalContext(this), new LocalContext());
         System.out.println("[DEBUG]: Finished binding module");
     }
 

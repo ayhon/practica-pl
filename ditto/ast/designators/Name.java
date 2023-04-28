@@ -10,6 +10,7 @@ import ditto.ast.Node;
 import ditto.ast.ProgramOutput;
 import ditto.ast.definitions.Definition;
 import ditto.ast.types.Type;
+import ditto.errors.SemanticError;
 import ditto.errors.TypeError;
 
 // A name designates a variable or a function.
@@ -61,14 +62,10 @@ public class Name extends Designator {
 
     @Override
     public void bind(GlobalContext globalScope, LocalContext localContext) {
-        if (module == null) {
-            definition = localContext.getDefOrGlobal(iden, globalScope);
+        if (hasModule()) {
+            definition = globalScope.getImportedDef(module, iden);
         } else {
-            definition = globalScope.getImported(module, iden);
-        }
-
-        if (definition == null) {
-            throw new TypeError("Could not find definition for " + iden);
+            definition = localContext.getDefOrGlobal(iden, globalScope);
         }
     }
 

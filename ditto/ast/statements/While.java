@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import ditto.ast.GlobalContext;
+import ditto.ast.LocalContext;
 import ditto.ast.Node;
 import ditto.ast.ProgramOutput;
 import ditto.ast.expressions.Expr;
@@ -23,6 +25,13 @@ public class While extends Statement {
 
     @Override
     public List<Object> getAstArguments() { return Arrays.asList(cond, statements); }
+
+    @Override
+    public void bind(GlobalContext global, LocalContext local) {
+        local.pushLightScope();
+        super.bind(global, local);
+        local.popLightScope();
+    }
 
     @Override
     public Type type() {

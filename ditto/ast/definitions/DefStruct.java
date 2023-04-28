@@ -5,6 +5,8 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.Map.Entry;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -19,6 +21,7 @@ public class DefStruct extends Definition {
     private final String name;
     private final Map<String, DefVar> attributes;
     private final Map<String, DefFunc> methods;
+    private StructType type;
 
     public DefStruct(String name) {
         this.name = name;
@@ -38,6 +41,14 @@ public class DefStruct extends Definition {
 
     public DefFunc getMethod(String iden) {
         return this.methods.get(iden);
+    }
+
+    public Set<Entry<String,DefVar>> getAttributes(){
+        return this.attributes.entrySet();
+    }
+
+    public Set<Entry<String,DefFunc>> getMethods(){
+        return this.methods.entrySet();
     }
 
     public Definition getAttributeOrMethod(String iden) {
@@ -73,16 +84,13 @@ public class DefStruct extends Definition {
     public void bind(GlobalContext global, LocalContext local) {
         /// Add the struct to the global scope
         global.addStruct(this);
-        // Cuando entramos en el Struct tenemos que resetear el local context
-        local.pushLightScope();
-        /// Llamar a bind de los hijos
-        super.bind(global, local);
-    }
-
-    @Override
-    public void compile(ProgramOutput out) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'generateCode'");
+        /// TODO: Quitar esto. No hay declaraciones de variables locales dentro de la definición de un Struct.
+        /// Sus únicos hijos son declaraciones de variables y funciones que no pertenecen a ningún ambito.
+        /// No se tiene que continuar la vinculación ni añadir un nuevo contexto ligero.
+        // /// Cuando entramos en el Struct tenemos que resetear el local context
+        //  local.pushLightScope();
+        // /// Llamar a bind de los hijos
+        // super.bind(global, local);
     }
 
     public String getIden() {
@@ -101,5 +109,15 @@ public class DefStruct extends Definition {
     public void compileAsInstruction(ProgramOutput out) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'compileAsInstruction'");
+    }
+
+    @Override
+    public int computeDelta(int lastPosition){
+        int delta = 0;
+        for (Node child : getAstChildren()) {
+            delta = child.computeDelta(delta);
+        }
+
+        return lastPosition + delta;
     }
 }

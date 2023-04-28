@@ -51,7 +51,6 @@ public class Deref extends Designator {
 
     @Override
     public void compileAsDesig(ProgramOutput out) {
-        // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'compileAsDesig'");
     }
 
@@ -62,7 +61,7 @@ public class Deref extends Designator {
 
     @Override
     public void bind(GlobalContext global, LocalContext local) {
-        // TODO Auto-generated method stub
+        /// Hace el bind del pointer
         super.bind(global, local);
     }
 

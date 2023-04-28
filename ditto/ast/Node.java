@@ -25,7 +25,7 @@ public abstract class Node {
     // Vincularmos cada uso de una definición con su definición
     public void bind(GlobalContext global, LocalContext local) {
         for (Node child : getAstChildren()) {
-            System.out.println("Node.bind: " + child);
+            // System.out.println("Node.bind: " + child);
             child.bind(global, local);
         }
     }
@@ -43,6 +43,23 @@ public abstract class Node {
         }
     }
 
+    //Calcula para cada definicion de variable su delta. El delta se resetea cuando entramos en bloque.
+    public int computeDelta(int lastPosition) {
+        for (Node child : getAstChildren()) {
+            lastPosition = child.computeDelta(lastPosition);
+        }
+        return lastPosition;
+    }
+
+    //Calcula para cada función el tamaño que habremos de reservar en la pila para parámetros y variables locales.
+    public int computeMaxFuncSize() {
+        int max = 0;
+        for (Node child : getAstChildren()) {
+            max = child.computeMaxFuncSize();
+        }
+        return max;
+    }
+
     public abstract void compile(ProgramOutput out); // Desde Module llama a `type` antes de recursar,
     // type ProgramOutput = StringBuilder;
 
@@ -57,7 +74,7 @@ public abstract class Node {
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append('(');
-        sb.append(getAstString() + ": " + type());
+        sb.append(getAstString() /*+ ": " + type()*/); //No podemos llamar a type() porque no hemos hecho el binding todavia
         sb.append("\n");
 
         StringJoiner args = new StringJoiner(",\n");

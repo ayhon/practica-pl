@@ -16,18 +16,18 @@ import ditto.ast.types.VoidType;
 public class DefFunc extends Definition {
     private final String id;
     private final List<Param> params;
-
+    private final List<Statement> body;
+    private final Type result;
+    private int varSize;
+    private FuncType type;
     public List<Param> getParams() {
         return params;
     }
-
-    private final Type result;
 
     public Type getResult() {
         return result;
     }
 
-    private final List<Statement> body;
 
     public DefFunc(String id, List<Param> params, List<Statement> body) {
         this(id, params, VoidType.getInstance(), body);
@@ -91,7 +91,7 @@ public class DefFunc extends Definition {
     @Override
     public void bind(GlobalContext global, LocalContext local) {
         /// Add the function to the global scope
-        global.addGlobalFunction(this);
+        global.addFunction(this);
 
         /// Llamar a bind de los hijos
         super.bind(global, local);
@@ -99,11 +99,14 @@ public class DefFunc extends Definition {
 
     @Override
     public Type type() {
-        List<Type> paramTypes = new ArrayList<>();
-        for (Param param : params) {
-            paramTypes.add(param.type);
+        if(type == null){
+            List<Type> paramTypes = new ArrayList<>();
+            for (Param param : params) {
+                paramTypes.add(param.type);
+            }
+            type = new FuncType(result, paramTypes);
         }
-        return new FuncType(result, paramTypes);
+        return type;
     }
 
     @Override
@@ -126,5 +129,29 @@ public class DefFunc extends Definition {
     public void compileAsInstruction(ProgramOutput out) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'compileAsInstruction'");
+    }
+
+    @Override
+    public int computeDelta(int lastPosition){
+        int delta = type().size();
+        for (Statement stmt : body){
+            delta = stmt.computeDelta(delta);
+        }
+        return lastPosition;
+    }
+
+    public int computeMaxFuncSize(){
+        int max = type.size();
+
+        for(Param param : params){
+            max += param.getType().size();
+        }
+
+        for(Statement stmt : body){
+            max += stmt.computeMaxFuncSize();
+        }
+
+        varSize = max;
+        return 0;
     }
 }

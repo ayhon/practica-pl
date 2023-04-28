@@ -15,6 +15,7 @@ public class DefVar extends Definition {
     private final String iden;
     private final Expr expr;
     private final Type type;
+    private int position;
 
     public DefVar(Type type, String iden, Expr expr) {
         // Argumentos en este orden para representar como se escribe en el lenguaje
@@ -57,7 +58,7 @@ public class DefVar extends Definition {
         if (lc != null) {
             lc.addDef(this);
         } else {
-            gl.addGlobalVariable(this);
+            gl.addVariable(this);
         }
     }
 
@@ -73,6 +74,22 @@ public class DefVar extends Definition {
     public void compileAsInstruction(ProgramOutput out) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'compileAsInstruction'");
+    }
+
+    @Override
+    public int computeDelta(int lastPosition){
+        this.position = lastPosition;
+        lastPosition += this.type.size();
+        return lastPosition;
+    }
+
+    @Override
+    public int computeMaxFuncSize(){
+        return this.type.size();
+    }
+
+    public int getDelta(){
+        return this.position;
     }
 
 }

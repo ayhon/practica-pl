@@ -9,9 +9,11 @@ import ditto.ast.LocalContext;
 import ditto.ast.Node;
 import ditto.ast.ProgramOutput;
 import ditto.ast.definitions.DefFunc;
+import ditto.ast.definitions.Definition;
 import ditto.ast.designators.Designator;
 import ditto.ast.types.FuncType;
 import ditto.ast.types.Type;
+import ditto.errors.SemanticError;
 import ditto.errors.TypeError;
 
 public class Call extends Expr {
@@ -50,14 +52,14 @@ public class Call extends Expr {
     @Override
     public void bind(GlobalContext global, LocalContext local) {
         super.bind(global, local);
-        var funcDef = this.func.getDefinition();
+        Definition funcDef = this.func.getDefinition();
 
         if (funcDef == null) {
-            throw new TypeError(String.format("'%s' is not defined", this.func));
+            throw new SemanticError(String.format("'%s' is not defined", this.func));
         }
 
         if (!(this.funcDef instanceof DefFunc)) {
-            throw new TypeError(String.format("'%s' is not a function", this.func));
+            throw new SemanticError(String.format("'%s' is not a function", this.func));
         }
 
         this.funcDef = (DefFunc) funcDef;

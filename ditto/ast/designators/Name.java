@@ -64,7 +64,7 @@ public class Name extends Designator {
         if (module == null) {
             definition = localContext.getDefOrGlobal(iden, globalScope);
         } else {
-            definition = globalScope.getImportedGlobal(module, iden);
+            definition = globalScope.getImported(module, iden);
         }
 
         if (definition == null) {

@@ -71,7 +71,7 @@ public class LocalContext {
     public Definition getDefOrGlobal(String iden, GlobalContext globalScope) {
         Definition def = getDef(iden);
         if (def == null) { // Couldn't find in local context, try global
-            def = globalScope.getGlobalVariable(iden);
+            def = globalScope.getVar(iden);
             if (def == null) // If it's not a variable, it must be a function
                 def = globalScope.getFunction(iden);
             // TODO: Comprobar que no es una función y una variable a la vez

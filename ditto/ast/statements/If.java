@@ -18,25 +18,28 @@ public class If extends Statement {
     public If(Expr cond, List<Statement> then) {
         this.cond = cond;
         this.then = then;
-        this.els  = new ArrayList<Statement>();
+        this.els = new ArrayList<Statement>();
     }
 
     public If(Expr cond, List<Statement> then, List<Statement> els) {
         this.cond = cond;
         this.then = then;
-        this.els  = els;
+        this.els = els;
     }
 
+    @Override
+    public String getAstString() {
+        return "if";
+    }
 
     @Override
-    public String getAstString() { return "if"; }
-
-    @Override
-    public List<Object> getAstArguments() { return Arrays.asList(cond, then, els); }
+    public List<Object> getAstArguments() {
+        return Arrays.asList(cond, then, els);
+    }
 
     @Override
     public Type type() {
-        if(cond.type().equals(BoolType.getInstance())) {
+        if (cond.type().equals(BoolType.getInstance())) {
             throw new RuntimeException("Condition in if statement must be boolean");
         }
         return null;

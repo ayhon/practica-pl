@@ -3,16 +3,21 @@ package ditto.ast.designators;
 import java.util.Arrays;
 import java.util.List;
 
+import ditto.ast.GlobalContext;
+import ditto.ast.LocalContext;
 import ditto.ast.Node;
 import ditto.ast.ProgramOutput;
+import ditto.ast.definitions.DefStruct;
+import ditto.ast.definitions.Definition;
 import ditto.ast.types.StructType;
 import ditto.ast.types.Type;
-import ditto.errors.SemanticError;
 import ditto.errors.TypeError;
 
 public class StructAccess extends Designator {
     private final Designator struct;
     private final String name;
+    private DefStruct defStruct;
+    private Definition definition;
 
     public StructAccess(Designator struct, String name) {
         this.name = name;
@@ -25,6 +30,20 @@ public class StructAccess extends Designator {
 
     public String getField() {
         return name;
+    }
+
+    @Override
+    public void bind(GlobalContext global, LocalContext local) {
+        /// Llamar recursivamente al bind del this.struct y hacer bind
+        super.bind(global, local);
+        this.typecheck();
+
+        /// Si pasa el typecheck, entonces struct es StructType, y struct.getDefinition
+        /// devuelve DefStruct
+        this.defStruct = (DefStruct) this.struct.getDefinition();
+
+        /// Y nuestra definicion seria un DefVar o un DefFunc
+        this.definition = this.defStruct.getAttributeOrMethod(name);
     }
 
     @Override
@@ -67,5 +86,10 @@ public class StructAccess extends Designator {
     @Override
     public List<Node> getAstChildren() {
         return Arrays.asList(struct);
+    }
+
+    @Override
+    public Definition getDefinition() {
+        return this.definition;
     }
 }

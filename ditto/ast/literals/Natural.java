@@ -29,6 +29,7 @@ public class Natural extends Literal {
     public Object getValue() {
         return value;
     }
+
     @Override
     public List<Object> getAstArguments() {
         return Arrays.asList(value);

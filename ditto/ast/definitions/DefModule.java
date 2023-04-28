@@ -20,6 +20,7 @@ import ditto.parser.Parser;
 
 public class DefModule extends Node {
     private final String name;
+    private Module module = null;
 
     public DefModule(String name) {
         this.name = name;
@@ -65,17 +66,23 @@ public class DefModule extends Node {
         return Arrays.asList();
     }
 
-    public Module getModule() {
+    private void loadModule() {
         /// Obtener el módulo asociado leyendo el archivo
         try (Reader input = new InputStreamReader(new FileInputStream(name + ".ditto"))) {
             Lexer lexer = new Lexer(input);
             Parser parser = new Parser(lexer);
             parser.parse();
-            return parser.getRoot();
+            module = parser.getRoot();
         } catch (IOException e) {
             throw new ModuleImportError("Error IO parsing module " + name);
         } catch (Exception e) {
             throw new ModuleImportError("Error parsing module " + name);
         }
+    }
+
+    public Module getModule() {
+        if (module == null)
+            loadModule();
+        return module;
     }
 }

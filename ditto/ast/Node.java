@@ -57,7 +57,7 @@ public abstract class Node {
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append('(');
-        sb.append(getAstString());
+        sb.append(getAstString() + ": " + type());
         sb.append("\n");
 
         StringJoiner args = new StringJoiner(",\n");

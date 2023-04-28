@@ -11,13 +11,14 @@ import ditto.ast.definitions.DefModule;
 import ditto.ast.definitions.DefStruct;
 import ditto.ast.definitions.DefVar;
 import ditto.ast.definitions.Definition;
+import ditto.ast.designators.Var;
 import ditto.ast.types.IntegerType;
 
 public class GlobalContext {
     // Aparte de Map<String, Definition> tiene que incluir un mapeo de modulos y de
     // estructuras
-    private Map<String, Definition> globalVar;
-    private Map<String, Definition> globalFunc;
+    private Map<String, DefVar> globalVar;
+    private Map<String, DefFunc> globalFunc;
     private Map<String, DefStruct> globalStruct;
     private Map<String, DefModule> globalModule;
 
@@ -59,7 +60,7 @@ public class GlobalContext {
      * @param iden
      * @return
      */
-    public Definition getImportedGlobal(List<String> module, String iden) {
+    public Definition getImportedGlobal(String module, String iden) {
 
         return null;
     }
@@ -83,7 +84,7 @@ public class GlobalContext {
         globalStruct.put(struct.getIden(), struct);
     }
 
-    public void addGlobalVariable(DefVar var) {
+    public void addGlobalVariable(DefVar var) { // TODO: cambiar para que devuelva int
         globalVar.put(var.getIden(), var);
     }
 
@@ -91,12 +92,12 @@ public class GlobalContext {
         globalFunc.put(func.getIden(), func);
     }
 
-    public DefFunc getGlobalFunction(String iden) {
-        return (DefFunc) globalFunc.get(iden);
+    public DefFunc getFunction(String iden) {
+        return globalFunc.get(iden);
     }
 
     public DefVar getGlobalVar(String iden) {
-        return (DefVar) globalVar.get(iden);
+        return globalVar.get(iden);
     }
 
     public DefModule getGlobalModule(String iden) {

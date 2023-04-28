@@ -132,14 +132,14 @@ public class OperUn extends Expr {
                 break;
             case REF:
                 // Se da con expresion `ptr x`,
-                expr.compileAsDesig(out);
+                expr.compile(out);
                 out.i32_const(((DefVar) (((Var) expr).getDefinition())).delta()); // Aqui hacemos i32.const delta(*id)
                                                                                   // (TODO: revisar)
                 out.i32_add();
                 break;
             case DEREF:
                 // Se da con expresion `@x`,
-                expr.compileAsDesig(out);
+                expr.compile(out);
                 out.i32_load();
                 break;
             default:

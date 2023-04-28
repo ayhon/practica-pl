@@ -9,7 +9,10 @@ import ditto.ast.LocalContext;
 import ditto.ast.Node;
 import ditto.ast.ProgramOutput;
 import ditto.ast.definitions.DefFunc;
+import ditto.ast.definitions.Definition;
 import ditto.ast.designators.Designator;
+import ditto.ast.designators.StructAccess;
+import ditto.ast.designators.Var;
 import ditto.ast.types.FuncType;
 import ditto.ast.types.Type;
 import ditto.errors.TypeError;
@@ -49,14 +52,27 @@ public class Call extends Expr {
 
     @Override
     public void bind(GlobalContext global, LocalContext local) {
-        this.funcDef = global.getGlobalFunction(func.toString());
+        super.bind(global, local);
 
-        if (this.funcDef == null) {
+        this.funcDef = this.func.getDefinition();
+
+        if (func instanceof Var) {
+            /// MAL, DEBERIA DEVOLVER FUNC.GETDEFINTION DIRECTAMENTE
+            Var varFunc = (Var) func;
+            this.funcDef = global.getFunction(varFunc);
+        } else if (func instanceof StructAccess) {
+            /// Necesito saber la definicion de esta funcion
+            /// Tengo un designador de forma StructAccess, varStruct.metodo
+            /// Seria muy comodo si tengo un metodo que sea getDefinition en StructAccess,
+            /// que me deja obtener su definicion directo
+
+            this.funcDef = (DefFunc) this.func.getDefinition();
+        } else {
             throw new TypeError(String.format("'%s' is not a function", this.func));
         }
 
-        for (Expr arg : args) {
-            arg.bind(global, local);
+        if (this.funcDef == null) {
+            throw new TypeError(String.format("'%s' is not a function", this.func));
         }
     }
 

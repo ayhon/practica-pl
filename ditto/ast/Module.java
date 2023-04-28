@@ -3,38 +3,34 @@ package ditto.ast;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import ditto.ast.definitions.*;
 import ditto.ast.types.Type;
 import ditto.ast.types.VoidType;
 
 public class Module extends Node {
-    private final List<DefModule> imports;
-    private final List<DefFunc> functions;
-    private final List<DefStruct> structs;
-    private final List<DefVar> globals;
-
-    public List<DefModule> getImports() {
-        return imports;
-    }
-
-    public List<DefFunc> getFunctions() {
-        return functions;
-    }
-
-    public List<DefStruct> getStructs() {
-        return structs;
-    }
-
-    public List<DefVar> getGlobals() {
-        return globals;
-    }
+    private final Map<String, DefModule> imports;
+    private final Map<String, DefFunc> functions;
+    private final Map<String, DefStruct> structs;
+    private final Map<String, DefVar> globals;
+    private final DefinitionCollection definitions;
 
     public Module(List<DefModule> imports, DefinitionCollection definitions) {
-        this.imports = imports;
-        this.functions = definitions.getFunctions();
-        this.structs = definitions.getStructs();
-        this.globals = definitions.getVariables();
+        this.definitions = definitions;
+        this.imports = imports.stream().collect(Collectors.toMap(DefModule::getIden, Function.identity()));
+        this.functions = definitions.getFunctions().stream()
+                .collect(Collectors.toMap(DefFunc::getIden, Function.identity()));
+        this.structs = definitions.getStructs().stream()
+                .collect(Collectors.toMap(DefStruct::getIden, Function.identity()));
+        this.globals = definitions.getVariables().stream()
+                .collect(Collectors.toMap(DefVar::getIden, Function.identity()));
+    }
+
+    public DefFunc getFunc(String iden) {
+        return this.functions.get(iden);
     }
 
     public static class DefinitionCollection {
@@ -117,23 +113,10 @@ public class Module extends Node {
     @Override
     public List<Node> getAstChildren() {
         List<Node> children = new ArrayList<Node>();
-
-        for (DefModule imp : imports) {
-            children.add(imp);
-        }
-
-        for (DefFunc func : functions) {
-            children.add(func);
-        }
-
-        for (DefStruct struct : structs) {
-            children.add(struct);
-        }
-
-        for (DefVar var : globals) {
-            children.add(var);
-        }
-
+        children.addAll(this.imports.values());
+        children.addAll(this.functions.values());
+        children.addAll(this.structs.values());
+        children.addAll(this.globals.values());
         return children;
     }
 }

@@ -54,17 +54,11 @@ public class DefVar extends Definition {
 
     @Override
     public void bind(GlobalContext gl, LocalContext lc) {
-        if(lc != null){
+        if (lc != null) {
             lc.addDef(this);
         } else {
             gl.addGlobalVariable(this);
         }
-    }
-
-    @Override
-    public void compile(ProgramOutput out) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'generateCode'");
     }
 
     @Override
@@ -75,14 +69,10 @@ public class DefVar extends Definition {
         return children;
     }
 
-    public int delta(){
-        //TODO: Implementar
-        throw new UnsupportedOperationException("Unimplemented method 'delta'");
-    }
-
     @Override
     public void compileAsInstruction(ProgramOutput out) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'compileAsInstruction'");
     }
+
 }

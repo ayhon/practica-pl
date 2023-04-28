@@ -3,8 +3,11 @@ package ditto.ast.designators;
 import java.util.Arrays;
 import java.util.List;
 
+import ditto.ast.GlobalContext;
+import ditto.ast.LocalContext;
 import ditto.ast.Node;
 import ditto.ast.ProgramOutput;
+import ditto.ast.definitions.Definition;
 import ditto.ast.types.PointerType;
 import ditto.ast.types.Type;
 import ditto.errors.TypeError;
@@ -55,5 +58,16 @@ public class Deref extends Designator {
     @Override
     public List<Node> getAstChildren() {
         return Arrays.asList(pointer);
+    }
+
+    @Override
+    public void bind(GlobalContext global, LocalContext local) {
+        // TODO Auto-generated method stub
+        super.bind(global, local);
+    }
+
+    @Override
+    public Definition getDefinition() {
+        return this.pointer.getDefinition();
     }
 }

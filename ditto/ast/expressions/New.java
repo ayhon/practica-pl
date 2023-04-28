@@ -39,9 +39,9 @@ public class New extends Expr {
 
     @Override
     public void compileAsExpr(ProgramOutput out) {
-        //Llama a la funcion que reserva el espacio necesario 
+        // Llama a la funcion que reserva el espacio necesario
         // y deja en la cima la dirección de inicio de ese espacio.
-        //TODO: Implementar
+        // TODO: Implementar
     }
 
     @Override

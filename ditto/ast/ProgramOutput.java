@@ -24,7 +24,8 @@ public class ProgramOutput {
         sb.append(instruction.indent(indent_level));
         sb.append('\n');
     }
-    public void append (String instruction, Object... args) {
+
+    public void append(String instruction, Object... args) {
         append(String.format(instruction, args));
     }
 
@@ -37,8 +38,8 @@ public class ProgramOutput {
         f.append("(type $_sig_i32 (func (param i32)))");
         f.append("(type $_sig_ri32 (func (result i32)))");
         f.append(String.format("(type $%s (func))", FUNC_SIG)); // TODO: Mirar si esto tiene sentido en WASM
-                                                   // Este es el tipo de todas nuestras funciones, pues nos
-                                                   // pasamos los argumentos y valores de retorno por memoria
+        // Este es el tipo de todas nuestras funciones, pues nos
+        // pasamos los argumentos y valores de retorno por memoria
         f.append("(import \"runtime\" \"print\" (func $print (type $_sig_i32)))");
         f.append("(import \"runtime\" \"scan\" (func $scan (type $_sig_ri32)))");
         f.append(sb.toString());
@@ -115,77 +116,94 @@ public class ProgramOutput {
         append("i32.mul");
     }
 
-    public void i32_div_s(){
+    public void i32_div_s() {
         append("i32.i32_div_s");
     }
-    public void i32_div_s(String x, String y){
+
+    public void i32_div_s(String x, String y) {
         append("(i32.i32_div_s (%s) (%s))", x, y);
     }
 
-    public void i32_rem_s(){
+    public void i32_rem_s() {
         append("i32.rem_s");
     }
-    public void i32_rem_s(String x, String y){
+
+    public void i32_rem_s(String x, String y) {
         append("(i32.rem_s (%s) (%s))", x, y);
     }
 
-    public void i32_eq(){
+    public void i32_eq() {
         append("i32.eq");
     }
-    public void i32_eq(String x, String y){
+
+    public void i32_eq(String x, String y) {
         append("(i32.eq (%s) (%s))", x, y);
     }
 
-    public void i32_ne(){
+    public void i32_ne() {
         append("i32.ne");
     }
-    public void i32_ne(String x, String y){
+
+    public void i32_ne(String x, String y) {
         append("(i32.ne (%s) (%s))", x, y);
     }
 
-    public void i32_eq_z(){
+    public void i32_eq_z() {
         append("i32.eq_z");
     }
-    public void i32_eq_z(String x, String y){
+
+    public void i32_eq_z(String x, String y) {
         append("(i32.eq_z (%s) (%s))", x, y);
     }
 
-    public void i32_le_s(){
+    public void i32_le_s() {
         append("i32.le_s");
     }
-    public void i32_le_s(String x, String y){
+
+    public void i32_le_s(String x, String y) {
         append("(i32.le_s (%s) (%s))", x, y);
     }
-    public void i32_lt_s(){
+
+    public void i32_lt_s() {
         append("i32.lt_s");
     }
-    public void i32_lt_s(String x, String y){
+
+    public void i32_lt_s(String x, String y) {
         append("(i32.lt_s (%s) (%s))", x, y);
     }
-    public void i32_ge_s(){
+
+    public void i32_ge_s() {
         append("i32.ge_s");
     }
-    public void i32_ge_s(String x, String y){
+
+    public void i32_ge_s(String x, String y) {
         append("(i32.ge_s (%s) (%s))", x, y);
     }
-    public void i32_gt_s(){
+
+    public void i32_gt_s() {
         append("i32.gt_s");
     }
-    public void i32_gt_s(String x, String y){
+
+    public void i32_gt_s(String x, String y) {
         append("(i32.gt_s (%s) (%s))", x, y);
     }
-    public void i32_and(){
+
+    public void i32_and() {
         append("i32.and");
     }
-    public void i32_and(String x, String y){
+
+    public void i32_and(String x, String y) {
         append("(i32.and (%s) (%s))", x, y);
     }
-    public void i32_or(){
+
+    public void i32_or() {
         append("i32.or");
     }
-    public void i32_or(String x, String y){
+
+    public void i32_or(String x, String y) {
         append("(i32.or (%s) (%s))", x, y);
     }
+
     public void i32_xor() {
         append("i32.xor");
     }
@@ -256,14 +274,15 @@ public class ProgramOutput {
     public void call(String name) {
         append("call $%s", name);
     }
+
     public void func(DefFunc fun, Runnable runnable) {
         append("(func $%s (type $%s)", fun.getIden(), FUNC_SIG);
         indent();
 
-        for(DefFunc.Param var : fun.getParams()) {
+        for (DefFunc.Param var : fun.getParams()) {
             append("(param $%s %s)", var.getName(), var.getType());
         }
-        if(fun.getResult() != VoidType.getInstance()) {
+        if (fun.getResult() != VoidType.getInstance()) {
             append("(result %s)");
         }
         runnable.run(); // La idea es que haga algo con el ProgramOutput dentro del runnable
@@ -280,6 +299,7 @@ public class ProgramOutput {
         dedent();
         append("end");
     }
+
     public void loop(Runnable runnable) {
         append("loop");
         indent();
@@ -287,20 +307,24 @@ public class ProgramOutput {
         dedent();
         append("end");
     }
+
     public void block_loop(Runnable runnable) {
         block(() -> loop(runnable));
     }
-    public void br(int skip){
+
+    public void br(int skip) {
         append("br %d", skip);
     }
-    public void br_if(int skip){
+
+    public void br_if(int skip) {
         append("br_if %d", skip);
     }
-    public void br_if(int skip, String condition){
+
+    public void br_if(int skip, String condition) {
         append("(br_if %d (%s))", skip, condition);
     }
     // public void br_table(int[] skip){
-    //     
+    //
     // }
 
     public void _if() {

@@ -13,25 +13,29 @@ import ditto.ast.types.Type;
 import ditto.errors.TypeError;
 
 public class Var extends Designator {
-    public final String iden;
-    public final List<String> module; // If it's empty, it's defined in the current module
-    public Definition definition = null;
+    private final String iden;
+    private final String module;
+    private Definition definition = null;
 
-    public Var(String iden, List<String> module) {
+    public Var(String iden, String module) {
         this.iden = iden;
         this.module = module;
     }
 
-    public Var(List<String> name) {
-        this(name.get(name.size() - 1), name.subList(0, name.size() - 1));
-    }
-
     public Var(String iden) {
-        this(iden, new ArrayList<>());
+        this(iden, null);
     }
 
     public String getIden() {
         return iden;
+    }
+
+    public String getModule() {
+        return module;
+    }
+
+    public boolean hasModule() {
+        return module != null;
     }
 
     @Override
@@ -46,13 +50,13 @@ public class Var extends Designator {
 
     @Override
     public void bind(GlobalContext globalScope, LocalContext localContext) {
-        if (module.isEmpty()) {
+        if (module == null) {
             definition = localContext.getDefOrGlobal(iden, globalScope);
         } else {
             definition = globalScope.getImportedGlobal(module, iden);
         }
 
-        if(definition == null) {
+        if (definition == null) {
             throw new TypeError("Could not find definition for " + iden);
         }
     }

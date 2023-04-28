@@ -4,9 +4,11 @@ import ditto.ast.Node;
 import ditto.ast.ProgramOutput;
 
 public abstract class Statement extends Node {
+
     public abstract void compileAsInstruction(ProgramOutput out);
+
     @Override
-    public void compile(ProgramOutput out){
+    public void compile(ProgramOutput out) {
         compileAsInstruction(out);
     }
 }

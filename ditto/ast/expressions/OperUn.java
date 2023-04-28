@@ -6,7 +6,7 @@ import java.util.List;
 import ditto.ast.Node;
 import ditto.ast.ProgramOutput;
 import ditto.ast.definitions.DefVar;
-import ditto.ast.designators.Var;
+import ditto.ast.designators.Name;
 import ditto.ast.types.BoolType;
 import ditto.ast.types.IntegerType;
 import ditto.ast.types.PointerType;
@@ -133,7 +133,7 @@ public class OperUn extends Expr {
             case REF:
                 // Se da con expresion `ptr x`,
                 expr.compile(out);
-                out.i32_const(((DefVar) (((Var) expr).getDefinition())).delta()); // Aqui hacemos i32.const delta(*id)
+                out.i32_const(((DefVar) (((Name) expr).getDefinition())).getDelta()); // Aqui hacemos i32.const delta(*id)
                                                                                   // (TODO: revisar)
                 out.i32_add();
                 break;

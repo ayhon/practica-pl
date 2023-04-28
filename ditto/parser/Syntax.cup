@@ -85,7 +85,7 @@ non terminal DefFunc FUN_DEF;
 non terminal DefStruct STRUCT_DEF;
 
 non terminal Type TYPE;
-non terminal List<String> NAME;
+non terminal List<String> QUAL_IDEN; // Possibly iden::iden, possibly just iden
 
 non terminal List<DefFunc.Param> FUNC_PARAMs, AT_LEAST_ONE_PARAM, NO_PARAM;
 non terminal DefFunc.Param PARAM;
@@ -101,13 +101,13 @@ S                           ::= IMPORTs:imports DEFINITIONs:declarations
 
 
 /* GRAMÁTICA DE DEFINICIONES */
-IMPORTs                     ::= IMPORTs:imports IMPORT NAME:name SEMICOLON
-                                    {: RESULT = imports; imports.add(new DefModule(name)); :}
+IMPORTs                     ::= IMPORTs:imports IMPORT QUAL_IDEN:iden SEMICOLON
+                                    {: RESULT = imports; imports.add(new DefModule(iden)); :}
                                 |
                                     {: RESULT = new ArrayList<DefModule>(); :};
 
-STRUCT_DEF                  ::= STRUCT IDEN:name IS DEFINITIONs:ds END
-                                    {: RESULT = new DefStruct(name, ds.getVariables(), ds.getFunctions()); :};
+STRUCT_DEF                  ::= STRUCT IDEN:iden IS DEFINITIONs:ds END
+                                    {: RESULT = new DefStruct(iden, ds.getVariables(), ds.getFunctions()); :};
              
 DEFINITIONs                 ::= DEFINITIONs:defs STRUCT_DEF:defStruct 
                                     {: RESULT = defs; defs.add(defStruct); :}
@@ -231,17 +231,17 @@ EXPRs                       ::= EXPRs:more COMMA EXPR:e
 /* GRAMÁTICA DE DESIGNADORES */
 DESIGNATION                 ::= DESIGNATION:d OPEN_BRACKET EXPR:e CLOSE_BRACKET  /* design[expr] */
                                     {: RESULT = new ArrayAccess(d, e); :}
-                                | DESIGNATION:d DOT IDEN:name                      /* design.iden() */
-                                    {: RESULT = new StructAccess(d, name); :}
-                                | DESIGNATION:d R_ARROW IDEN:name                  /* desig->iden */
-                                    {: RESULT = new StructAccess(new Deref(d), name); :}
-                                | NAME:name
-                                    {: RESULT = new Var(name); :};                      /* Var should take a binding */ 
+                                | DESIGNATION:d DOT IDEN:iden                      /* design.iden() */
+                                    {: RESULT = new StructAccess(d, iden); :}
+                                | DESIGNATION:d R_ARROW IDEN:iden                  /* desig->iden */
+                                    {: RESULT = new StructAccess(new Deref(d), iden); :}
+                                | QUAL_IDEN:iden
+                                    {: RESULT = new Name(iden); :};                      /* Var should take a binding */ 
 
-NAME                        ::= NAME:more QUADOT IDEN:name                       /* name::iden */
-                                    {: RESULT = more; more.add(name); :}
-                                | IDEN:name
-                                    {: RESULT = new ArrayList<String>(); RESULT.add(name); :}; 
+QUAL_IDEN                   ::= QUAL_IDEN:more QUADOT IDEN:iden                       /* name::iden */
+                                    {: RESULT = more; more.add(iden); :}
+                                | IDEN:iden
+                                    {: RESULT = new ArrayList<String>(); RESULT.add(iden); :}; 
 
 LITERAL                     ::= NAT:n
                                     {: RESULT = n; :}
@@ -263,18 +263,18 @@ ARRAY_LITERAL               ::= OPEN_BRACKET CLOSE_BRACKET
                                 | OPEN_BRACKET EXPR:def SEMICOLON EXPR:size CLOSE_BRACKET 
                                     {: RESULT = new ArrayLiteral(def,size); :};             /* [default; size] */
 
-STRUCT_LITERAL              ::= NAME:name OPEN_CURLY ATRIBUTE_ASSIGNMENTs:assigns CLOSE_CURLY
-                                    {: RESULT = new StructLiteral(name, assigns); :};
+STRUCT_LITERAL              ::= QUAL_IDEN:iden OPEN_CURLY ATRIBUTE_ASSIGNMENTs:assigns CLOSE_CURLY
+                                    {: RESULT = new StructLiteral(iden, assigns); :};
 
 ATRIBUTE_ASSIGNMENTs        ::= AT_LEAST_ONE_ATR_ASSIGMENT:assigns 
                                     {: RESULT = assigns; :}
                                 | 
                                     {: RESULT = new HashMap<String, Expr>(); :}; 
 
-AT_LEAST_ONE_ATR_ASSIGMENT  ::= AT_LEAST_ONE_ATR_ASSIGMENT:more COMMA IDEN:name COLON EXPR:expr 
-                                    {: RESULT = more; more.put(name, expr); :}
-                                | IDEN:name COLON EXPR:expr 
-                                    {: RESULT = new HashMap<String, Expr>(); RESULT.put(name, expr); :};
+AT_LEAST_ONE_ATR_ASSIGMENT  ::= AT_LEAST_ONE_ATR_ASSIGMENT:more COMMA IDEN:iden COLON EXPR:expr 
+                                    {: RESULT = more; more.put(iden, expr); :}
+                                | IDEN:iden COLON EXPR:expr 
+                                    {: RESULT = new HashMap<String, Expr>(); RESULT.put(iden, expr); :};
 
 /* GRAMÁTICA DE SENTENCIAS */
 /* NOTA: Quiza luego hay problema, porque estamos modificando la misma referencia de ArrayList */
@@ -301,16 +301,16 @@ STMT                        ::= EXPR:e SEMICOLON
                                     {: RESULT = r; :}
                                 | error;
 
-ASSIGNMENT                  ::= DESIGNATION:name ASSIGN EXPR: e SEMICOLON 
-                                    {: RESULT = new Assign(name, e); :};
+ASSIGNMENT                  ::= DESIGNATION:iden ASSIGN EXPR: e SEMICOLON 
+                                    {: RESULT = new Assign(iden, e); :};
 
-VAR_DEF                     ::= TYPE:t IDEN:name SEMICOLON
-                                    {: RESULT = new DefVar(t, name); :}
+VAR_DEF                     ::= TYPE:t IDEN:iden SEMICOLON
+                                    {: RESULT = new DefVar(t, iden); :}
                                 | TYPE:t ASSIGNMENT:a
-                                    {: RESULT = new DefVar(t, ((Var)((Assign)a).getPlace()).getIden(), ((Assign)a).getExpr()); :};
+                                    {: RESULT = new DefVar(t, ((Name)((Assign)a).getPlace()).getIden(), ((Assign)a).getExpr()); :};
 
-TYPE                        ::= NAME:name 
-                                    {: RESULT = new StructType(name); :} // By default, if it's not a primitive type, it's a struct. TODO: Link to the struct definition
+TYPE                        ::= QUAL_IDEN:iden 
+                                    {: RESULT = new StructType(iden); :} // By default, if it's not a primitive type, it's a struct. TODO: Link to the struct definition
                                 | INT 
                                     {: RESULT = IntegerType.getInstance(); :}
                                 | BOOL 

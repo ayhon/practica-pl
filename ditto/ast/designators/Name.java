@@ -26,7 +26,7 @@ public class Name extends Designator {
 
     @Override
     public String getAstString() {
-        return "var";
+        return "name";
     }
 
     @Override

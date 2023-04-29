@@ -37,4 +37,9 @@ public class Identifier {
             return false;
         }
     }
+
+    @Override
+    public String toString() {
+        return (module == null ? "" : module + "::") + name;
+    }
 }

@@ -33,6 +33,13 @@ public class DefStruct extends Definition {
         this.name = name;
         this.attributes = attributes.stream().collect(Collectors.toMap(DefVar::getIden, Function.identity()));
         this.methods = methods.stream().collect(Collectors.toMap(DefFunc::getIden, Function.identity()));
+        Map<String, Type> fieldTypes = new HashMap<>();
+
+        for (DefVar attribute : this.attributes.values()) {
+            fieldTypes.put(attribute.getIden(), attribute.getType());
+        }
+
+        type = new StructType(name, fieldTypes);
     }
 
     public DefVar getAttribute(String iden) {
@@ -69,15 +76,13 @@ public class DefStruct extends Definition {
         return Arrays.asList(name, attributes, methods);
     }
 
+    public Type getType(){
+        return this.type;
+    }
+
     @Override
     public Type type() {
-        Map<String, Type> fieldTypes = new HashMap<>();
-
-        for (DefVar attribute : attributes.values()) {
-            fieldTypes.put(attribute.getIden(), attribute.type());
-        }
-
-        return new StructType(name, fieldTypes);
+        return getType();
     }
 
     @Override

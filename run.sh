@@ -30,9 +30,11 @@ case $1 in
         esac
         ;;
     test)
-        file=`[ -z $3 ] && echo "test/keywords.ditto" || echo "test/$3.ditto"`
+        action="$2"
+        test_file="$3"
+        file=`[ -z $test_file ] && echo "test/keywords.ditto" || echo "test/$test_file.ditto"`
         javac -cp "$JAR_PATH/*:." ditto/*/*.java ditto/*.java \
-        && java -cp "$JAR_PATH/*:." ditto.Test $2 $file
+        && java -cp "$JAR_PATH/*:." ditto.Test $action $file
         ;;
     *)
         echo "Nou entiendo"

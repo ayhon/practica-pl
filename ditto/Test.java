@@ -28,14 +28,12 @@ public class Test {
         }
 
         var classFolder = file.getParentFile().getAbsolutePath();
-
         Reader input = new InputStreamReader(new FileInputStream(file));
         Lexer lexer = new Lexer(input);
         Parser parser = new Parser(lexer);
         parser.parse();
         Module main = parser.getRoot();
-        main.setClassFolder(filePath);
-        parser.setClassFolder(classFolder);
+        main.setClassFolder(classFolder);
 
         switch (task) {
             case "ast" -> {

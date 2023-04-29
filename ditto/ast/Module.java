@@ -184,8 +184,8 @@ public class Module extends Node {
     public List<Node> getAstChildren() {
         List<Node> children = new ArrayList<Node>();
         children.addAll(this.modules.values());
-        children.addAll(this.functions.values());
         children.addAll(this.structs.values());
+        children.addAll(this.functions.values());
         children.addAll(this.variables.values());
         return children;
     }

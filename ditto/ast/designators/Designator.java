@@ -1,7 +1,6 @@
 package ditto.ast.designators;
 
 import ditto.ast.ProgramOutput;
-import ditto.ast.definitions.Definition;
 import ditto.ast.expressions.Expr;
 
 public abstract class Designator extends Expr {
@@ -12,6 +11,4 @@ public abstract class Designator extends Expr {
         compileAsDesig(out);
         out.i32_load();
     }
-
-    public abstract Definition getDefinition();
 }

@@ -7,7 +7,6 @@ import ditto.ast.Module;
 import ditto.ast.LocalContext;
 import ditto.ast.Node;
 import ditto.ast.ProgramOutput;
-import ditto.ast.definitions.Definition;
 import ditto.ast.types.PointerType;
 import ditto.ast.types.Type;
 import ditto.errors.TypeError;
@@ -63,10 +62,5 @@ public class Deref extends Designator {
     public void bind(Module global, LocalContext local) {
         /// Hace el bind del pointer
         super.bind(global, local);
-    }
-
-    @Override
-    public Definition getDefinition() {
-        return this.pointer.getDefinition();
     }
 }

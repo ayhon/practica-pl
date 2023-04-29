@@ -5,7 +5,6 @@ import java.util.List;
 
 import ditto.ast.Node;
 import ditto.ast.ProgramOutput;
-import ditto.ast.definitions.Definition;
 import ditto.ast.expressions.Expr;
 import ditto.ast.types.ArrayType;
 import ditto.ast.types.IntegerType;
@@ -27,12 +26,6 @@ public class ArrayAccess extends Designator {
 
     public Expr getIndex() {
         return index;
-    }
-
-    @Override
-    public Definition getDefinition() {
-        /// Devuelve la definicion del array original
-        return this.array.getDefinition();
     }
 
     @Override

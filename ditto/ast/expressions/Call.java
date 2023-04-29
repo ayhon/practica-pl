@@ -4,16 +4,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import ditto.ast.Module;
-import ditto.ast.LocalContext;
 import ditto.ast.Node;
 import ditto.ast.ProgramOutput;
 import ditto.ast.definitions.DefFunc;
-import ditto.ast.definitions.Definition;
 import ditto.ast.designators.Designator;
 import ditto.ast.types.FuncType;
 import ditto.ast.types.Type;
-import ditto.errors.SemanticError;
 import ditto.errors.TypeError;
 
 public class Call extends Expr {
@@ -23,7 +19,7 @@ public class Call extends Expr {
 
     public Call(Designator func) {
         this.func = func;
-        this.args = new ArrayList<>(0);
+        this.args = new ArrayList<>();
     }
 
     public Call(Designator func, List<Expr> args) {
@@ -47,22 +43,6 @@ public class Call extends Expr {
 
     public Designator getFunc() {
         return func;
-    }
-
-    @Override
-    public void bind(Module global, LocalContext local) {
-        super.bind(global, local);
-        Definition funcDef = this.func.getDefinition();
-
-        if (funcDef == null) {
-            throw new SemanticError(String.format("'%s' is not defined", this.func));
-        }
-
-        if (!(funcDef instanceof DefFunc)) {
-            throw new SemanticError(String.format("'%s' is not a function", this.func));
-        }
-
-        this.funcDef = (DefFunc) funcDef;
     }
 
     @Override

@@ -45,6 +45,7 @@ public class ArrayType extends Type {
         /// Dos arrays son del mismo tipo si tienen el mismo tipo de elementos
         if (obj instanceof ArrayType) {
             ArrayType other = (ArrayType) obj;
+            if(other.elementType == null) return true; // We're comparing with an empty array
             return elementType.equals(other.elementType);
         } else {
             return false;

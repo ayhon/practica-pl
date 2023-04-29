@@ -80,8 +80,8 @@ public class DefStruct extends Definition {
 
     @Override
     public void bind(Context ctx) {
-        super.bind(ctx);
         ctx.add(this);
+        super.bind(ctx);
     }
 
     public StructType getType() {
@@ -100,6 +100,7 @@ public class DefStruct extends Definition {
     @Override
     public List<Node> getAstChildren() {
         List<Node> children = new ArrayList<>();
+        children.add(type);
         children.addAll(attributes.values());
         children.addAll(methods.values());
         return children;

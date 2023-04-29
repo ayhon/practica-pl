@@ -24,6 +24,8 @@ public class PointerType extends Type {
         /// Dos punteros son del mismo tipo si lo son sus elementos
         if (obj instanceof PointerType) {
             PointerType other = (PointerType) obj;
+            if (other.elementType == null)
+                return true; // We're comparing with a null pointer
             return elementType.equals(other.elementType);
         } else {
             return false;

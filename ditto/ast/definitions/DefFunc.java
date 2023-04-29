@@ -106,7 +106,7 @@ public class DefFunc extends Definition {
     public List<Node> getAstChildren() {
         List<Node> children = new ArrayList<>();
         children.addAll(body);
-        children.add(result);
+        children.add(type);
         return children;
     }
 

@@ -1,6 +1,8 @@
 package ditto.ast.types;
 
 import ditto.ast.Node;
+
+import java.util.ArrayList;
 import java.util.List;
 
 public class FuncType extends Type {
@@ -15,7 +17,7 @@ public class FuncType extends Type {
     public List<Type> getArgumentTypes() {
         return argumentTypes;
     }
-
+    
     public Type getReturnType() {
         return returnType;
     }
@@ -48,7 +50,13 @@ public class FuncType extends Type {
 
     @Override
     public List<Node> getAstChildren() {
-        List<Node> children = argumentTypes.stream().map(x -> (Node) x).toList();
+        List<Node> children = new ArrayList<>(); // argumentTypes.stream().map(x -> (Node) x).toList()
+        
+        for (Type t : argumentTypes) {
+            System.err.println("asdfasdfs");
+            children.add(t);
+        }
+
         children.add(returnType);
         return children;
     }

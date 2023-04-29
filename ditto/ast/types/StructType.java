@@ -6,54 +6,39 @@ import java.util.List;
 import java.util.Map;
 
 import ditto.ast.GlobalContext;
+import ditto.ast.Identifier;
 import ditto.ast.LocalContext;
 import ditto.ast.definitions.DefStruct;
 import ditto.errors.SemanticError;
 
 public class StructType implements Type {
-    private final String name;
-    private final String module;
+    private final Identifier iden;
     private Map<String, Type> fieldTypes;
     private DefStruct definition;
 
-    public StructType(List<String> name) {
+    public StructType(Identifier iden) {
         /// Este constructor se utiliza para CUP
         /// Para cuando declaramos una variable del tipo struct
-        if (name.size() == 1){
-            this.name = name.get(0);
-            this.module = null;
-        } else if (name.size() == 2){
-            this.name = name.get(1);
-            this.module = name.get(0);
-        } else throw new SemanticError("Nested modules aren't supported yet.");
+        this.iden = iden;
     }
 
-    public StructType(String name, Map<String, Type> fieldTypes) {
-        this(null, name, fieldTypes);
-    }
-
-    public StructType(String module, String name, Map<String, Type> fieldTypes) {
-        this.name = name;
-        this.module = module;
+    public StructType(Identifier iden, Map<String, Type> fieldTypes) {
+        this.iden = iden;
         this.fieldTypes = fieldTypes;
     }
 
-    public String getName() {
-        return name;
+    public Identifier getIden() {
+        return iden;
     }
 
-    public String getModule() {
-        return module;
-    }
-
-    private void loadFieldTypesFromDefinition(){
+    private void loadFieldTypesFromDefinition() {
         fieldTypes = new HashMap<>();
-        for(var entry : definition.getAttributes()){
+        for (var entry : definition.getAttributes()) {
             String attribute = entry.getKey();
             Type type = entry.getValue().getType();
             fieldTypes.put(attribute, type);
         }
-        for(var entry : definition.getMethods()){
+        for (var entry : definition.getMethods()) {
             String method = entry.getKey();
             Type type = entry.getValue().getType();
             fieldTypes.put(method, type);
@@ -61,9 +46,9 @@ public class StructType implements Type {
     }
 
     public Type getFieldOrMethodType(String name) {
-        if(fieldTypes == null && definition == null)
+        if (fieldTypes == null && definition == null)
             throw new SemanticError("Can't get the field types before binding.");
-        else if(fieldTypes == null)
+        else if (fieldTypes == null)
             loadFieldTypesFromDefinition();
 
         if (fieldTypes.containsKey(name)) {
@@ -84,22 +69,18 @@ public class StructType implements Type {
         /// Porque no aceptamos Duck Typing
         if (obj instanceof StructType) {
             StructType other = (StructType) obj;
-            return name.equals(other.name);
+            return iden.equals(other.iden);
         } else {
             return false;
         }
     }
 
     public void bind(GlobalContext global, LocalContext local) {
-        if(hasModule()){
-            definition = global.getModule(module).getStruct(name);
+        if(iden.hasModule()){
+            definition = global.getModule(iden.getModule()).getStruct(iden.getName());
         } else {
-            definition = global.getStruct(name);
+            definition = global.getStruct(iden.getName());
         }
-    }
-
-    private boolean hasModule() {
-        return module != null;
     }
 
     @Override

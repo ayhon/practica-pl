@@ -31,25 +31,32 @@ public class Module extends Node {
     }
 
     public DefFunc getFunc(String iden) {
-        var def =  this.functions.get(iden);
-        if(def == null) throw new SemanticError("Couln't find function " + iden );
+        var def = this.functions.get(iden);
+        if (def == null)
+            throw new SemanticError("Couln't find function " + iden);
         return def;
     }
+
     public DefStruct getStruct(String iden) {
-        var def =  this.structs.get(iden);
-        if(def == null) throw new SemanticError("Couln't find struct " + iden );
+        var def = this.structs.get(iden);
+        if (def == null)
+            throw new SemanticError("Couln't find struct " + iden);
         return def;
     }
+
     public DefVar getVar(String iden) {
-        var def =  this.globals.get(iden);
-        if(def == null) throw new SemanticError("Couln't find global " + iden );
+        var def = this.globals.get(iden);
+        if (def == null)
+            throw new SemanticError("Couln't find global " + iden);
         return def;
     }
+
     public Definition getDefinition(String iden) {
         Definition def = globals.get(iden);
-        if(def == null) 
+        if (def == null)
             def = functions.get(iden);
-        if(def == null) throw new SemanticError("No global definition found for " + iden);
+        if (def == null)
+            throw new SemanticError("No global definition found for " + iden);
         return def;
     }
 

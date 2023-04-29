@@ -1,53 +1,27 @@
 package ditto.ast.designators;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import ditto.ast.GlobalContext;
+import ditto.ast.Identifier;
 import ditto.ast.LocalContext;
 import ditto.ast.Node;
 import ditto.ast.ProgramOutput;
 import ditto.ast.definitions.Definition;
 import ditto.ast.types.Type;
-import ditto.errors.SemanticError;
-import ditto.errors.TypeError;
 
 // A name designates a variable or a function.
 public class Name extends Designator {
-    private final String iden;
-    private final String module;
+    private final Identifier iden;
     private Definition definition = null;
 
-    public Name(List<String> names) {
-        if (names.size() == 1) {
-            this.iden = names.get(0);
-            this.module = null;
-        } else {
-            this.iden = names.get(1);
-            this.module = names.get(0);
-        }
-    }
-
-    public Name(String iden, String module) {
+    public Name(Identifier iden) {
         this.iden = iden;
-        this.module = module;
     }
 
-    public Name(String iden) {
-        this(iden, null);
-    }
-
-    public String getIden() {
+    public Identifier getIden() {
         return iden;
-    }
-
-    public String getModule() {
-        return module;
-    }
-
-    public boolean hasModule() {
-        return module != null;
     }
 
     @Override
@@ -62,10 +36,10 @@ public class Name extends Designator {
 
     @Override
     public void bind(GlobalContext globalScope, LocalContext localContext) {
-        if (hasModule()) {
-            definition = globalScope.getImportedDef(module, iden);
+        if (this.iden.hasModule()) {
+            definition = globalScope.getImportedDef(iden.getModule(), iden.getName());
         } else {
-            definition = localContext.getDefOrGlobal(iden, globalScope);
+            definition = localContext.getDefOrGlobal(iden.getName(), globalScope);
         }
     }
 

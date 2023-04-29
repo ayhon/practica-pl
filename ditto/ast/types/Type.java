@@ -1,25 +1,30 @@
 package ditto.ast.types;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import ditto.ast.Bindable;
-import ditto.ast.Module;
-import ditto.ast.LocalContext;
+import ditto.ast.Node;
+import ditto.ast.ProgramOutput;
 
-public abstract class Type implements Bindable {
+public abstract class Type extends Node {
     /// Lo que ocuparía en memoria. Se usa para calcular delta.
     public abstract int size();
 
-    @Override
-    public List<Bindable> getBindableChildren() {
-        return new ArrayList<>();
+    public Type type() {
+        return null;
     }
 
-    @Override
-    public void bind(Module global, LocalContext localContext) {
-        for (var children : this.getBindableChildren()) {
-            children.bind(global, localContext);
-        }
+    public void compile(ProgramOutput out) {
+        /* TODO */ } // Desde Module llama a `type` antes de recursar,
+
+    public String getAstString() {
+        return null;
+    }
+
+    public List<Object> getAstArguments() {
+        return null;
+    }
+
+    public List<Node> getAstChildren() {
+        return null;
     }
 }

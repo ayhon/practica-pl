@@ -5,7 +5,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import ditto.ast.Module;
-import ditto.ast.LocalContext;
+import ditto.ast.Context;
 import ditto.ast.Node;
 import ditto.ast.ProgramOutput;
 import ditto.ast.expressions.Expr;
@@ -40,10 +40,10 @@ public class If extends Statement {
     }
 
     @Override
-    public void bind(Module global, LocalContext local) {
-        local.pushLightScope();
-        super.bind(global, local);
-        local.popLightScope();
+    public void bind(Context ctx) {
+        ctx.pushScope();
+        super.bind(ctx);
+        ctx.popScope();
     }
 
     @Override

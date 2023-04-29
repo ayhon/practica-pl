@@ -4,10 +4,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import ditto.ast.Module;
-import ditto.ast.Bindable;
+import ditto.ast.Node;
 import ditto.ast.Identifier;
-import ditto.ast.LocalContext;
+import ditto.ast.Context;
 import ditto.ast.definitions.DefStruct;
 import ditto.errors.SemanticError;
 
@@ -75,18 +74,14 @@ public class StructType extends Type {
     }
 
     @Override
-    public List<Bindable> getBindableChildren() {
-        return fieldTypes.values().stream().map(t -> (Bindable) t).toList();
+    public List<Node> getAstChildren() {
+        return fieldTypes.values().stream().map(t -> (Node) t).toList();
     }
 
     @Override
-    public void bind(Module global, LocalContext local) {
-        if (iden.hasModule()) {
-            definition = global.getModule(iden.getModule()).getStruct(iden.getName());
-        } else {
-            definition = global.getStruct(iden.getName());
-        }
+    public void bind(Context ctx) {
+        definition = (DefStruct) ctx.get(this.iden);
         fieldTypes = definition.getType().getFieldTypes();
-        super.bind(global, local);
+        super.bind(ctx);
     }
 }

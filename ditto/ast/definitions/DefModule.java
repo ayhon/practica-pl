@@ -8,7 +8,7 @@ import java.io.Reader;
 import java.util.Arrays;
 import java.util.List;
 
-import ditto.ast.LocalContext;
+import ditto.ast.Context;
 import ditto.ast.Module;
 import ditto.ast.Node;
 import ditto.ast.ProgramOutput;
@@ -37,9 +37,9 @@ public class DefModule extends Node {
     }
 
     @Override
-    public void bind(Module global, LocalContext local) {
+    public void bind(Context ctx) {
         if (module == null)
-            loadModule(global.getClassFolder());
+            loadModule(ctx.getModule().getClassFolder());
         module.bind();
     }
 
@@ -50,7 +50,6 @@ public class DefModule extends Node {
 
     @Override
     public void compile(ProgramOutput out) {
-        // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'generateCode'");
     }
 
@@ -74,6 +73,7 @@ public class DefModule extends Node {
             Parser parser = new Parser(lexer);
             parser.parse();
             this.module = parser.getRoot();
+            this.module.setName(path + "/" + name);
         } catch (IOException e) {
             throw new ModuleImportError("Error IO parsing module " + name);
         } catch (Exception e) {

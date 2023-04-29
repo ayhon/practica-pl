@@ -3,9 +3,7 @@ package ditto.ast.types;
 import java.util.Arrays;
 import java.util.List;
 
-import ditto.ast.Bindable;
-import ditto.ast.LocalContext;
-import ditto.ast.Module;
+import ditto.ast.Node;
 import ditto.ast.literals.Natural;
 
 public class ArrayType extends Type {
@@ -59,7 +57,7 @@ public class ArrayType extends Type {
     }
 
     @Override
-    public List<Bindable> getBindableChildren() {
+    public List<Node> getAstChildren() {
         return Arrays.asList(elementType);
     }
 }

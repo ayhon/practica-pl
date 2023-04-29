@@ -1,8 +1,7 @@
 package ditto.ast.types;
 
+import ditto.ast.Node;
 import java.util.List;
-
-import ditto.ast.Bindable;
 
 public class PointerType extends Type {
     private final Type elementType;
@@ -37,7 +36,7 @@ public class PointerType extends Type {
     }
 
     @Override
-    public List<Bindable> getBindableChildren() {
+    public List<Node> getAstChildren() {
         return List.of(elementType);
     }
 }

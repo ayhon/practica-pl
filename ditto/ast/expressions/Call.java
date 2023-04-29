@@ -6,7 +6,6 @@ import java.util.List;
 
 import ditto.ast.Node;
 import ditto.ast.ProgramOutput;
-import ditto.ast.definitions.DefFunc;
 import ditto.ast.designators.Designator;
 import ditto.ast.types.FuncType;
 import ditto.ast.types.Type;

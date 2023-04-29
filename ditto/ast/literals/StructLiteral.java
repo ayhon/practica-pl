@@ -5,16 +5,14 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-import ditto.ast.Module;
 import ditto.ast.Identifier;
-import ditto.ast.LocalContext;
+import ditto.ast.Context;
 import ditto.ast.Node;
 import ditto.ast.ProgramOutput;
 import ditto.ast.definitions.DefStruct;
 import ditto.ast.definitions.DefVar;
 import ditto.ast.expressions.Expr;
 import ditto.ast.types.Type;
-import ditto.errors.SemanticError;
 import ditto.errors.TypeError;
 
 public class StructLiteral extends Literal {
@@ -82,12 +80,9 @@ public class StructLiteral extends Literal {
     }
 
     @Override
-    public void bind(Module global, LocalContext local) {
-        if(iden.hasModule()){
-            definition = global.getModule(iden.getModule()).getStruct(iden.getName());
-        } else {
-            definition = global.getStruct(iden.getName());
-        }
+    public void bind(Context ctx) {
+        super.bind(ctx);
+        definition = (DefStruct) ctx.get(iden);
 
         /// En realidad no hay que hacer bind de los campos. Estos sabemos que se
         /// encontrarán en el

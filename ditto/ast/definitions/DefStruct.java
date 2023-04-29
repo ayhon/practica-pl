@@ -28,10 +28,12 @@ public class DefStruct extends Definition {
         this.methods = new HashMap<>();
     }
 
-    public DefStruct(String name, List<DefVar> attributes, List<DefFunc> methods) {
+    public DefStruct(String name, List<Definition> definitions) {
         this.name = name;
-        this.attributes = attributes.stream().collect(Collectors.toMap(DefVar::getIden, Function.identity()));
-        this.methods = methods.stream().collect(Collectors.toMap(DefFunc::getIden, Function.identity()));
+        this.attributes = definitions.stream().filter(def -> def instanceof DefVar).map(def -> (DefVar) def)
+                .collect(Collectors.toMap(DefVar::getIden, Function.identity()));
+        this.methods = definitions.stream().filter(def -> def instanceof DefVar).map(def -> (DefFunc) def)
+                .collect(Collectors.toMap(DefFunc::getIden, Function.identity()));
         Map<String, Type> fieldTypes = new HashMap<>();
 
         for (DefVar attribute : this.attributes.values()) {

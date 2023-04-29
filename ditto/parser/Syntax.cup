@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.HashMap;
 
+import ditto.ast.Node;
 import ditto.ast.Module;
 import ditto.ast.Identifier;
 import ditto.ast.definitions.*;
@@ -91,14 +92,13 @@ non terminal List<DefFunc.Param> FUNC_PARAMs, AT_LEAST_ONE_PARAM, NO_PARAM;
 non terminal DefFunc.Param PARAM;
 
 non terminal List<DefModule> IMPORTs;
-non terminal Module.DefinitionCollection DEFINITIONs;
+non terminal List<Definition> DEFINITIONs;
 
 /*** GRAMÁTICA DEL PROGRAMA ***/
 
 /* Nuestro programa empieza con un conjunto de imports, y luego declaraciones */
 S                           ::= IMPORTs:imports DEFINITIONs:declarations
                                     {: RESULT = parser.setRoot(new Module(imports, declarations)); :};
-
 
 /* GRAMÁTICA DE DEFINICIONES */
 IMPORTs                     ::= IMPORTs:imports IMPORT IDEN:iden SEMICOLON
@@ -107,7 +107,7 @@ IMPORTs                     ::= IMPORTs:imports IMPORT IDEN:iden SEMICOLON
                                     {: RESULT = new ArrayList<DefModule>(); :};
 
 STRUCT_DEF                  ::= STRUCT IDEN:iden IS DEFINITIONs:ds END
-                                    {: RESULT = new DefStruct(iden, ds.getVariables(), ds.getFunctions()); :};
+                                    {: RESULT = new DefStruct(iden, ds); :};
              
 DEFINITIONs                 ::= DEFINITIONs:defs STRUCT_DEF:defStruct 
                                     {: RESULT = defs; defs.add(defStruct); :}
@@ -116,7 +116,7 @@ DEFINITIONs                 ::= DEFINITIONs:defs STRUCT_DEF:defStruct
                                 | DEFINITIONs:defs VAR_DEF:defVar 
                                     {: RESULT = defs; defs.add(defVar); :}
                                 | 
-                                    {: RESULT = new Module.DefinitionCollection(); :};
+                                    {: RESULT = new ArrayList<Definition>(); :};
 
 FUN_DEF                     ::= FUNC IDEN:id OPEN_PAR FUNC_PARAMs:params CLOSE_PAR STMTs:statements END 
                                     {: RESULT = new DefFunc(id, params, statements); :}
@@ -231,10 +231,10 @@ EXPRs                       ::= EXPRs:more COMMA EXPR:e
 /* GRAMÁTICA DE DESIGNADORES */
 DESIGNATION                 ::= DESIGNATION:d OPEN_BRACKET EXPR:e CLOSE_BRACKET  /* design[expr] */
                                     {: RESULT = new ArrayAccess(d, e); :}
-                                | DESIGNATION:d DOT IDEN:iden                      /* design.iden() */
+                                | DESIGNATION:d DOT IDEN:iden                            /* design.iden() */
                                     {: RESULT = new StructAccess(d, iden); :}
-                                | DESIGNATION:d R_ARROW IDEN:iden                  /* desig->iden */
-                                    {: RESULT = new StructAccess(new Deref(d), iden); :}
+                                | DESIGNATION:d R_ARROW IDEN:iden                        /* desig->iden */
+                                    {: RESULT = new StructAccess(new Deref(d), iden); :}         
                                 | QUAL_IDEN:iden
                                     {: RESULT = new Name(iden); :};                      /* Var should take a binding */ 
 

@@ -34,15 +34,16 @@ public class Test {
         parser.parse();
         Module main = parser.getRoot();
         main.setClassFolder(classFolder);
+        main.setName(filePath);
 
         switch (task) {
             case "ast" -> {
-                System.out.println(parser.getRoot());
+                System.out.println(main);
                 break;
             }
             case "bind" -> {
                 try{
-                    parser.getRoot().bind();
+                    main.bind();
                 } catch (SemanticError e) {
                     System.out.println(e);
                     System.out.println(main.dumpGlobals());
@@ -52,11 +53,11 @@ public class Test {
                 break;
             }
             case "typecheck" -> {
-                parser.getRoot().typecheck();
+                main.typecheck();
                 break;
             }
             case "code" -> {
-                parser.getRoot().compile(new ProgramOutput());
+                main.compile(new ProgramOutput());
                 break;
             }
         }

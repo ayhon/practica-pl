@@ -5,36 +5,33 @@ import java.util.StringJoiner;
 
 import ditto.ast.types.Type;
 
-public abstract class Node implements Bindable {
-    /*
-     * type LocalScopes = Map<String, (DefVar | DefFunc | DefStruct | DefModule)>;
-     * type Context = List<LocalScopes>;
-     * class Context {
-     * GlobalScope globalScope,
-     * List<LocalScopes> localScopes;
-     * List<List<LocalScopes>> otros;
-     * public getDef(String id);
-     * public enterFunction();
-     * }
-     * void bind(gl, scs){
-     * for (Statement inst : this.body)
-     * inst.bind(gl, new ArrayList<>());
-     * }
-     */
+public abstract class Node {
 
-    public List<Bindable> getBindableChildren() {
-        return getAstChildren().stream().map(x -> (Bindable) x).toList();
+    private CompilationProgress progress;
+
+    public CompilationProgress getProgress() {
+        return progress;
     }
 
-    // Vincularmos cada uso de una definición con su definición
-    public void bind(Module global, LocalContext local) {
-        for (Bindable child : getBindableChildren()) {
-            // System.out.println("Node.bind: " + child);
-            child.bind(global, local);
-        }
-    }
+
+    public abstract void compile(ProgramOutput out); // Desde Module llama a `type` antes de recursar,
+
+    public abstract String getAstString();
+
+    public abstract List<Object> getAstArguments();
+
+    public abstract List<Node> getAstChildren();
 
     public abstract Type type();
+
+        // Vincularmos cada uso de una definición con su definición
+    public void bind(Context ctx) {
+        progress = CompilationProgress.BIND;
+        for (Node child : getAstChildren()) {
+            if (child.getProgress().lessThan(CompilationProgress.BIND))
+                child.bind(ctx);
+        }
+    }
 
     public void typecheck() {
         /*
@@ -65,15 +62,6 @@ public abstract class Node implements Bindable {
         }
         return max;
     }
-
-    public abstract void compile(ProgramOutput out); // Desde Module llama a `type` antes de recursar,
-    // type ProgramOutput = StringBuilder;
-
-    public abstract String getAstString();
-
-    public abstract List<Object> getAstArguments();
-
-    public abstract List<Node> getAstChildren();
 
     @Override
     @SuppressWarnings("unchecked")

@@ -1,8 +1,7 @@
 package ditto.ast.types;
 
+import ditto.ast.Node;
 import java.util.List;
-
-import ditto.ast.Bindable;
 
 public class FuncType extends Type {
     private final Type returnType;
@@ -48,8 +47,8 @@ public class FuncType extends Type {
     }
 
     @Override
-    public List<Bindable> getBindableChildren() {
-        List<Bindable> children = argumentTypes.stream().map(x -> (Bindable) x).toList();
+    public List<Node> getAstChildren() {
+        List<Node> children = argumentTypes.stream().map(x -> (Node) x).toList();
         children.add(returnType);
         return children;
     }

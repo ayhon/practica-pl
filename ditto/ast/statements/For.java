@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 import ditto.ast.Module;
-import ditto.ast.LocalContext;
+import ditto.ast.Context;
 import ditto.ast.Node;
 import ditto.ast.ProgramOutput;
 import ditto.ast.definitions.DefVar;
@@ -44,11 +44,11 @@ public class For extends Statement {
     }
 
     @Override
-    public void bind(Module global, LocalContext local) {
-        local.pushLightScope();
-        local.addDef(new DefVar(IntegerType.getInstance(), index)); // Add the for-loop's index to the new local scope
-        super.bind(global, local);
-        local.popLightScope();
+    public void bind(Context ctx) {
+        ctx.pushScope();
+        ctx.add(new DefVar(IntegerType.getInstance(), index)); // Add the for-loop's index to the new local scope
+        super.bind(ctx);
+        ctx.popScope();
     }
 
     @Override

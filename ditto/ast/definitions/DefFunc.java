@@ -4,8 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import ditto.ast.Module;
-import ditto.ast.LocalContext;
+import ditto.ast.Context;
 import ditto.ast.Node;
 import ditto.ast.ProgramOutput;
 import ditto.ast.statements.Statement;
@@ -94,9 +93,11 @@ public class DefFunc extends Definition {
     }
 
     @Override
-    public void bind(Module global, LocalContext local) {
-        /// Llamar a bind de los hijos con nuevo contexto
-        super.bind(global, new LocalContext(this));
+    public void bind(Context ctx) {
+        /// Llama a bind de los hijos con nuevo contexto local
+        ctx.pushScope(this);
+        super.bind(ctx);
+        ctx.popScope();
     }
 
     public Type getType() {
@@ -126,7 +127,6 @@ public class DefFunc extends Definition {
 
     @Override
     public void compileAsInstruction(ProgramOutput out) {
-        // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'compileAsInstruction'");
     }
 

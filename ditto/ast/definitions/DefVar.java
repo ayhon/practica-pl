@@ -3,8 +3,7 @@ package ditto.ast.definitions;
 import java.util.ArrayList;
 import java.util.List;
 
-import ditto.ast.Module;
-import ditto.ast.LocalContext;
+import ditto.ast.Context;
 
 import ditto.ast.Node;
 import ditto.ast.ProgramOutput;
@@ -43,7 +42,7 @@ public class DefVar extends Definition {
         return args;
     }
 
-    public Type getType(){
+    public Type getType() {
         // Como type(), pero getType() se puede usar antes del type-checking
         return type;
     }
@@ -59,12 +58,9 @@ public class DefVar extends Definition {
     }
 
     @Override
-    public void bind(Module global, LocalContext local) {
-        if (local != null) {
-            local.addDef(this);
-        } else {
-            // Es una variable global, ya está en el módulo
-        }
+    public void bind(Context ctx) {
+        super.bind(ctx);
+        ctx.add(this);
     }
 
     @Override
@@ -77,24 +73,22 @@ public class DefVar extends Definition {
 
     @Override
     public void compileAsInstruction(ProgramOutput out) {
-        // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'compileAsInstruction'");
     }
 
     @Override
-    public int computeDelta(int lastPosition){
+    public int computeDelta(int lastPosition) {
         this.position = lastPosition;
         lastPosition += this.type.size();
         return lastPosition;
     }
 
     @Override
-    public int computeMaxFuncSize(){
+    public int computeMaxFuncSize() {
         return this.type.size();
     }
 
-    public int getDelta(){
+    public int getDelta() {
         return this.position;
     }
-
 }

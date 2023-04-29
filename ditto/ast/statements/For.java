@@ -57,7 +57,8 @@ public class For extends Statement {
         if (!aux.equals(to.type())) {
             throw new RuntimeException("Type mismatch in for loop");
         }
-        if (aux.equals(by.type())) {
+
+        if (!aux.equals(by.type())) {
             throw new RuntimeException("Type mismatch in for loop");
         }
         return null;

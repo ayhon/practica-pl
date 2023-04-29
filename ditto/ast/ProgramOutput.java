@@ -280,7 +280,7 @@ public class ProgramOutput {
         indent();
 
         for (DefFunc.Param var : fun.getParams()) {
-            append("(param $%s %s)", var.getName(), var.getType());
+            append("(param $%s %s)", var.getIden(), var.getType());
         }
         if (fun.getResult() != VoidType.getInstance()) {
             append("(result %s)");

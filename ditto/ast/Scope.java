@@ -15,9 +15,7 @@ public class Scope {
 
     public Scope(DefFunc func) {
         for (DefFunc.Param param : func.getParams()) {
-            // De alguna manera convendría indicar que son parámetros
-            // Funciona sino cuando tenemos parámetros pasados por referencia?
-            add(new DefVar(param.getType(), param.getName()));
+            add(param);
         }
     }
 

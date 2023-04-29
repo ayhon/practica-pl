@@ -34,14 +34,15 @@ public class Module extends Node {
         this.globalScope.add(
                 new DefFunc(
                         "scan",
-                        Arrays.asList(new DefFunc.Param(IntegerType.getInstance(), "dest")),
+                        Arrays.asList(new DefFunc.Param(IntegerType.getInstance(), "dest", true)),
                         new ArrayList<>()));
 
         /// print recibe un entero y devuelve un entero
         this.globalScope.add(
                 new DefFunc(
                         "print",
-                        Arrays.asList(new DefFunc.Param(IntegerType.getInstance(), "src")), IntegerType.getInstance(),
+                        Arrays.asList(new DefFunc.Param(IntegerType.getInstance(), "src", false)),
+                        IntegerType.getInstance(),
                         new ArrayList<>()));
     }
 
@@ -101,7 +102,6 @@ public class Module extends Node {
         List<Node> children = new ArrayList<Node>();
         children.addAll(this.modules.values());
         children.addAll(this.definitions);
-        System.err.println(this.definitions);
         return children;
     }
 

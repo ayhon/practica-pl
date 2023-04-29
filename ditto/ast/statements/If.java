@@ -48,8 +48,8 @@ public class If extends Statement {
 
     @Override
     public Type type() {
-        if (cond.type().equals(BoolType.getInstance())) {
-            throw new RuntimeException("Condition in if statement must be boolean");
+        if (!cond.type().equals(BoolType.getInstance())) {
+            throw new RuntimeException("Condition in if statement must be boolean.");
         }
         return null;
     }

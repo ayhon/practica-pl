@@ -12,8 +12,8 @@ func play() -> array int
     if arr[0] == 10 then
         print(10);
     else 
-        ptr int a := ptr arr[2];
-        return a[1];
+        // ptr int a := ptr arr[2];
+        // return a[1];
     end
     int guess;
     int secret_number := Random::integer(0,100);
@@ -60,7 +60,7 @@ struct Name is
 end
 
 func mat_mul(array array int A, array array int B) -> array array int
-    assert(A[0].size == B.size);
+    /// assert(A[0].size == B.size);
     array array int C := [[0; 3]; 3];
     for i from 0 to 3 do
         for j from 0 to 3 do

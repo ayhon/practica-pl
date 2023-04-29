@@ -39,7 +39,7 @@ public class DefFunc extends Definition {
         this.body = body;
         List<Type> paramTypes = new ArrayList<>();
         for (Param param : params) {
-            paramTypes.add(param.type);
+            paramTypes.add(param.getType());
         }
         type = new FuncType(result, paramTypes);
     }
@@ -58,37 +58,20 @@ public class DefFunc extends Definition {
         return Arrays.asList(id, params, result, body);
     }
 
-    static public class Param {
-        public final Type type;
-        public final String name;
-
-        public Type getType() {
-            return type;
-        }
-
-        public String getName() {
-            return name;
-        }
-
-        public final Boolean isRef;
-
-        public Param(Type type, String name) {
-            /// Por valor por defecto
-            this(type, name, false);
-        }
+    static public class Param extends DefVar {
+        private final boolean isRef;
 
         public Param(Type type, String name, Boolean isRef) {
-            this.type = type;
-            this.name = name;
+            super(type, name);
             this.isRef = isRef;
         }
 
         @Override
         public String toString() {
             if (this.isRef)
-                return "REF " + type + " " + name;
+                return "REF " + this.getType() + " " + this.getIden();
             else
-                return type + " " + name;
+                return this.getType() + " " + this.getIden();
         }
     }
 
@@ -123,6 +106,7 @@ public class DefFunc extends Definition {
     public List<Node> getAstChildren() {
         List<Node> children = new ArrayList<>();
         children.addAll(body);
+        children.add(result);
         return children;
     }
 

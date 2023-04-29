@@ -5,8 +5,10 @@ import java.util.List;
 
 import ditto.ast.Node;
 import ditto.ast.ProgramOutput;
+import ditto.ast.types.BoolType;
 import ditto.ast.types.Type;
 import ditto.errors.TypeError;
+import ditto.ast.types.IntegerType;
 
 public class OperBin extends Expr {
     public enum Operators {
@@ -22,9 +24,7 @@ public class OperBin extends Expr {
         LESS_EQUAL,
         GREATER_EQUAL,
         AND,
-        OR,
-        ACCESS,
-        ACCESS_ARR;
+        OR;
 
         public String toString() {
             switch (this) {
@@ -63,6 +63,7 @@ public class OperBin extends Expr {
     private final Operators op;
     private final Expr left;
     private final Expr right;
+    private Type type;
 
     public OperBin(Operators op, Expr left, Expr right) {
         this.op = op;
@@ -84,7 +85,9 @@ public class OperBin extends Expr {
 
     @Override
     public Type type() {
-        return left.type();
+        if (type == null)
+            throw new TypeError("Can't get type of expression before typechecking");
+        return type;
     }
 
     @Override
@@ -96,6 +99,30 @@ public class OperBin extends Expr {
             throw new TypeError(String.format(
                     "El tipo de la expresión izquierda (%s - %s) no coincide con el tipo de la expresión derecha (%s - %s)",
                     left, left.type(), right, right.type()));
+        }
+
+        switch (this.op) {
+            case SUM, SUBS, MUL, DIV, MODULO -> {
+                if (!left.type().equals(IntegerType.getInstance()))
+                    throw new TypeError("Can't add a " + left.type());
+                this.type = IntegerType.getInstance();
+            }
+            case EQUALS, NOTEQUALS -> {
+                this.type = BoolType.getInstance();
+            }
+            case LESS, GREATER, LESS_EQUAL, GREATER_EQUAL -> {
+                if (!left.type().equals(IntegerType.getInstance()))
+                    throw new TypeError("Can't compare non-Integers");
+                this.type = BoolType.getInstance();
+            }
+            case AND, OR -> {
+                if (!left.type().equals(BoolType.getInstance()))
+                    throw new TypeError("Can't apply logic operators on " + left.type());
+                this.type = BoolType.getInstance();
+            }
+            default -> {
+                throw new RuntimeException("Operador no soportada: " + op.toString());
+            }
         }
     }
 

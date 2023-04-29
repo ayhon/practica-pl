@@ -1,7 +1,7 @@
 package ditto.ast;
 
 public enum CompilationProgress {
-    BUILD,
+    NONE,
     BIND,
     TYPE,
     COMPUTING_DELTAS,

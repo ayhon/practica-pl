@@ -6,13 +6,11 @@ import java.util.StringJoiner;
 import ditto.ast.types.Type;
 
 public abstract class Node {
-
-    private CompilationProgress progress;
+    private CompilationProgress progress = CompilationProgress.NONE;
 
     public CompilationProgress getProgress() {
         return progress;
     }
-
 
     public abstract void compile(ProgramOutput out); // Desde Module llama a `type` antes de recursar,
 
@@ -24,7 +22,7 @@ public abstract class Node {
 
     public abstract Type type();
 
-        // Vincularmos cada uso de una definición con su definición
+    // Vincularmos cada uso de una definición con su definición
     public void bind(Context ctx) {
         progress = CompilationProgress.BIND;
         for (Node child : getAstChildren()) {

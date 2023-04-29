@@ -32,7 +32,7 @@ public class DefStruct extends Definition {
         this.name = name;
         this.attributes = definitions.stream().filter(def -> def instanceof DefVar).map(def -> (DefVar) def)
                 .collect(Collectors.toMap(DefVar::getIden, Function.identity()));
-        this.methods = definitions.stream().filter(def -> def instanceof DefVar).map(def -> (DefFunc) def)
+        this.methods = definitions.stream().filter(def -> def instanceof DefFunc).map(def -> (DefFunc) def)
                 .collect(Collectors.toMap(DefFunc::getIden, Function.identity()));
         Map<String, Type> fieldTypes = new HashMap<>();
 

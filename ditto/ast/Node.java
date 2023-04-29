@@ -72,9 +72,9 @@ public abstract class Node {
         sb.append(getAstString() /* + ": " + type() */); // No podemos llamar a type() porque no hemos hecho el binding
                                                          // todavia
 
-        sb.append(" @ " + progress);
+        sb.append(" [PROGRESS: " + progress + "]");
         if (this.progress.atLeast(CompilationProgress.TYPE)) {
-            sb.append(": " + type());
+            sb.append(" [TYPE: " + type() + "]");
         }
         sb.append("\n");
 

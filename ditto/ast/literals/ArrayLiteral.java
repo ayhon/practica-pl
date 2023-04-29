@@ -93,7 +93,7 @@ public class ArrayLiteral extends Literal {
 
     @Override
     public List<Node> getAstChildren() {
-        List<Node> children = new ArrayList<Node>();
+        List<Node> children = new ArrayList<>();
         children.addAll(elements);
         children.add(numberOfElem);
         return children;

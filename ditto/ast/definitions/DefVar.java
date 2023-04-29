@@ -34,7 +34,7 @@ public class DefVar extends Definition {
 
     @Override
     public List<Object> getAstArguments() {
-        List<Object> args = new ArrayList<Object>();
+        List<Object> args = new ArrayList<>();
         args.add(type);
         args.add(iden);
         if (this.expr != null)

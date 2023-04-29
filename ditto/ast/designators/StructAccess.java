@@ -5,6 +5,8 @@ import java.util.List;
 
 import ditto.ast.Node;
 import ditto.ast.ProgramOutput;
+import ditto.ast.types.ArrayType;
+import ditto.ast.types.IntegerType;
 import ditto.ast.types.StructType;
 import ditto.ast.types.Type;
 import ditto.errors.SemanticError;
@@ -41,8 +43,16 @@ public class StructAccess extends Designator {
     public void typecheck() {
         super.typecheck();
         Type struct_type = struct.type();
+
+        if (struct_type instanceof ArrayType && name.equals("size")) {
+            /// Es de tipo ArrayType y se quiere acceder a su campo size
+            this.type = IntegerType.getInstance();
+            return;
+        }
+
         if (!(struct_type instanceof StructType)) {
-            throw new TypeError(String.format("Cannot access a field of a non-struct type '%s', %s", struct_type));
+            throw new TypeError(
+                    String.format("Cannot access a field of a non-struct type '%s', %s", struct_type, struct));
         }
 
         Type type = ((StructType) struct_type).getFieldOrMethodType(name);

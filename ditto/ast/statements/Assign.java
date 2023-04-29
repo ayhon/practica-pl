@@ -41,8 +41,9 @@ public class Assign extends Statement {
     @Override
     public Type type() {
         Type aux = place.type();
-        if(!aux.equals(expr.type())){
-            throw new RuntimeException("Type mismatch in assignment");
+        if (!aux.equals(expr.type())) {
+            throw new RuntimeException(
+                    String.format("Can't assign %s to variable %s of type %s", expr.type(), place, aux));
         }
         this.type = aux;
         return this.type;

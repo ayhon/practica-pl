@@ -50,7 +50,7 @@ public class FuncType extends Type {
 
     @Override
     public List<Node> getAstChildren() {
-        List<Node> children = new ArrayList<>(); // argumentTypes.stream().map(x -> (Node) x).toList()
+        List<Node> children = new ArrayList<>();
         
         for (Type t : argumentTypes) {
             children.add(t);

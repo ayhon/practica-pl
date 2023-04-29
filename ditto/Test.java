@@ -23,7 +23,7 @@ public class Test {
 
         File file = new File(filePath);
         if (!file.exists()) {
-            System.out.println("File does not exist");
+            System.out.println("File not found: " + filePath);
             return;
         }
 

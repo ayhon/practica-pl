@@ -32,10 +32,18 @@ case $1 in
     test)
         task="$2"
         test_file="$3"
-        file=`[ -z $test_file ] && echo "test/keywords.ditto" || echo "test/$test_file.ditto"`
-        javac -cp "$JAR_PATH/*:." ditto/*/*.java ditto/*.java \
-        && java -cp "$JAR_PATH/*:." ditto.Test $task $file
+        case $test_file in
+            all)
+                for file in test/*.ditto; do $0 test $task `basename $file .ditto` || exit 1; done
+                ;;
+            *)
+                file=`[ -z $test_file ] && echo "test/keywords.ditto" || echo "test/$test_file.ditto"`
+                javac -cp "$JAR_PATH/*:." ditto/*/*.java ditto/*.java \
+                && java -cp "$JAR_PATH/*:." ditto.Test $task $file
+                ;;
+        esac
         ;;
+    
     *)
         echo "Nou entiendo"
         exit 1

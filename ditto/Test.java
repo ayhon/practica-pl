@@ -49,6 +49,7 @@ public class Test {
                     System.out.println(e);
                     System.out.println(main.dumpGlobals());
                     e.printStackTrace();
+                    System.exit(1);
                 }
                 break;
             }

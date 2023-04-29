@@ -1,0 +1,7 @@
+func foo()
+    foo();
+end
+
+func scan_bool(bool b) 
+    scan_bool(b);
+end

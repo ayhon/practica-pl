@@ -1,5 +1,6 @@
 package ditto.ast;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -11,7 +12,6 @@ import ditto.ast.definitions.Definition;
 import ditto.errors.SemanticError;
 
 public class LocalContext {
-
     private List<LocalScope> scopes;
 
     private class LocalScope {
@@ -39,7 +39,8 @@ public class LocalContext {
             // Funciona sino cuando tenemos parámetros pasados por referencia?
             scope.addDef(new DefVar(param.getType(), param.getName()));
         }
-        scopes = Arrays.asList(scope);
+
+        this.scopes = new ArrayList<>(Arrays.asList(scope));
     }
 
     public void pushLightScope() {

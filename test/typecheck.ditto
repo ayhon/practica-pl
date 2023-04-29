@@ -1,0 +1,8 @@
+import Std;
+
+func main() -> int
+    int a := 1;
+    bool b := false;
+    Std::scan_bool(b);
+    return not b;
+end

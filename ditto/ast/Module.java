@@ -8,6 +8,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import ditto.ast.definitions.*;
+import ditto.ast.types.IntegerType;
 import ditto.ast.types.Type;
 import ditto.ast.types.VoidType;
 import ditto.errors.SemanticError;
@@ -27,6 +28,24 @@ public class Module extends Node {
                 .collect(Collectors.toMap(DefStruct::getIden, Function.identity()));
         this.variables = definitions.getVariables().stream()
                 .collect(Collectors.toMap(DefVar::getIden, Function.identity()));
+        loadBuiltins();
+    }
+
+    private void loadBuiltins() {
+        /// Añadir función scan y print
+        /// scan recibe un entero y no devuelve nada
+        this.functions.put("scan",
+                new DefFunc(
+                        "scan",
+                        Arrays.asList(new DefFunc.Param(IntegerType.getInstance(), "dest")),
+                        new ArrayList<>()));
+
+        /// print recibe un entero y devuelve un entero
+        this.functions.put("print",
+                new DefFunc(
+                        "print",
+                        Arrays.asList(new DefFunc.Param(IntegerType.getInstance(), "src")), IntegerType.getInstance(),
+                        new ArrayList<>()));
     }
 
     public void addFunc(DefFunc func) {

@@ -1,0 +1,3 @@
+func integer(int lo, int hi) -> int
+    return (hi + lo)/2;
+end

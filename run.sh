@@ -34,15 +34,25 @@ case $1 in
         test_file="$3"
         case $test_file in
             all)
+                # Solo compilo una vez
+                javac -cp "$JAR_PATH/*:." ditto/*/*.java ditto/*.java
+
+                # Y el resto de veces ejecuto los tests sin compilar
+                export DO_NOT_COMPILE=1
                 for file in test/*.ditto; do 
                     $0 test $task `basename $file .ditto` \
-                    || exit 1; 
+                        || exit 1; 
                 done
                 ;;
             *)
                 file=`[ -z $test_file ] && echo "test/keywords.ditto" || echo "test/$test_file.ditto"`
-                javac -cp "$JAR_PATH/*:." ditto/*/*.java ditto/*.java \
-                && java -cp "$JAR_PATH/*:." ditto.Test $task $file \
+
+                # Comprobar el flag de DO_NOT_COMPILE y compilar si no está
+                if [ -z $DO_NOT_COMPILE ]; then
+                    javac -cp "$JAR_PATH/*:." ditto/*/*.java ditto/*.java
+                fi && \
+
+                java -cp "$JAR_PATH/*:." ditto.Test $task $file \
                 && (echo -e "\e[32mPassed test $file\e[m") \
                 || (echo -e "\e[31mFailed test $file\e[m" && exit 1); 
                 ;;

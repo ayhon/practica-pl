@@ -5,7 +5,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-import ditto.ast.GlobalContext;
+import ditto.ast.Module;
 import ditto.ast.LocalContext;
 import ditto.ast.Node;
 import ditto.ast.ProgramOutput;
@@ -97,7 +97,7 @@ public class StructLiteral extends Literal {
     }
 
     @Override
-    public void bind(GlobalContext global, LocalContext local) {
+    public void bind(Module global, LocalContext local) {
         if(hasModule()){
             definition = global.getModule(module).getStruct(iden);
         } else {

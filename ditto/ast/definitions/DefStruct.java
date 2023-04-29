@@ -10,7 +10,7 @@ import java.util.Map.Entry;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import ditto.ast.GlobalContext;
+import ditto.ast.Module;
 import ditto.ast.LocalContext;
 import ditto.ast.Node;
 import ditto.ast.ProgramOutput;
@@ -86,7 +86,7 @@ public class DefStruct extends Definition {
     }
 
     @Override
-    public void bind(GlobalContext global, LocalContext local) {
+    public void bind(Module global, LocalContext local) {
         /// Add the struct to the global scope
         global.addStruct(this);
         /// TODO: Quitar esto. No hay declaraciones de variables locales dentro de la definición de un Struct.

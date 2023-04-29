@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import ditto.ast.GlobalContext;
+import ditto.ast.Module;
 import ditto.ast.LocalContext;
 import ditto.ast.Node;
 import ditto.ast.ProgramOutput;
@@ -27,7 +27,7 @@ public class While extends Statement {
     public List<Object> getAstArguments() { return Arrays.asList(cond, statements); }
 
     @Override
-    public void bind(GlobalContext global, LocalContext local) {
+    public void bind(Module global, LocalContext local) {
         local.pushLightScope();
         super.bind(global, local);
         local.popLightScope();

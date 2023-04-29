@@ -13,44 +13,75 @@ import ditto.ast.types.VoidType;
 import ditto.errors.SemanticError;
 
 public class Module extends Node {
-    private final Map<String, DefModule> imports;
+    private final Map<String, DefModule> modules;
     private final Map<String, DefFunc> functions;
     private final Map<String, DefStruct> structs;
-    private final Map<String, DefVar> globals;
+    private final Map<String, DefVar> variables;
     private final DefinitionCollection definitions;
 
     public Module(List<DefModule> imports, DefinitionCollection definitions) {
         this.definitions = definitions;
-        this.imports = imports.stream().collect(Collectors.toMap(DefModule::getIden, Function.identity()));
+        this.modules = imports.stream().collect(Collectors.toMap(DefModule::getIden, Function.identity()));
         this.functions = definitions.getFunctions().stream()
                 .collect(Collectors.toMap(DefFunc::getIden, Function.identity()));
         this.structs = definitions.getStructs().stream()
                 .collect(Collectors.toMap(DefStruct::getIden, Function.identity()));
-        this.globals = definitions.getVariables().stream()
+        this.variables = definitions.getVariables().stream()
                 .collect(Collectors.toMap(DefVar::getIden, Function.identity()));
     }
 
+    public void addFunc(DefFunc func) {
+        if (functions.containsKey(func.getIden()))
+            throw new SemanticError("Function " + func.getIden() + " already defined");
+        functions.put(func.getIden(), func);
+    }
+
     public DefFunc getFunc(String iden) {
-        var def =  this.functions.get(iden);
-        if(def == null) throw new SemanticError("Couln't find function " + iden );
+        var def = this.functions.get(iden);
+        if (def == null)
+            throw new SemanticError("Couln't find function " + iden);
         return def;
     }
+
+    public void addStruct(DefStruct struct) {
+        structs.put(struct.getIden(), struct);
+    }
+
     public DefStruct getStruct(String iden) {
-        var def =  this.structs.get(iden);
-        if(def == null) throw new SemanticError("Couln't find struct " + iden );
+        var def = this.structs.get(iden);
+        if (def == null)
+            throw new SemanticError("Couln't find struct " + iden);
         return def;
     }
+
+    public void addVar(DefVar var) { // TODO: cambiar para que devuelva int
+        variables.put(var.getIden(), var);
+    }
+
     public DefVar getVar(String iden) {
-        var def =  this.globals.get(iden);
-        if(def == null) throw new SemanticError("Couln't find global " + iden );
+        var def = this.variables.get(iden);
+        if (def == null)
+            throw new SemanticError("Couln't find global " + iden);
         return def;
     }
+
     public Definition getDefinition(String iden) {
-        Definition def = globals.get(iden);
-        if(def == null) 
+        Definition def = variables.get(iden);
+        if (def == null)
             def = functions.get(iden);
-        if(def == null) throw new SemanticError("No global definition found for " + iden);
+        if (def == null)
+            throw new SemanticError("No global definition found for " + iden);
         return def;
+    }
+
+    public void addModule(DefModule module) {
+        modules.put(module.getIden(), module);
+    }
+
+    public Module getModule(String moduleName){
+        DefModule module_def = modules.get(moduleName);
+        if(module_def == null) throw new SemanticError("Module " + moduleName + " not found");
+        return  module_def.getModule();
     }
 
     public static class DefinitionCollection {
@@ -102,12 +133,12 @@ public class Module extends Node {
 
     @Override
     public List<Object> getAstArguments() {
-        return Arrays.asList(imports, functions, structs, globals);
+        return Arrays.asList(modules, functions, structs, variables);
     }
 
     public void bind() {
         System.out.println("[DEBUG]: Start binding module");
-        bind(new GlobalContext(this), new LocalContext());
+        bind(this, new LocalContext());
         System.out.println("[DEBUG]: Finished binding module");
     }
 
@@ -133,10 +164,10 @@ public class Module extends Node {
     @Override
     public List<Node> getAstChildren() {
         List<Node> children = new ArrayList<Node>();
-        children.addAll(this.imports.values());
+        children.addAll(this.modules.values());
         children.addAll(this.functions.values());
         children.addAll(this.structs.values());
-        children.addAll(this.globals.values());
+        children.addAll(this.variables.values());
         return children;
     }
 }

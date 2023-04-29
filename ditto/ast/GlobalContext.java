@@ -64,19 +64,6 @@ public class GlobalContext {
         return globalVar.get(iden);
     }
 
-    /**
-     * Devuelve la definición global correspondiente a `iden` del módulo `module`.
-     * 
-     * @param module
-     * @param iden
-     * @return
-     */
-    public Definition getImportedDef(String moduleName, String iden) {
-        Module module = getModule(moduleName);
-        Definition def = module.getDefinition(iden);
-        if(def == null) throw new SemanticError("Coldn't find " + iden + " in module " + moduleName);
-        return def;
-    }
     public Module getModule(String moduleName){
         DefModule module_def = globalModule.get(moduleName);
         if(module_def == null) throw new SemanticError("Module " + moduleName + " not found");
@@ -102,11 +89,11 @@ public class GlobalContext {
         globalStruct.put(struct.getIden(), struct);
     }
 
-    public void addVariable(DefVar var) { // TODO: cambiar para que devuelva int
+    public void addVar(DefVar var) { // TODO: cambiar para que devuelva int
         globalVar.put(var.getIden(), var);
     }
 
-    public void addFunction(DefFunc func) {
+    public void addFunc(DefFunc func) { // HECHO
         if (globalFunc.containsKey(func.getIden()))
             throw new RuntimeException("Function " + func.getIden() + " already defined");
         globalFunc.put(func.getIden(), func);

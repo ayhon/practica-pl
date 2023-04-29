@@ -3,7 +3,7 @@ package ditto.ast.designators;
 import java.util.Arrays;
 import java.util.List;
 
-import ditto.ast.GlobalContext;
+import ditto.ast.Module;
 import ditto.ast.LocalContext;
 import ditto.ast.Node;
 import ditto.ast.ProgramOutput;
@@ -35,7 +35,7 @@ public class StructAccess extends Designator {
     }
 
     @Override
-    public void bind(GlobalContext global, LocalContext local) {
+    public void bind(Module global, LocalContext local) {
         /// Llamar recursivamente al bind del this.struct y hacer bind
         super.bind(global, local);
         this.typecheck();

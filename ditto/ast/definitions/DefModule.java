@@ -52,7 +52,7 @@ public class DefModule extends Node {
     }
 
     @Override
-    public void bind(GlobalContext global, LocalContext local) {
+    public void bind(Module global, LocalContext local) {
         /// Add the module to the global scope
         global.addModule(this);
         // We dont' load the module

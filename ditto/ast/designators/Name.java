@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import ditto.ast.GlobalContext;
+import ditto.ast.Module;
 import ditto.ast.LocalContext;
 import ditto.ast.Node;
 import ditto.ast.ProgramOutput;
@@ -61,9 +61,9 @@ public class Name extends Designator {
     }
 
     @Override
-    public void bind(GlobalContext globalScope, LocalContext localContext) {
+    public void bind(Module globalScope, LocalContext localContext) {
         if (hasModule()) {
-            definition = globalScope.getImportedDef(module, iden);
+            definition = globalScope.getModule(module).getDefinition(iden);
         } else {
             definition = localContext.getDefOrGlobal(iden, globalScope);
         }

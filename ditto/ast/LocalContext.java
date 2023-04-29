@@ -78,7 +78,7 @@ public class LocalContext {
      * @throws SemanticError
      * @return The definition of the variable in the local or global context.
      */
-    public Definition getDefOrGlobal(String iden, GlobalContext globalScope) {
+    public Definition getDefOrGlobal(String iden, Module globalScope) {
         Definition def = getDef(iden);
         if (def == null)  // Couldn't find in local context, try global
             def = globalScope.getDefinition(iden);

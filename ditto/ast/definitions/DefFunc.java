@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import ditto.ast.GlobalContext;
+import ditto.ast.Module;
 import ditto.ast.LocalContext;
 import ditto.ast.Node;
 import ditto.ast.ProgramOutput;
@@ -94,9 +94,9 @@ public class DefFunc extends Definition {
     }
 
     @Override
-    public void bind(GlobalContext global, LocalContext local) {
+    public void bind(Module global, LocalContext local) {
         /// Add the function to the global scope
-        global.addFunction(this);
+        global.addFunc(this);
 
         /// Llamar a bind de los hijos con nuevo contexto
         LocalContext newLocal = new LocalContext(this);

@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import ditto.ast.GlobalContext;
+import ditto.ast.Module;
 import ditto.ast.LocalContext;
 import ditto.ast.Node;
 import ditto.ast.ProgramOutput;
@@ -40,7 +40,7 @@ public class For extends Statement {
     public List<Object> getAstArguments() { return Arrays.asList(index, from, to, by, body); }
 
     @Override
-    public void bind(GlobalContext global, LocalContext local) {
+    public void bind(Module global, LocalContext local) {
         local.pushLightScope();
         local.addDef(new DefVar(IntegerType.getInstance(), index)); // Add the for-loop's index to the new local scope
         super.bind(global, null);

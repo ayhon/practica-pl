@@ -3,7 +3,7 @@ package ditto.ast.definitions;
 import java.util.ArrayList;
 import java.util.List;
 
-import ditto.ast.GlobalContext;
+import ditto.ast.Module;
 import ditto.ast.LocalContext;
 
 import ditto.ast.Node;
@@ -59,11 +59,11 @@ public class DefVar extends Definition {
     }
 
     @Override
-    public void bind(GlobalContext global, LocalContext local) {
+    public void bind(Module global, LocalContext local) {
         if (local != null) {
             local.addDef(this);
         } else {
-            global.addVariable(this);
+            global.addVar(this);
         }
     }
 

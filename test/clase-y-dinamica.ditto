@@ -5,10 +5,7 @@ struct Persona is
 end
 
 func main() -> int 
-    
-    Persona pers := new Persona{edad:13, altura:174, peso:63};
-
-    ptr Persona p := ptr pers;
+    ptr Persona p := new Persona{edad:13, altura:174, peso:63};
     
     print(p->edad);
 

@@ -7,7 +7,6 @@ import java.io.Reader;
 import java.util.Arrays;
 import java.util.List;
 
-import ditto.ast.GlobalContext;
 import ditto.ast.LocalContext;
 import ditto.ast.Module;
 import ditto.ast.Node;

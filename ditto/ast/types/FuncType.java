@@ -50,7 +50,7 @@ public class FuncType extends Type {
     @Override
     public List<Bindable> getBindableChildren() {
         List<Bindable> children = argumentTypes.stream().map(x -> (Bindable) x).toList();
-        children.add((Bindable) returnType);
+        children.add(returnType);
         return children;
     }
 }

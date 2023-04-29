@@ -34,7 +34,9 @@ case $1 in
         test_file="$3"
         case $test_file in
             all)
-                for file in test/*.ditto; do $0 test $task `basename $file .ditto` || exit 1; done
+                for file in test/*.ditto; do 
+                    $0 test $task `basename $file .ditto` || (echo "\e[31mFailed test $file\e[m" && exit 1); 
+                done
                 ;;
             *)
                 file=`[ -z $test_file ] && echo "test/keywords.ditto" || echo "test/$test_file.ditto"`

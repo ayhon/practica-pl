@@ -2,12 +2,12 @@ func subarray(array int ls, int offset, int size) -> array int
     ptr array int sub := new [0; size];
     for i from 0 to size - 1 do 
         if i + offset < ls.size then
-            @sub[i] := ls[i + offset];
+            sub@[i] := ls[i + offset];
         else 
-            return @sub;
+            return sub@;
         end
     end
-    return @sub;
+    return sub@;
 end
 
 func merge(array int rhs, array int lhs) -> array int
@@ -17,14 +17,14 @@ func merge(array int rhs, array int lhs) -> array int
     int l := 0;
     for i from 0 to size - 1 do
         if rhs[r] <= lhs[l] then
-            @ls[i] := rhs[r];
+            ls@[i] := rhs[r];
             r := r + 1;
         else
-            @ls[i] := lhs[l];
+            ls@[i] := lhs[l];
             l := l + 1;
         end
     end
-    return @ls;
+    return ls@;
 end
 
 func sort(array int ls) -> array int

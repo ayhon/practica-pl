@@ -73,7 +73,7 @@ non terminal Expr NEGATION, UNARY;
 non terminal Call FUNC_CALL;
 
 /* DESIGNADOR */
-non terminal Designator DESIGNATION, DESIGNATION_1;
+non terminal Designator DESIGNATION;
 
 /* SENTENCIAS */
 non terminal List<Statement> STMTs;     /* Lista de sentencias */
@@ -234,10 +234,7 @@ DESIGNATION                   ::= DESIGNATION:d OPEN_BRACKET EXPR:e CLOSE_BRACKE
                                     {: RESULT = new StructAccess(d, iden); :}
                                 | DESIGNATION:d R_ARROW IDEN:iden                        /* desig->iden */
                                     {: RESULT = new StructAccess(new Deref(d), iden); :}         
-                                | DESIGNATION_1:d
-                                    {: RESULT = d; :};
-
-DESIGNATION_1                 ::= AT DESIGNATION_1:d 
+                                | DESIGNATION:d AT
                                     {: RESULT = new Deref(d); :}
                                 | QUAL_IDEN:iden
                                     {: RESULT = new Name(iden); :};                      /* Var should take a binding */ 

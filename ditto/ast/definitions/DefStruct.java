@@ -90,15 +90,8 @@ public class DefStruct extends Definition {
     public void bind(Module global, LocalContext local) {
         /// Add the struct to the global scope
         global.addStruct(this);
-        /// TODO: Quitar esto. No hay declaraciones de variables locales dentro de la
-        /// definición de un Struct.
-        /// Sus únicos hijos son declaraciones de variables y funciones que no
-        /// pertenecen a ningún ambito.
-        /// No se tiene que continuar la vinculación ni añadir un nuevo contexto ligero.
-        // /// Cuando entramos en el Struct tenemos que resetear el local context
-        // local.pushLightScope();
-        // /// Llamar a bind de los hijos
-        // super.bind(global, local);
+        // Llamar a bind de los hijos
+        super.bind(global, local);
     }
 
     public String getIden() {

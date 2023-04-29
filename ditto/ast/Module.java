@@ -17,10 +17,8 @@ public class Module extends Node {
     private final Map<String, DefFunc> functions;
     private final Map<String, DefStruct> structs;
     private final Map<String, DefVar> variables;
-    private final DefinitionCollection definitions;
 
     public Module(List<DefModule> imports, DefinitionCollection definitions) {
-        this.definitions = definitions;
         this.modules = imports.stream().collect(Collectors.toMap(DefModule::getIden, Function.identity()));
         this.functions = definitions.getFunctions().stream()
                 .collect(Collectors.toMap(DefFunc::getIden, Function.identity()));
@@ -78,10 +76,11 @@ public class Module extends Node {
         modules.put(module.getIden(), module);
     }
 
-    public Module getModule(String moduleName){
+    public Module getModule(String moduleName) {
         DefModule module_def = modules.get(moduleName);
-        if(module_def == null) throw new SemanticError("Module " + moduleName + " not found");
-        return  module_def.getModule();
+        if (module_def == null)
+            throw new SemanticError("Module " + moduleName + " not found");
+        return module_def.getModule();
     }
 
     public static class DefinitionCollection {
@@ -138,7 +137,7 @@ public class Module extends Node {
 
     public void bind() {
         System.out.println("[DEBUG]: Start binding module");
-        bind(this, new LocalContext());
+        bind(this, null);
         System.out.println("[DEBUG]: Finished binding module");
     }
 

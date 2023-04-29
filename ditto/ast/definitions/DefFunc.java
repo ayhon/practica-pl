@@ -95,12 +95,8 @@ public class DefFunc extends Definition {
 
     @Override
     public void bind(Module global, LocalContext local) {
-        /// Add the function to the global scope
-        global.addFunc(this);
-
         /// Llamar a bind de los hijos con nuevo contexto
-        LocalContext newLocal = new LocalContext(this);
-        super.bind(global, newLocal);
+        super.bind(global, new LocalContext(this));
     }
 
     public Type getType(){

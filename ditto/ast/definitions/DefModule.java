@@ -36,6 +36,11 @@ public class DefModule extends Node {
     }
 
     @Override
+    public void bind(Module global, LocalContext local) {
+        getModule().bind();
+    }
+
+    @Override
     public Type type() {
         return VoidType.getInstance();
     }
@@ -46,20 +51,13 @@ public class DefModule extends Node {
         throw new UnsupportedOperationException("Unimplemented method 'generateCode'");
     }
 
-    @Override
-    public void bind(Module global, LocalContext local) {
-        /// Add the module to the global scope
-        global.addModule(this);
-        // We dont' load the module
-    }
-
     public String getIden() {
         return name;
     }
 
     @Override
     public List<Node> getAstChildren() {
-        return Arrays.asList();
+        return Arrays.asList(this.getModule());
     }
 
     private void loadModule() {

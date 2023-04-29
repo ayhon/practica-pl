@@ -32,12 +32,9 @@ public class LocalContext {
 
     }
 
-    public LocalContext() {
-        scopes = Arrays.asList(new LocalScope());
-    }
     public LocalContext(DefFunc func) {
         LocalScope scope = new LocalScope();
-        for(DefFunc.Param param : func.getParams()) {
+        for (DefFunc.Param param : func.getParams()) {
             // De alguna manera convendría indicar que son parámetros
             // Funciona sino cuando tenemos parámetros pasados por referencia?
             scope.addDef(new DefVar(param.getType(), param.getName()));
@@ -80,9 +77,9 @@ public class LocalContext {
      */
     public Definition getDefOrGlobal(String iden, Module globalScope) {
         Definition def = getDef(iden);
-        if (def == null)  // Couldn't find in local context, try global
+        if (def == null) // Couldn't find in local context, try global
             def = globalScope.getDefinition(iden);
-           // TODO: Comprobar que no es una función y una variable a la vez
+        // TODO: Comprobar que no es una función y una variable a la vez
         if (def == null) // Couldn't find in global context, throw error since it wasn't defined
             throw new SemanticError("Can't access undefined variable '" + iden + "'.");
         return def;

@@ -46,12 +46,12 @@ public class GlobalContext {
                 ));
 
         /// print recibe un entero y devuelve un entero
-        globalFunc.put("print", 
-            new DefFunc(
-                "print", // Name
-                Arrays.asList(new DefFunc.Param(IntegerType.getInstance(), "src")),IntegerType.getInstance(),  // Parameters
-                new ArrayList<>() // Body
-            ));
+        globalFunc.put("print",
+                new DefFunc(
+                        "print", // Name
+                        Arrays.asList(new DefFunc.Param(IntegerType.getInstance(), "src")), IntegerType.getInstance(), // Parameters
+                        new ArrayList<>() // Body
+                ));
     }
 
     /**
@@ -65,9 +65,11 @@ public class GlobalContext {
     }
 
     public Module getModule(String moduleName){
+
         DefModule module_def = globalModule.get(moduleName);
-        if(module_def == null) throw new SemanticError("Module " + moduleName + " not found");
-        return  module_def.getModule();
+        if (module_def == null)
+            throw new SemanticError("Module " + moduleName + " not found");
+        return module_def.getModule();
     }
 
     /**
@@ -100,26 +102,30 @@ public class GlobalContext {
     }
 
     public DefFunc getFunction(String iden) {
-        var def =  globalFunc.get(iden);
-        if(def == null) throw new SemanticError("Couldn't find function " + iden);
+        var def = globalFunc.get(iden);
+        if (def == null)
+            throw new SemanticError("Couldn't find function " + iden);
         return def;
     }
 
     public DefModule getDefModule(String iden) {
-        var def =  globalModule.get(iden);
-        if(def == null) throw new SemanticError("Couldn't find module " + iden);
+        var def = globalModule.get(iden);
+        if (def == null)
+            throw new SemanticError("Couldn't find module " + iden);
         return def;
     }
 
     public DefStruct getStruct(String iden) {
-        var def =  globalStruct.get(iden);
-        if(def == null) throw new SemanticError("Couldn't find struct " + iden);
+        var def = globalStruct.get(iden);
+        if (def == null)
+            throw new SemanticError("Couldn't find struct " + iden);
         return def;
     }
 
     public Definition getDefinition(String iden) {
-        var def =  mainModule.getDefinition(iden);
-        if(def == null) throw new SemanticError("Couldn't find definition " + iden);
+        var def = mainModule.getDefinition(iden);
+        if (def == null)
+            throw new SemanticError("Couldn't find definition " + iden);
         return def;
     }
 }

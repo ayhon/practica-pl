@@ -11,6 +11,7 @@ import java.util.HashMap;
 
 import ditto.ast.Node;
 import ditto.ast.Module;
+import ditto.ast.Identifier;
 import ditto.ast.definitions.*;
 import ditto.ast.designators.*;
 import ditto.ast.expressions.*;
@@ -85,7 +86,7 @@ non terminal DefFunc FUN_DEF;
 non terminal DefStruct STRUCT_DEF;
 
 non terminal Type TYPE;
-non terminal List<String> QUAL_IDEN; // Possibly iden::iden, possibly just iden
+non terminal Identifier QUAL_IDEN; // Possibly iden::iden, possibly just iden
 
 non terminal List<DefFunc.Param> FUNC_PARAMs, AT_LEAST_ONE_PARAM, NO_PARAM;
 non terminal DefFunc.Param PARAM;
@@ -101,7 +102,7 @@ S                           ::= IMPORTs:imports DEFINITIONs:declarations
 
 
 /* GRAMÁTICA DE DEFINICIONES */
-IMPORTs                     ::= IMPORTs:imports IMPORT QUAL_IDEN:iden SEMICOLON
+IMPORTs                     ::= IMPORTs:imports IMPORT IDEN:iden SEMICOLON
                                     {: RESULT = imports; imports.add(new DefModule(iden)); :}
                                 |
                                     {: RESULT = new ArrayList<DefModule>(); :};
@@ -238,10 +239,10 @@ DESIGNATION                 ::= DESIGNATION:d OPEN_BRACKET EXPR:e CLOSE_BRACKET 
                                 | QUAL_IDEN:iden
                                     {: RESULT = new Name(iden); :};                      /* Var should take a binding */ 
 
-QUAL_IDEN                   ::= QUAL_IDEN:more QUADOT IDEN:iden                       /* name::iden */
-                                    {: RESULT = more; more.add(iden); :}
+QUAL_IDEN                   ::= IDEN:module QUADOT IDEN:iden
+                                    {: RESULT = new Identifier(module, iden); :}
                                 | IDEN:iden
-                                    {: RESULT = new ArrayList<String>(); RESULT.add(iden); :}; 
+                                    {: RESULT = new Identifier(iden); :}; 
 
 LITERAL                     ::= NAT:n
                                     {: RESULT = n; :}
@@ -307,7 +308,7 @@ ASSIGNMENT                  ::= DESIGNATION:iden ASSIGN EXPR: e SEMICOLON
 VAR_DEF                     ::= TYPE:t IDEN:iden SEMICOLON
                                     {: RESULT = new DefVar(t, iden); :}
                                 | TYPE:t ASSIGNMENT:a
-                                    {: RESULT = new DefVar(t, ((Name)((Assign)a).getPlace()).getIden(), ((Assign)a).getExpr()); :};
+                                    {: RESULT = new DefVar(t, ((Name)((Assign)a).getPlace()).getIden().getName(), ((Assign)a).getExpr()); :};
 
 TYPE                        ::= QUAL_IDEN:iden 
                                     {: RESULT = new StructType(iden); :} // By default, if it's not a primitive type, it's a struct. TODO: Link to the struct definition

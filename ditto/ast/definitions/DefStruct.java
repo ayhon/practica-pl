@@ -11,6 +11,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import ditto.ast.Module;
+import ditto.ast.Identifier;
 import ditto.ast.LocalContext;
 import ditto.ast.Node;
 import ditto.ast.ProgramOutput;
@@ -39,7 +40,7 @@ public class DefStruct extends Definition {
             fieldTypes.put(attribute.getIden(), attribute.getType());
         }
 
-        type = new StructType(name, fieldTypes);
+        type = new StructType(new Identifier(name), fieldTypes);
     }
 
     public DefVar getAttribute(String iden) {
@@ -50,11 +51,11 @@ public class DefStruct extends Definition {
         return this.methods.get(iden);
     }
 
-    public Set<Entry<String,DefVar>> getAttributes(){
+    public Set<Entry<String, DefVar>> getAttributes() {
         return this.attributes.entrySet();
     }
 
-    public Set<Entry<String,DefFunc>> getMethods(){
+    public Set<Entry<String, DefFunc>> getMethods() {
         return this.methods.entrySet();
     }
 
@@ -76,7 +77,7 @@ public class DefStruct extends Definition {
         return Arrays.asList(name, attributes, methods);
     }
 
-    public Type getType(){
+    public Type getType() {
         return this.type;
     }
 
@@ -89,11 +90,13 @@ public class DefStruct extends Definition {
     public void bind(Module global, LocalContext local) {
         /// Add the struct to the global scope
         global.addStruct(this);
-        /// TODO: Quitar esto. No hay declaraciones de variables locales dentro de la definición de un Struct.
-        /// Sus únicos hijos son declaraciones de variables y funciones que no pertenecen a ningún ambito.
+        /// TODO: Quitar esto. No hay declaraciones de variables locales dentro de la
+        /// definición de un Struct.
+        /// Sus únicos hijos son declaraciones de variables y funciones que no
+        /// pertenecen a ningún ambito.
         /// No se tiene que continuar la vinculación ni añadir un nuevo contexto ligero.
         // /// Cuando entramos en el Struct tenemos que resetear el local context
-        //  local.pushLightScope();
+        // local.pushLightScope();
         // /// Llamar a bind de los hijos
         // super.bind(global, local);
     }
@@ -117,7 +120,7 @@ public class DefStruct extends Definition {
     }
 
     @Override
-    public int computeDelta(int lastPosition){
+    public int computeDelta(int lastPosition) {
         int delta = 0;
         for (Node child : getAstChildren()) {
             delta = child.computeDelta(delta);

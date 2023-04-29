@@ -26,10 +26,6 @@ public class DefModule extends Node {
         this.name = name;
     }
 
-    public DefModule(List<String> listName) {
-        this.name = String.join("::", listName);
-    }
-
     @Override
     public String getAstString() {
         return "import";

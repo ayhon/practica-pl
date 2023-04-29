@@ -77,7 +77,7 @@ public class DefStruct extends Definition {
         return Arrays.asList(name, attributes, methods);
     }
 
-    public Type getType() {
+    public StructType getType() {
         return this.type;
     }
 

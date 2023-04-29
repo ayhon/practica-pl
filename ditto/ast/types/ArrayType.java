@@ -1,8 +1,14 @@
 package ditto.ast.types;
 
+import java.util.Arrays;
+import java.util.List;
+
+import ditto.ast.Bindable;
+import ditto.ast.LocalContext;
+import ditto.ast.Module;
 import ditto.ast.literals.Natural;
 
-public class ArrayType implements Type {
+public class ArrayType extends Type {
     private final Type elementType;
     private final int size;
 
@@ -50,5 +56,10 @@ public class ArrayType implements Type {
     @Override
     public int size() {
         return size * elementType.size();
+    }
+
+    @Override
+    public List<Bindable> getBindableChildren() {
+        return Arrays.asList(elementType);
     }
 }

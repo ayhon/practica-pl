@@ -1,7 +1,7 @@
 package ditto.ast.types;
 
 // Singleton que sirve para el null y las funciones que devuelven void
-public class VoidType implements Type {
+public class VoidType extends Type {
     private static VoidType instance = new VoidType();
 
     private VoidType() {

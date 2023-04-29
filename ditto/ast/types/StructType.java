@@ -1,17 +1,17 @@
 package ditto.ast.types;
 
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import ditto.ast.GlobalContext;
+import ditto.ast.Module;
+import ditto.ast.Bindable;
 import ditto.ast.Identifier;
 import ditto.ast.LocalContext;
 import ditto.ast.definitions.DefStruct;
 import ditto.errors.SemanticError;
 
-public class StructType implements Type {
+public class StructType extends Type {
     private final Identifier iden;
     private Map<String, Type> fieldTypes;
     private DefStruct definition;
@@ -31,25 +31,13 @@ public class StructType implements Type {
         return iden;
     }
 
-    private void loadFieldTypesFromDefinition() {
-        fieldTypes = new HashMap<>();
-        for (var entry : definition.getAttributes()) {
-            String attribute = entry.getKey();
-            Type type = entry.getValue().getType();
-            fieldTypes.put(attribute, type);
-        }
-        for (var entry : definition.getMethods()) {
-            String method = entry.getKey();
-            Type type = entry.getValue().getType();
-            fieldTypes.put(method, type);
-        }
+    public Map<String, Type> getFieldTypes() {
+        return Collections.unmodifiableMap(fieldTypes);
     }
 
     public Type getFieldOrMethodType(String name) {
-        if (fieldTypes == null && definition == null)
+        if (definition == null)
             throw new SemanticError("Can't get the field types before binding.");
-        else if (fieldTypes == null)
-            loadFieldTypesFromDefinition();
 
         if (fieldTypes.containsKey(name)) {
             return fieldTypes.get(name);
@@ -75,14 +63,6 @@ public class StructType implements Type {
         }
     }
 
-    public void bind(GlobalContext global, LocalContext local) {
-        if(iden.hasModule()){
-            definition = global.getModule(iden.getModule()).getStruct(iden.getName());
-        } else {
-            definition = global.getStruct(iden.getName());
-        }
-    }
-
     @Override
     public int size() {
         /// Lo que ocupa un struct es la suma de lo que ocupan sus campos
@@ -92,5 +72,21 @@ public class StructType implements Type {
             size += type.size();
         }
         return size;
+    }
+
+    @Override
+    public List<Bindable> getBindableChildren() {
+        return fieldTypes.values().stream().map(t -> (Bindable) t).toList();
+    }
+
+    @Override
+    public void bind(Module global, LocalContext local) {
+        if (iden.hasModule()) {
+            definition = global.getModule(iden.getModule()).getStruct(iden.getName());
+        } else {
+            definition = global.getStruct(iden.getName());
+        }
+        fieldTypes = definition.getType().getFieldTypes();
+        super.bind(global, local);
     }
 }

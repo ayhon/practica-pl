@@ -2,7 +2,7 @@
 package ditto.ast.types;
 
 // Singleton
-public class IntegerType implements Type {
+public class IntegerType extends Type {
     private static IntegerType instance = new IntegerType();
 
     private IntegerType() {

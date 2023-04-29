@@ -1,7 +1,7 @@
 package ditto.ast.types;
 
 // Singleton
-public class BoolType implements Type {
+public class BoolType extends Type {
     private static BoolType instance = new BoolType();
 
     private BoolType() {

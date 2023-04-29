@@ -1,6 +1,10 @@
 package ditto.ast.types;
 
-public class PointerType implements Type {
+import java.util.List;
+
+import ditto.ast.Bindable;
+
+public class PointerType extends Type {
     private final Type elementType;
 
     public PointerType(Type elementType) {
@@ -30,5 +34,10 @@ public class PointerType implements Type {
     @Override
     public int size() {
         return 1;
+    }
+
+    @Override
+    public List<Bindable> getBindableChildren() {
+        return List.of(elementType);
     }
 }

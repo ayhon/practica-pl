@@ -2,7 +2,9 @@ package ditto.ast.types;
 
 import java.util.List;
 
-public class FuncType implements Type {
+import ditto.ast.Bindable;
+
+public class FuncType extends Type {
     private final Type returnType;
     private final List<Type> argumentTypes;
 
@@ -38,10 +40,17 @@ public class FuncType implements Type {
 
     @Override
     public int size() {
-        int cont =  0;
-        for(Type t : argumentTypes){
+        int cont = 0;
+        for (Type t : argumentTypes) {
             cont += t.size();
         }
         return cont;
+    }
+
+    @Override
+    public List<Bindable> getBindableChildren() {
+        List<Bindable> children = argumentTypes.stream().map(x -> (Bindable) x).toList();
+        children.add((Bindable) returnType);
+        return children;
     }
 }

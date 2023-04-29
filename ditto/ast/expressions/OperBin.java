@@ -89,12 +89,13 @@ public class OperBin extends Expr {
 
     @Override
     public void typecheck() {
+        super.typecheck();
         /// El tipo resultante será el tipo de ambas expresiones
         /// (tiene que ser el mismo)
         if (!left.type().equals(right.type())) {
             throw new TypeError(String.format(
-                    "El tipo de la expresión izquierda (%s) no coincide con el tipo de la expresión derecha (%s)",
-                    left.type(), right.type()));
+                    "El tipo de la expresión izquierda (%s - %s) no coincide con el tipo de la expresión derecha (%s - %s)",
+                    left, left.type(), right, right.type()));
         }
     }
 

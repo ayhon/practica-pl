@@ -15,7 +15,7 @@ import ditto.errors.TypeError;
 public class Call extends Expr {
     private final Designator func;
     private final List<Expr> args;
-    private DefFunc funcDef;
+    private Type type;
 
     public Call(Designator func) {
         this.func = func;
@@ -47,7 +47,7 @@ public class Call extends Expr {
 
     @Override
     public Type type() {
-        return funcDef.getResult();
+        return type;
     }
 
     @Override
@@ -57,6 +57,7 @@ public class Call extends Expr {
         if (!(this.func.type() instanceof FuncType)) {
             throw new TypeError(String.format("'%s' is not a function", this.func));
         }
+        this.type = ((FuncType) this.func.type()).getReturnType();
     }
 
     @Override

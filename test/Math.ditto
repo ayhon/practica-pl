@@ -1,0 +1,15 @@
+func fib(int n) -> int
+    if n < 2 then
+        return n;
+    else
+        return fib(n - 1) + fib(n - 2);
+    end
+end
+
+func exp(int base, int exponent) -> int
+    if exponent == 0 then
+        return 1;
+    else
+        return base * exp(base, exponent - 1);
+    end
+end

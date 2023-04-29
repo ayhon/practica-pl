@@ -1,6 +1,6 @@
 func patata(int a)
     int x := 10;
-    input(x);
+    scan(x);
     if x == 0 then
         print(x);
     else 

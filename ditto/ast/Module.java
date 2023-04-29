@@ -17,6 +17,7 @@ public class Module extends Node {
     private final Map<String, DefFunc> functions;
     private final Map<String, DefStruct> structs;
     private final Map<String, DefVar> variables;
+    private String classFolder;
 
     public Module(List<DefModule> imports, DefinitionCollection definitions) {
         this.modules = imports.stream().collect(Collectors.toMap(DefModule::getIden, Function.identity()));
@@ -52,7 +53,7 @@ public class Module extends Node {
         return def;
     }
 
-    public void addVar(DefVar var) { // TODO: cambiar para que devuelva int
+    public void addVar(DefVar var) {
         variables.put(var.getIden(), var);
     }
 
@@ -168,5 +169,35 @@ public class Module extends Node {
         children.addAll(this.structs.values());
         children.addAll(this.variables.values());
         return children;
+    }
+
+    public void setClassFolder(String classFolder) {
+        this.classFolder = classFolder;
+    }
+
+    public String getClassFolder() {
+        return classFolder;
+    }
+
+    public String dumpGlobals() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("Modules:\n");
+        for (var entry : modules.entrySet()) {
+            sb.append(String.format("  %s :\n", entry.getKey()));
+            sb.append(entry.getValue().getModule().dumpGlobals().indent(4));
+        }
+        sb.append("Global variables:\n");
+        for (var entry : variables.entrySet()) {
+            sb.append(String.format("  %s → %s\n", entry.getKey(), entry.getValue()));
+        }
+        sb.append("Structs:\n");
+        for (var entry : structs.entrySet()) {
+            sb.append(String.format("  %s → %s\n", entry.getKey(), entry.getValue()));
+        }
+        sb.append("Functions:\n");
+        for (var entry : functions.entrySet()) {
+            sb.append(String.format("  %s → %s\n", entry.getKey(), entry.getValue()));
+        }
+        return sb.toString();
     }
 }

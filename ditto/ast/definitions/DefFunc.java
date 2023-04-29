@@ -20,6 +20,7 @@ public class DefFunc extends Definition {
     private final Type result;
     private int varSize;
     private FuncType type;
+
     public List<Param> getParams() {
         return params;
     }
@@ -27,7 +28,6 @@ public class DefFunc extends Definition {
     public Type getResult() {
         return result;
     }
-
 
     public DefFunc(String id, List<Param> params, List<Statement> body) {
         this(id, params, VoidType.getInstance(), body);
@@ -99,7 +99,7 @@ public class DefFunc extends Definition {
         super.bind(global, new LocalContext(this));
     }
 
-    public Type getType(){
+    public Type getType() {
         return type;
     }
 
@@ -131,22 +131,22 @@ public class DefFunc extends Definition {
     }
 
     @Override
-    public int computeDelta(int lastPosition){
+    public int computeDelta(int lastPosition) {
         int delta = type().size();
-        for (Statement stmt : body){
+        for (Statement stmt : body) {
             delta = stmt.computeDelta(delta);
         }
         return lastPosition;
     }
 
-    public int computeMaxFuncSize(){
+    public int computeMaxFuncSize() {
         int max = type.size();
 
-        for(Param param : params){
+        for (Param param : params) {
             max += param.getType().size();
         }
 
-        for(Statement stmt : body){
+        for (Statement stmt : body) {
             max += stmt.computeMaxFuncSize();
         }
 

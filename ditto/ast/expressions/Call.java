@@ -58,7 +58,7 @@ public class Call extends Expr {
             throw new SemanticError(String.format("'%s' is not defined", this.func));
         }
 
-        if (!(this.funcDef instanceof DefFunc)) {
+        if (!(funcDef instanceof DefFunc)) {
             throw new SemanticError(String.format("'%s' is not a function", this.func));
         }
 

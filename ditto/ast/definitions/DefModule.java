@@ -1,5 +1,6 @@
 package ditto.ast.definitions;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -37,7 +38,9 @@ public class DefModule extends Node {
 
     @Override
     public void bind(Module global, LocalContext local) {
-        getModule().bind();
+        if (module == null)
+            loadModule(global.getClassFolder());
+        module.bind();
     }
 
     @Override
@@ -60,9 +63,13 @@ public class DefModule extends Node {
         return Arrays.asList(this.getModule());
     }
 
-    private void loadModule() {
+    private void loadModule(String path) {
+        File file = new File(path, name + ".ditto");
+        if (!file.exists())
+            throw new ModuleImportError("Module " + name + " not found");
+            
         /// Obtener el módulo asociado leyendo el archivo
-        try (Reader input = new InputStreamReader(new FileInputStream(name + ".ditto"))) {
+        try (Reader input = new InputStreamReader(new FileInputStream(file))) {
             Lexer lexer = new Lexer(input);
             Parser parser = new Parser(lexer);
             parser.parse();
@@ -75,8 +82,6 @@ public class DefModule extends Node {
     }
 
     public Module getModule() {
-        if (module == null)
-            loadModule();
         return module;
     }
 }

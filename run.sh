@@ -36,8 +36,7 @@ case $1 in
             all)
                 for file in test/*.ditto; do 
                     $0 test $task `basename $file .ditto` \
-                    && (echo -e "\e[32mPassed test $file\e[m") \
-                    || (echo -e "\e[31mFailed test $file\e[m" && exit 1); 
+                    || exit 1; 
                 done
                 ;;
             *)

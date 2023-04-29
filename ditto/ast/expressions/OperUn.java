@@ -15,7 +15,7 @@ import ditto.errors.TypeError;
 
 public class OperUn extends Expr {
     public enum Operators {
-        NOT, NEG, POS, REF, DEREF;
+        NOT, NEG, POS, REF;
 
         public String toString() {
             switch (this) {
@@ -27,8 +27,6 @@ public class OperUn extends Expr {
                     return "+";
                 case REF:
                     return "ptr";
-                case DEREF:
-                    return "@";
                 default:
                     throw new IllegalArgumentException("Invalid operator");
             }
@@ -64,10 +62,6 @@ public class OperUn extends Expr {
                 /// Se da con expresion `ptr x`,
                 /// que sirve para obtener el puntero a la variable x
                 return new PointerType(expr.type());
-            case DEREF:
-                /// Se da con expresion `@x`,
-                /// que sirve para obtener el valor apuntado por el puntero x
-                return ((PointerType) expr.type()).getElementType();
             default:
                 throw new IllegalArgumentException("Invalid operator '" + op + "'");
         }
@@ -87,9 +81,6 @@ public class OperUn extends Expr {
             case REF -> {
                 /// Porque cualquier tipo puede ser referenciado
                 expectedType = null;
-            }
-            case DEREF -> {
-                expectedType = new PointerType(null);
             }
             default -> {
                 throw new IllegalArgumentException("Invalid operator '" + op + "'");
@@ -137,11 +128,6 @@ public class OperUn extends Expr {
                 out.i32_const(((DefVar) (((Name) expr).getDefinition())).getDelta()); // Aqui hacemos i32.const delta(*id)
                                                                                   // (TODO: revisar)
                 out.i32_add();
-                break;
-            case DEREF:
-                // Se da con expresion `@x`,
-                expr.compile(out);
-                out.i32_load();
                 break;
             default:
                 throw new IllegalArgumentException("Invalid operator '" + op + "'");

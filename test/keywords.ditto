@@ -47,7 +47,6 @@ func play() -> array int
     end
 end
 
-
 struct Name is
     struct Sub is
         int a := 10;

@@ -14,7 +14,6 @@ import ditto.errors.TypeError;
 public class DefVar extends Definition {
     private final String iden;
     private final Expr expr;
-    private final Type type;
     private int position;
 
     public DefVar(Type type, String iden, Expr expr) {

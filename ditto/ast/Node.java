@@ -4,9 +4,11 @@ import java.util.List;
 import java.util.StringJoiner;
 
 import ditto.ast.types.Type;
+import ditto.errors.TypeError;
 
 public abstract class Node {
     private CompilationProgress progress = CompilationProgress.NONE;
+    protected Type type = null;
 
     public CompilationProgress getProgress() {
         return progress;
@@ -35,7 +37,11 @@ public abstract class Node {
         }
     }
 
-    public abstract Type type();
+    public Type type() {
+        if (this.type == null)
+            throw new TypeError("Can't get type before typechekcing");
+        return this.type;
+    }
 
     // Calcula para cada definicion de variable su delta. El delta se resetea cuando
     // entramos en bloque.

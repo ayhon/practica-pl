@@ -11,7 +11,6 @@ import ditto.errors.TypeError;
 
 public class Deref extends Designator {
     private final Designator pointer;
-    private Type type;
 
     public Designator getPointer() {
         return pointer;
@@ -22,21 +21,13 @@ public class Deref extends Designator {
     }
 
     @Override
-    public Type type() {
-        /// Nota: typecheck() ya se encarga de chequear que pointer sea un puntero
-        if(type == null)
-            throw new TypeError("Can't type before typechecking");
-        return type;
-    }
-
-    @Override
     public void typecheck() {
         super.typecheck();
         Type ptr_type = pointer.type();
 
         if (ptr_type instanceof PointerType) {
             type = ((PointerType) ptr_type).getElementType();
-            if(type == null)
+            if (type == null)
                 throw new TypeError("You can't dereference null");
         } else
             throw new TypeError(String.format("Cannot dereference a non-pointer type '%s'", ptr_type));

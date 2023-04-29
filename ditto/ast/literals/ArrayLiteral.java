@@ -58,18 +58,26 @@ public class ArrayLiteral extends Literal {
 
     @Override
     public Type type() {
-        for (Expr e : elements) {
-            if (type == null) {
-                type = e.type();
+        return this.type;
+    }
+
+    @Override
+    public void typecheck() {
+        super.typecheck();
+        
+        Type elementType = null;
+        for (Expr elem : elements) {
+            if (elementType == null) {
+                elementType = elem.type();
             } else {
-                if (!type.equals(e.type())) {
-                    throw new RuntimeException("ArrayLiteral: All elements must be of the same type");
+                if (!elementType.equals(elem.type())) {
+                    throw new RuntimeException("ArrayLiteral: All elements must be of the same type" + elementType
+                            + ", but type " + elem.type() + " was found");
                 }
             }
         }
 
-        this.type = new ArrayType(type);
-        return this.type;
+        this.type = new ArrayType(elementType);
     }
 
     @Override

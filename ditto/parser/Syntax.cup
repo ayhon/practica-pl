@@ -73,7 +73,7 @@ non terminal Expr NEGATION, UNARY;
 non terminal Call FUNC_CALL;
 
 /* DESIGNADOR */
-non terminal Designator DESIGNATION;
+non terminal Designator DESIGNATION, DESIGNATION_0, DESIGNATION_1;
 
 /* SENTENCIAS */
 non terminal List<Statement> STMTs;     /* Lista de sentencias */
@@ -138,7 +138,7 @@ PARAM                       ::= TYPE:t IDEN:id /* Por valor */
                                     {: RESULT = new DefFunc.Param(t, id, false); :}
                                 | REF TYPE:t IDEN:id  /* Por referencia */
                                     {: RESULT = new DefFunc.Param(t, id, true); :};
-
+                                    
 NO_PARAM                    ::= {: RESULT = new ArrayList<DefFunc.Param>(); :};
 
 /* GRAMÁTICA DE EXPRESIONES */
@@ -200,8 +200,6 @@ UNARY                       ::= MINUS UNARY:expr
                                     {: RESULT = expr; :}
                                 | PTR UNARY:expr
                                     {: RESULT = new OperUn(OperUn.Operators.REF, expr); :}
-                                | AT UNARY:expr
-                                    {: RESULT = new OperUn(OperUn.Operators.DEREF, expr); :}
                                 | PRIMARY:expr
                                     {: RESULT = expr; :};
 
@@ -229,12 +227,23 @@ EXPRs                       ::= EXPRs:more COMMA EXPR:e
                                     {: RESULT = new ArrayList<Expr>(); RESULT.add((Expr) e); :};
 
 /* GRAMÁTICA DE DESIGNADORES */
-DESIGNATION                 ::= DESIGNATION:d OPEN_BRACKET EXPR:e CLOSE_BRACKET  /* design[expr] */
+
+DESIGNATION                   ::= DESIGNATION:d OPEN_BRACKET EXPR:e CLOSE_BRACKET  /* design[expr] */
                                     {: RESULT = new ArrayAccess(d, e); :}
                                 | DESIGNATION:d DOT IDEN:iden                            /* design.iden() */
                                     {: RESULT = new StructAccess(d, iden); :}
                                 | DESIGNATION:d R_ARROW IDEN:iden                        /* desig->iden */
                                     {: RESULT = new StructAccess(new Deref(d), iden); :}         
+                                | DESIGNATION_1:d
+                                    {: RESULT = d; :};
+
+DESIGNATION_1                 ::= AT DESIGNATION_1:d 
+                                    {: RESULT = new Deref(d); :}
+                                |  DESIGNATION_0:d
+                                    {: RESULT = d; :};
+
+DESIGNATION_0                 ::= OPEN_PAR DESIGNATION:d CLOSE_PAR
+                                    {: RESULT = d; :}
                                 | QUAL_IDEN:iden
                                     {: RESULT = new Name(iden); :};                      /* Var should take a binding */ 
 

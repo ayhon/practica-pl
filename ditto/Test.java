@@ -1,5 +1,6 @@
 package ditto;
 
+import ditto.ast.ProgramOutput;
 import ditto.lexer.Lexer;
 import ditto.parser.Parser;
 
@@ -20,18 +21,22 @@ public class Test {
             case "ast" -> {
                 parser.parse();
                 System.out.println(parser.getRoot());
+                break;
             }
             case "bind" -> {
                 parser.parse();
                 parser.getRoot().bind();
+                break;
             }
             case "typecheck" -> {
                 parser.parse();
                 parser.getRoot().typecheck();
+                break;
             }
             case "code" -> {
                 parser.parse();
-                parser.getRoot().compile(null);
+                parser.getRoot().compile(new ProgramOutput());
+                break;
             }
         }
     }

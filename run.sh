@@ -20,6 +20,10 @@ case $1 in
                   mv Parser.java ditto/parser/ && \
                   mv TokenKind.java ditto/parser/
                 ;;
+            java)
+                find ditto -type f -name "*.class" -delete && \
+                javac -cp "$JAR_PATH/*:." ditto/*/*.java ditto/*.java
+                ;;
             all)
                 $0 build lexer && $0 build parser
                 ;;
@@ -32,11 +36,14 @@ case $1 in
     test)
         task="$2"
         test_file="$3"
+    
+        # Comprobar el flag de DO_NOT_COMPILE y compilar si no está
+        if [ -z $DO_NOT_COMPILE ]; then
+            $0 build all
+        fi && \
+
         case $test_file in
             all)
-                # Solo compilo una vez
-                javac -cp "$JAR_PATH/*:." ditto/*/*.java ditto/*.java
-
                 # Y el resto de veces ejecuto los tests sin compilar
                 export DO_NOT_COMPILE=1
                 for file in test/*.ditto; do 
@@ -46,12 +53,6 @@ case $1 in
                 ;;
             *)
                 file=`[ -z $test_file ] && echo "test/keywords.ditto" || echo "test/$test_file.ditto"`
-
-                # Comprobar el flag de DO_NOT_COMPILE y compilar si no está
-                if [ -z $DO_NOT_COMPILE ]; then
-                    javac -cp "$JAR_PATH/*:." ditto/*/*.java ditto/*.java
-                fi && \
-
                 java -cp "$JAR_PATH/*:." ditto.Test $task $file \
                 && (echo -e "\e[32mPassed test $file\e[m") \
                 || (echo -e "\e[31mFailed test $file\e[m" && exit 1); 

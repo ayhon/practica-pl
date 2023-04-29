@@ -47,7 +47,7 @@ public class For extends Statement {
     public void bind(Module global, LocalContext local) {
         local.pushLightScope();
         local.addDef(new DefVar(IntegerType.getInstance(), index)); // Add the for-loop's index to the new local scope
-        super.bind(global, null);
+        super.bind(global, local);
         local.popLightScope();
     }
 

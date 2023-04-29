@@ -1,4 +1,11 @@
 import Std;
+import Random;
+
+func assert(bool b)
+    if not b then
+        print(666);
+    end
+end
 
 func play() -> array int
     array int arr := [1,2,3,4,5];
@@ -21,8 +28,8 @@ func play() -> array int
     end
     print(0);
     1 + 1;
-    a + 1;
     int a := 0;
+    a + 1;
     if a == 10 then
         print(10);
     else
@@ -31,6 +38,7 @@ func play() -> array int
     while true do
         print(1);
     end
+    
     for x from 1 to 10 do
         print(x);
     end
@@ -51,13 +59,13 @@ struct Name is
     end
 end
 
-func mat_mul(array array int A, array array int B) -> array array int 
+func mat_mul(array array int A, array array int B) -> array array int
     assert(A[0].size == B.size);
     array array int C := [[0; 3]; 3];
-    for i from x to 3 do
-        for j from x to 3 do
+    for i from 0 to 3 do
+        for j from 0 to 3 do
             C[i][j] := 0;
-            for k from x to 3 do
+            for k from 0 to 3 do
                 C[i][j] := C[i][j] + A[i][k]*B[k][j];
             end
         end

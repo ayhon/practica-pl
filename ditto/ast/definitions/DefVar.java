@@ -9,6 +9,7 @@ import ditto.ast.Node;
 import ditto.ast.ProgramOutput;
 import ditto.ast.expressions.Expr;
 import ditto.ast.types.Type;
+import ditto.errors.TypeError;
 
 public class DefVar extends Definition {
     private final String iden;
@@ -50,6 +51,13 @@ public class DefVar extends Definition {
     @Override
     public Type type() {
         return getType();
+    }
+
+    @Override
+    public void typecheck() {
+        super.typecheck();
+        if (expr != null && !expr.type().equals(type))
+            throw new TypeError(String.format("Can't assign %s to variable %s of type %s", expr.type(), iden, type));
     }
 
     @Override

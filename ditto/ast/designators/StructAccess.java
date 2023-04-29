@@ -42,7 +42,7 @@ public class StructAccess extends Designator {
         super.typecheck();
         Type struct_type = struct.type();
         if (!(struct_type instanceof StructType)) {
-            throw new TypeError(String.format("Cannot access a field of a non-struct type '%s'", struct_type));
+            throw new TypeError(String.format("Cannot access a field of a non-struct type '%s', %s", struct_type));
         }
 
         Type type = ((StructType) struct_type).getFieldOrMethodType(name);

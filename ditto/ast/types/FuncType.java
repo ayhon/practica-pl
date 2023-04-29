@@ -53,7 +53,6 @@ public class FuncType extends Type {
         List<Node> children = new ArrayList<>(); // argumentTypes.stream().map(x -> (Node) x).toList()
         
         for (Type t : argumentTypes) {
-            System.err.println("asdfasdfs");
             children.add(t);
         }
 

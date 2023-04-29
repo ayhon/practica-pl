@@ -19,23 +19,23 @@ func reverse_nodes(ptr Node curr)
 end
 
 func reverse (ptr List ls)
-    reverse_nodes(ls.head);
+    reverse_nodes(ls->head);
 end
 
 func push(ptr List ls, int elem)
-    Node new_head := new Node {};
+    ptr Node new_head := new Node {};
     new_head->val := elem;
-    new_head->next := ls.head;
-    ls.head := new_head;
-    ls.size := ls.size + 1;
+    new_head->next := ls->head;
+    ls->head := new_head;
+    ls->size := ls->size + 1;
 end
 
 func pop(ptr List ls) -> int
-    if ls.head != null then
-        ptr Node new_head := ls.head->next;
-        int head_value := ls.head->val;
-        ls.head := new_head;
-        ls.size := ls.size - 1;
+    if ls->head != null then
+        ptr Node new_head := ls->head->next;
+        int head_value := ls->head->val;
+        ls->head := new_head;
+        ls->size := ls->size - 1;
         return head_value;
     else 
         return 0;

@@ -168,9 +168,7 @@ null = null
 {end}                         {return ops.scanEnd();}
 {do}                          {return ops.scanDo();}
 {then}                        {return ops.scanThen();}
-{module}                      {return ops.scanModule();}
 {struct}                      {return ops.scanStruct();}
-{public}                      {return ops.scanPublic();}
 {from}                        {return ops.scanFrom();}
 {to}                          {return ops.scanTo();}
 {by}                          {return ops.scanBy();}

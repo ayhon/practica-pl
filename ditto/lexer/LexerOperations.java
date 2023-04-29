@@ -217,17 +217,9 @@ public class LexerOperations {
         // System.out.println("Token Then");
         return new Token(lexer.col(), lexer.row(), lexer.lexeme(), TokenKind.THEN);
     }
-    Token scanModule(){
-        // System.out.println("Token Module");
-        return new Token(lexer.col(), lexer.row(), lexer.lexeme(), TokenKind.MODULE);
-    }
     Token scanStruct(){
         // System.out.println("Token Struct");
         return new Token(lexer.col(), lexer.row(), lexer.lexeme(), TokenKind.STRUCT);
-    }
-    Token scanPublic(){
-        // System.out.println("Token Public");
-        return new Token(lexer.col(), lexer.row(), lexer.lexeme(), TokenKind.PUBLIC);
     }
     Token scanFrom(){
         // System.out.println("Token From");

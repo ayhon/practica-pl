@@ -1,16 +1,18 @@
 package ditto.ast.types;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import ditto.ast.Node;
 import ditto.ast.ProgramOutput;
+import ditto.errors.TypeError;
 
 public abstract class Type extends Node {
     /// Lo que ocuparía en memoria. Se usa para calcular delta.
     public abstract int size();
 
     public Type type() {
-        return null;
+        throw new TypeError("What's the type of a type?");
     }
 
     public void compile(ProgramOutput out) {
@@ -21,10 +23,10 @@ public abstract class Type extends Node {
     }
 
     public List<Object> getAstArguments() {
-        return null;
+        return new ArrayList<Object>();
     }
 
     public List<Node> getAstChildren() {
-        return null;
+        return new ArrayList<Node>();
     }
 }

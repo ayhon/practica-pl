@@ -12,15 +12,11 @@ public abstract class Node {
         return progress;
     }
 
-    public abstract void compile(ProgramOutput out); // Desde Module llama a `type` antes de recursar,
-
     public abstract String getAstString();
 
     public abstract List<Object> getAstArguments();
 
     public abstract List<Node> getAstChildren();
-
-    public abstract Type type();
 
     // Vincularmos cada uso de una definición con su definición
     public void bind(Context ctx) {
@@ -32,15 +28,14 @@ public abstract class Node {
     }
 
     public void typecheck() {
-        /*
-         * Llamar al typecheck de nodos hijos para que comprueben sus tipos
-         * Nota: antes de llamar a este método, se debe haber llamado a `bind` para
-         * vincular
-         */
+        progress = CompilationProgress.TYPE;
         for (Node child : getAstChildren()) {
-            child.typecheck();
+            if (child.getProgress().lessThan(CompilationProgress.TYPE))
+                child.typecheck();
         }
     }
+
+    public abstract Type type();
 
     // Calcula para cada definicion de variable su delta. El delta se resetea cuando
     // entramos en bloque.
@@ -61,6 +56,8 @@ public abstract class Node {
         return max;
     }
 
+    public abstract void compile(ProgramOutput out);
+
     @Override
     @SuppressWarnings("unchecked")
     public String toString() {
@@ -68,6 +65,11 @@ public abstract class Node {
         sb.append('(');
         sb.append(getAstString() /* + ": " + type() */); // No podemos llamar a type() porque no hemos hecho el binding
                                                          // todavia
+
+        sb.append(" @ " + progress);
+        if (this.progress.atLeast(CompilationProgress.TYPE)) {
+            sb.append(": " + type());
+        }
         sb.append("\n");
 
         StringJoiner args = new StringJoiner(",\n");

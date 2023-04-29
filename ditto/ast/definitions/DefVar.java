@@ -66,6 +66,7 @@ public class DefVar extends Definition {
     @Override
     public List<Node> getAstChildren() {
         List<Node> children = new ArrayList<Node>();
+        children.add(this.type);
         if (this.expr != null)
             children.add(expr);
         return children;

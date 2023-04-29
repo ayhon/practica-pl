@@ -95,6 +95,7 @@ public class DefFunc extends Definition {
     @Override
     public void bind(Context ctx) {
         /// Llama a bind de los hijos con nuevo contexto local
+        ctx.add(this);
         ctx.pushScope(this);
         super.bind(ctx);
         ctx.popScope();

@@ -39,6 +39,7 @@ public class StructAccess extends Designator {
 
     @Override
     public void typecheck() {
+        super.typecheck();
         Type struct_type = struct.type();
         if (!(struct_type instanceof StructType)) {
             throw new TypeError(String.format("Cannot access a field of a non-struct type '%s'", struct_type));
@@ -48,6 +49,8 @@ public class StructAccess extends Designator {
         if (type == null) {
             throw new TypeError("Struct " + struct_type + " has no field named " + name);
         }
+
+        this.type = type;
     }
 
     @Override

@@ -8,14 +8,12 @@ import ditto.ast.definitions.DefVar;
 import ditto.ast.definitions.Definition;
 
 public class Scope {
-    private Map<String, Definition> defs;
+    private final Map<String, Definition> defs = new HashMap<>();
 
     public Scope() {
-        defs = new HashMap<>();
     }
 
     public Scope(DefFunc func) {
-        this();
         for (DefFunc.Param param : func.getParams()) {
             // De alguna manera convendría indicar que son parámetros
             // Funciona sino cuando tenemos parámetros pasados por referencia?

@@ -3,7 +3,6 @@ package ditto.ast.designators;
 import java.util.Arrays;
 import java.util.List;
 
-import ditto.ast.Module;
 import ditto.ast.Identifier;
 import ditto.ast.Context;
 import ditto.ast.Node;
@@ -11,7 +10,6 @@ import ditto.ast.ProgramOutput;
 import ditto.ast.definitions.Definition;
 import ditto.ast.types.Type;
 import ditto.errors.SemanticError;
-import ditto.errors.TypeError;
 
 // A name designates a variable or a function.
 public class Name extends Designator {
@@ -38,7 +36,8 @@ public class Name extends Designator {
 
     @Override
     public void bind(Context ctx) {
-        definition = ctx.getModule().getDefinition(this.iden);
+        super.bind(ctx);
+        definition = ctx.get(this.iden);
         if (definition == null) {
             throw new SemanticError(String.format("'%s' is not defined", iden));
         }

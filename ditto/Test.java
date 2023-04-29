@@ -46,7 +46,6 @@ public class Test {
                     main.bind();
                 } catch (SemanticError e) {
                     System.out.println(e);
-                    System.out.println(main.dumpGlobals());
                     e.printStackTrace();
                     System.exit(1);
                 }
@@ -54,6 +53,7 @@ public class Test {
             }
             case "typecheck" -> {
                 main.typecheck();
+                System.out.println(main);
                 break;
             }
             case "code" -> {

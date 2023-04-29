@@ -10,4 +10,8 @@ public enum CompilationProgress {
     public boolean lessThan(CompilationProgress other) {
         return this.ordinal() < other.ordinal();
     }
+
+    public boolean atLeast(CompilationProgress other) {
+        return !(this.lessThan(other));
+    }
 }

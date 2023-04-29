@@ -11,6 +11,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import ditto.ast.Identifier;
+import ditto.ast.Context;
 import ditto.ast.Node;
 import ditto.ast.ProgramOutput;
 import ditto.ast.types.StructType;
@@ -75,6 +76,12 @@ public class DefStruct extends Definition {
     @Override
     public List<Object> getAstArguments() {
         return Arrays.asList(name, attributes, methods);
+    }
+
+    @Override
+    public void bind(Context ctx) {
+        super.bind(ctx);
+        ctx.add(this);
     }
 
     public StructType getType() {

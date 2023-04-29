@@ -2,7 +2,7 @@ package ditto.ast;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -16,31 +16,29 @@ import ditto.errors.SemanticError;
 
 public class Module extends Node {
     private final Map<String, DefModule> modules;
-    private final Map<String, DefFunc> functions = new HashMap<>();
-    private final Map<String, DefStruct> structs = new HashMap<>();
-    private final Map<String, DefVar> variables = new HashMap<>();
-    private final List<Definition> children;
+    private final List<Definition> definitions;
     private final Scope globalScope = new Scope();
     private String name;
     private String classFolder;
 
     public Module(List<DefModule> imports, List<Definition> definitions) {
-        this.modules = imports.stream().collect(Collectors.toMap(DefModule::getIden, Function.identity()));
-        children = definitions;
+        this.modules = Collections
+                .unmodifiableMap(imports.stream().collect(Collectors.toMap(DefModule::getIden, Function.identity())));
+        this.definitions = definitions;
         loadBuiltins();
     }
 
     private void loadBuiltins() {
         /// Añadir función scan y print
         /// scan recibe un entero y no devuelve nada
-        this.functions.put("scan",
+        this.globalScope.add(
                 new DefFunc(
                         "scan",
                         Arrays.asList(new DefFunc.Param(IntegerType.getInstance(), "dest")),
                         new ArrayList<>()));
 
         /// print recibe un entero y devuelve un entero
-        this.functions.put("print",
+        this.globalScope.add(
                 new DefFunc(
                         "print",
                         Arrays.asList(new DefFunc.Param(IntegerType.getInstance(), "src")), IntegerType.getInstance(),
@@ -53,7 +51,7 @@ public class Module extends Node {
             if (mod == null) {
                 throw new SemanticError(String.format("Module '%s' not found", iden.getModule()));
             }
-            return mod.getModule().getDefinition(iden);
+            return mod.getModule().getDefinition(new Identifier(iden.getName()));
         } else
             return this.globalScope.get(iden.getName());
     }
@@ -69,7 +67,7 @@ public class Module extends Node {
 
     @Override
     public List<Object> getAstArguments() {
-        return Arrays.asList(modules, children);
+        return Arrays.asList(modules, definitions);
     }
 
     public void bind() {
@@ -102,9 +100,8 @@ public class Module extends Node {
     public List<Node> getAstChildren() {
         List<Node> children = new ArrayList<Node>();
         children.addAll(this.modules.values());
-        children.addAll(this.structs.values());
-        children.addAll(this.functions.values());
-        children.addAll(this.variables.values());
+        children.addAll(this.definitions);
+        System.err.println(this.definitions);
         return children;
     }
 
@@ -114,27 +111,5 @@ public class Module extends Node {
 
     public String getClassFolder() {
         return classFolder;
-    }
-
-    public String dumpGlobals() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("Modules:\n");
-        for (var entry : modules.entrySet()) {
-            sb.append(String.format("  %s :\n", entry.getKey()));
-            sb.append(entry.getValue().getModule().dumpGlobals().indent(4));
-        }
-        sb.append("Global variables:\n");
-        for (var entry : variables.entrySet()) {
-            sb.append(String.format("  %s → %s\n", entry.getKey(), entry.getValue()));
-        }
-        sb.append("Structs:\n");
-        for (var entry : structs.entrySet()) {
-            sb.append(String.format("  %s → %s\n", entry.getKey(), entry.getValue()));
-        }
-        sb.append("Functions:\n");
-        for (var entry : functions.entrySet()) {
-            sb.append(String.format("  %s → %s\n", entry.getKey(), entry.getValue()));
-        }
-        return sb.toString();
     }
 }

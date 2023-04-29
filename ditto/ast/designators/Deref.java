@@ -3,8 +3,6 @@ package ditto.ast.designators;
 import java.util.Arrays;
 import java.util.List;
 
-import ditto.ast.Module;
-import ditto.ast.Context;
 import ditto.ast.Node;
 import ditto.ast.ProgramOutput;
 import ditto.ast.types.PointerType;

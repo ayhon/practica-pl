@@ -38,6 +38,7 @@ public class ArrayAccess extends Designator {
 
     @Override
     public void typecheck() {
+        super.typecheck();
         if (!index.type().equals(IntegerType.getInstance())) {
             throw new TypeError(String.format("Cannot index with non-integer type '%s'", index.type()));
         }

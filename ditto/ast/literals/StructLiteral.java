@@ -13,6 +13,7 @@ import ditto.ast.definitions.DefStruct;
 import ditto.ast.definitions.DefVar;
 import ditto.ast.expressions.Expr;
 import ditto.ast.types.Type;
+import ditto.errors.SemanticError;
 import ditto.errors.TypeError;
 
 public class StructLiteral extends Literal {
@@ -81,14 +82,12 @@ public class StructLiteral extends Literal {
 
     @Override
     public void bind(Context ctx) {
-        super.bind(ctx);
-        definition = (DefStruct) ctx.get(iden);
+        var def = ctx.get(iden);
+        if(def instanceof DefStruct){
+            definition = (DefStruct) def;
+        } else throw new SemanticError("Couldn't find definition for module " + iden);
 
-        /// En realidad no hay que hacer bind de los campos. Estos sabemos que se
-        /// encontrarán en el
-        /// tipo específico del struct, y no en un ámbito local o global.
-        // /// Hacer bind de los campos
-        // super.bind(global, local);
+        super.bind(ctx);
     }
 
     @Override

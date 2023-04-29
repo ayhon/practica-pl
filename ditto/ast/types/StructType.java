@@ -8,6 +8,7 @@ import ditto.ast.Node;
 import ditto.ast.Identifier;
 import ditto.ast.Context;
 import ditto.ast.definitions.DefStruct;
+import ditto.ast.definitions.Definition;
 import ditto.errors.SemanticError;
 
 public class StructType extends Type {
@@ -80,7 +81,10 @@ public class StructType extends Type {
 
     @Override
     public void bind(Context ctx) {
-        definition = (DefStruct) ctx.get(this.iden);
+        Definition def = ctx.get(this.iden);
+        if (def == null)
+            throw new SemanticError("Couldn't find def " + iden);
+        definition = (DefStruct) def;
         fieldTypes = definition.getType().getFieldTypes();
         super.bind(ctx);
     }

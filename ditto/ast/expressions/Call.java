@@ -52,7 +52,7 @@ public class Call extends Expr {
     @Override
     public void typecheck() {
         /// Hay que comprobar que el designator sea una funcion
-        this.func.typecheck();
+        super.typecheck();
         if (!(this.func.type() instanceof FuncType)) {
             throw new TypeError(String.format("'%s' is not a function", this.func));
         }

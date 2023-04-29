@@ -75,6 +75,7 @@ public class OperUn extends Expr {
 
     @Override
     public void typecheck() {
+        super.typecheck();
         Type expectedType = null;
         switch (this.op) {
             case NOT -> {

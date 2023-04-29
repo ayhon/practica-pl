@@ -10,9 +10,7 @@ import java.util.Map.Entry;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import ditto.ast.Module;
 import ditto.ast.Identifier;
-import ditto.ast.LocalContext;
 import ditto.ast.Node;
 import ditto.ast.ProgramOutput;
 import ditto.ast.types.StructType;
@@ -84,14 +82,6 @@ public class DefStruct extends Definition {
     @Override
     public Type type() {
         return getType();
-    }
-
-    @Override
-    public void bind(Module global, LocalContext local) {
-        /// Add the struct to the global scope
-        global.addStruct(this);
-        // Llamar a bind de los hijos
-        super.bind(global, local);
     }
 
     public String getIden() {

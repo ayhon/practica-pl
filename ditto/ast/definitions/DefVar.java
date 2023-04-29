@@ -63,7 +63,7 @@ public class DefVar extends Definition {
         if (local != null) {
             local.addDef(this);
         } else {
-            global.addVar(this);
+            // Es una variable global, ya está en el módulo
         }
     }
 

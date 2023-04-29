@@ -57,10 +57,4 @@ public class Deref extends Designator {
     public List<Node> getAstChildren() {
         return Arrays.asList(pointer);
     }
-
-    @Override
-    public void bind(Module global, LocalContext local) {
-        /// Hace el bind del pointer
-        super.bind(global, local);
-    }
 }

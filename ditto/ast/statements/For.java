@@ -34,10 +34,14 @@ public class For extends Statement {
     }
 
     @Override
-    public String getAstString() { return "for"; }
+    public String getAstString() {
+        return "for";
+    }
 
     @Override
-    public List<Object> getAstArguments() { return Arrays.asList(index, from, to, by, body); }
+    public List<Object> getAstArguments() {
+        return Arrays.asList(index, from, to, by, body);
+    }
 
     @Override
     public void bind(Module global, LocalContext local) {
@@ -47,17 +51,13 @@ public class For extends Statement {
         local.popLightScope();
     }
 
-    private DefVar DefVar(IntegerType instance, String index2) {
-        return null;
-    }
-
     @Override
     public Type type() {
         Type aux = from.type();
-        if(!aux.equals(to.type())) {
+        if (!aux.equals(to.type())) {
             throw new RuntimeException("Type mismatch in for loop");
         }
-        if(aux.equals(by.type())) {
+        if (aux.equals(by.type())) {
             throw new RuntimeException("Type mismatch in for loop");
         }
         return null;

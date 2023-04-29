@@ -28,7 +28,7 @@ public abstract class Node implements Bindable {
 
     // Vincularmos cada uso de una definición con su definición
     public void bind(Module global, LocalContext local) {
-        for (Node child : getAstChildren()) {
+        for (Bindable child : getBindableChildren()) {
             // System.out.println("Node.bind: " + child);
             child.bind(global, local);
         }

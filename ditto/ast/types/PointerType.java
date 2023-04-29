@@ -16,7 +16,7 @@ public class PointerType extends Type {
 
     @Override
     public String toString() {
-        return "PTR";
+        return String.format("Pointer(%s)", elementType);
     }
 
     @Override

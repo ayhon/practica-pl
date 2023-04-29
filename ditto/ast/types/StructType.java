@@ -48,7 +48,7 @@ public class StructType extends Type {
 
     @Override
     public String toString() {
-        return "STRUCT";
+        return String.format("Struct(%s)", iden);
     }
 
     @Override

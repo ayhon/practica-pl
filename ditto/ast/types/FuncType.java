@@ -17,14 +17,14 @@ public class FuncType extends Type {
     public List<Type> getArgumentTypes() {
         return argumentTypes;
     }
-    
+
     public Type getReturnType() {
         return returnType;
     }
 
     @Override
     public String toString() {
-        return "FUNC";
+        return String.format("Func(%s) -> %s", argumentTypes, returnType);
     }
 
     @Override
@@ -51,7 +51,7 @@ public class FuncType extends Type {
     @Override
     public List<Node> getAstChildren() {
         List<Node> children = new ArrayList<>();
-        
+
         for (Type t : argumentTypes) {
             children.add(t);
         }

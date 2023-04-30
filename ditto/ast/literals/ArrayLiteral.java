@@ -77,7 +77,11 @@ public class ArrayLiteral extends Literal {
             }
         }
 
-        this.type = new ArrayType(elementType);
+        Integer length = numberOfElem.evalIntAtCompileTime();
+        if (length == null)
+            throw new RuntimeException("ArrayLiteral: Number of elements cannot be determined at compile time");
+
+        this.type = new ArrayType(elementType, length);
     }
 
     @Override

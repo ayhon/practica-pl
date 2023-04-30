@@ -163,4 +163,20 @@ public class OperUn extends Expr {
         }
     }
 
+    @Override
+    public Integer evalIntAtCompileTime() {
+        Integer val = expr.evalIntAtCompileTime();
+        if (val == null) {
+            return null;
+        }
+
+        switch (op) {
+            case NEG -> {
+                return -val;
+            }
+            default -> {
+                return null;
+            }
+        }
+    }
 }

@@ -49,4 +49,9 @@ public class Natural extends Literal {
     public List<Node> getAstChildren() {
         return Arrays.asList();
     }
+
+    @Override
+    public Integer evalIntAtCompileTime() {
+        return this.value;
+    }
 }

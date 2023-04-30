@@ -9,6 +9,7 @@ import ditto.ast.Delta;
 import ditto.ast.Node;
 import ditto.ast.ProgramOutput;
 import ditto.ast.expressions.Expr;
+import ditto.ast.types.ArrayType;
 import ditto.ast.types.Type;
 import ditto.errors.TypeError;
 
@@ -81,6 +82,11 @@ public class DefVar extends Definition {
         super.typecheck();
         if (expr != null && !expr.type().equals(type))
             throw new TypeError(String.format("Can't assign %s to variable %s of type %s", expr.type(), iden, type));
+        else if (expr != null)
+            type = expr.type();
+        // Así adivinamos la longitud del array, para
+        // casos como este:
+        // array int a = [10; 1];
     }
 
     @Override
@@ -93,8 +99,12 @@ public class DefVar extends Definition {
         super.computeTypeSize();
         // Tras haber calculado los tamaños de los tipos
         // ya sabemos si los tipos son representables o no
-        if (expr == null)
+        if (expr == null) {
             this.expr = getType().getDefault();
+            type = expr.type();
+        }
+
+
     }
 
     @Override

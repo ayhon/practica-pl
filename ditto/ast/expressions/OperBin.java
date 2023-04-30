@@ -180,4 +180,35 @@ public class OperBin extends Expr {
                 throw new RuntimeException("Operador no soportada: " + op.toString());
         }
     }
+
+    @Override
+    public Integer evalIntAtCompileTime() {
+        Integer left = this.left.evalIntAtCompileTime();
+        Integer rigth = this.right.evalIntAtCompileTime();
+
+        if (rigth == null || left == null) {
+            return null;
+        }
+
+        switch (op) {
+            case SUM -> {
+                return left + rigth;
+            }
+            case SUBS -> {
+                return left - rigth;
+            }
+            case MUL -> {
+                return left * rigth;
+            }
+            case DIV -> {
+                return left / rigth;
+            }
+            case MODULO -> {
+                return left % rigth;
+            }
+            default -> {
+                return null;
+            }
+        }
+    }
 }

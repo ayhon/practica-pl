@@ -12,4 +12,8 @@ public abstract class Expr extends Statement {
         compileAsExpr(out);
         out.drop();
     }
+
+    public Integer evalIntAtCompileTime() {
+        return null;
+    }
 }

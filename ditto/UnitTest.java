@@ -14,55 +14,53 @@ public class UnitTest {
         File passSet = new File(passSetFolder);
         File failSet = new File(failSetFolder);
 
-        if (!passSet.isDirectory()) {
-            System.out.println("passSet is not a directory");
-            System.exit(1);
-        }
-
-        if (!failSet.isDirectory()) {
-            System.out.println("failSet is not a directory");
-            System.exit(1);
-        }
-
-        int taskIndex = Arrays.asList(Test.tasks).indexOf(task);
-
         Test.useAsMain = false;
-        /// Deberian de pasar todos los tests anteriores, salvo etapa actual
-        /// Iterar primero los archivos de passSet
         String[] newArgs = new String[2];
         newArgs[0] = task;
-        for (File f : passSet.listFiles()) {
-            newArgs[1] = f.getAbsolutePath();
 
-            try {
-                Test.main(newArgs);
-                System.out.println("✅ passed " + f.getName() + " as it should");
-            } catch (Exception e) {
-                System.err.println(e);
-                e.printStackTrace();
-                System.err.println("❌ failed " + f.getName() + " as it shouldn't");
+        /// Deberian de pasar todos los tests anteriores, salvo etapa actual
+        /// Iterar primero los archivos de passSet
+        if (!passSet.isDirectory()) {
+            for (File f : passSet.listFiles()) {
+                newArgs[1] = f.getAbsolutePath();
+
+                try {
+                    Test.main(newArgs);
+                    System.out.println("✅ passed " + f.getName() + " as it should");
+                } catch (Exception e) {
+                    System.err.println(e);
+                    e.printStackTrace();
+                    System.err.println("❌ failed " + f.getName() + " as it shouldn't");
+                }
             }
+        } else {
+            System.out.println("passSet is not a directory");
         }
 
         /// Iterar los archivos de failSet
         /// Deberian pasar los tests anteriores, salvo etapa actual
-        System.out.println("Testing " + task + " failSet");
-        for (File f : failSet.listFiles()) {
-            newArgs[1] = f.getAbsolutePath();
+        if (failSet.isDirectory()) {
+            System.out.println("Testing " + task + " failSet");
+            int taskIndex = Arrays.asList(Test.tasks).indexOf(task);
+            for (File f : failSet.listFiles()) {
+                newArgs[1] = f.getAbsolutePath();
 
-            for (int i = 0; i < taskIndex; i++) {
-                /// Estos tienen que pasar
-                newArgs[0] = Test.tasks[i];
-                Test.main(newArgs);
-            }
+                for (int i = 0; i < taskIndex; i++) {
+                    /// Estos tienen que pasar
+                    newArgs[0] = Test.tasks[i];
+                    Test.main(newArgs);
+                }
 
-            newArgs[0] = task;
-            try {
-                Test.main(newArgs);
-                System.out.println("❌ passed " + f.getName() + " " + task + " test, but it shouldn't");
-            } catch (Exception e) {
-                System.out.println("✅ failed " + f.getName() + " " + task + " as it should");
+                newArgs[0] = task;
+                try {
+                    Test.main(newArgs);
+                    System.out.println("❌ passed " + f.getName() + " " + task + " test, but it shouldn't");
+                } catch (Exception e) {
+                    System.out.println("✅ failed " + f.getName() + " " + task + " as it should");
+                }
             }
+        } else {
+            System.out.println("failSet is not a directory");
         }
     }
 }

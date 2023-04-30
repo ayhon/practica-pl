@@ -119,7 +119,7 @@ public class Match extends Statement {
     public void typecheck() {
         super.typecheck();
         Type matchingType = expr.type();
-        
+
         for (Case c : this.cases) {
             if (c.expr != null && !matchingType.equals(c.expr.type())) {
                 throw new TypeError("Type mismatch in case");

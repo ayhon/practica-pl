@@ -6,11 +6,12 @@ import java.util.List;
 import ditto.ast.Node;
 import ditto.ast.literals.Literal;
 import ditto.ast.literals.Natural;
+import ditto.errors.SemanticError;
 import ditto.ast.literals.ArrayLiteral;
 
 public class ArrayType extends Type {
     private final Type elementType;
-    private final int size;
+    private int length;
 
     /// If size is null, then this type definition is only possible
     /// in the arguments of a function definition.
@@ -22,9 +23,9 @@ public class ArrayType extends Type {
         this(elementType, (int) size.getValue());
     }
 
-    public ArrayType(Type elementType, int size) {
+    public ArrayType(Type elementType, int length) {
         this.elementType = elementType;
-        this.size = size;
+        this.length = length;
     }
 
     public Literal getDefault() { // Empty array
@@ -35,10 +36,14 @@ public class ArrayType extends Type {
         return elementType;
     }
 
-    public int getSize() {
-        if (this.size == -1)
-            return -1; /// Para caso de que sea un argumento de una funcion
-        return size * this.elementType.size();
+    public int getLength() {
+        if (this.length == -1)
+            throw new SemanticError("Array length not defined");
+        return length;
+    }
+
+    public void setLength(int length){
+        this.length = length;
     }
 
     @Override
@@ -66,7 +71,7 @@ public class ArrayType extends Type {
 
     @Override
     public int size() {
-        return size * elementType.size();
+        return getLength() * elementType.size();
     }
 
     @Override

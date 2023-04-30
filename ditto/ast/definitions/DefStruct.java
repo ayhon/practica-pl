@@ -107,7 +107,9 @@ public class DefStruct extends Definition {
     @Override
     public void bind(Context ctx) {
         ctx.add(this);
+        ctx.pushScope();
         super.bind(ctx);
+        ctx.popScope();
     }
 
     @Override

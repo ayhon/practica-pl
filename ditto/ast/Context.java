@@ -5,7 +5,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import ditto.ast.definitions.Definition;
-import ditto.errors.SemanticError;
+import ditto.errors.BindingError;
 
 public class Context {
     private final List<Scope> scopes;
@@ -32,7 +32,7 @@ public class Context {
     public void add(Definition var) {
         Scope actualScope = scopes.get(scopes.size() - 1);
         if(actualScope.contains(var.getIden()))
-            throw new SemanticError("Definition " + var.getIden() + " already defined in this scope: " + actualScope);
+            throw new BindingError("Definition " + var.getIden() + " already defined in this scope: " + actualScope);
             
         scopes.get(scopes.size() - 1).add(var);
     }

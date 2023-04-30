@@ -12,7 +12,7 @@ import ditto.ast.definitions.*;
 import ditto.ast.types.IntegerType;
 import ditto.ast.types.Type;
 import ditto.ast.types.VoidType;
-import ditto.errors.SemanticError;
+import ditto.errors.BindingError;
 
 public class Module extends Node {
     private final Map<String, DefModule> modules;
@@ -51,7 +51,7 @@ public class Module extends Node {
         if (iden.hasModule()) {
             DefModule mod = modules.get(iden.getModule());
             if (mod == null) {
-                throw new SemanticError(String.format("Module '%s' not found", iden.getModule()));
+                throw new BindingError(String.format("Module '%s' not found", iden.getModule()));
             }
             return mod.getModule().getDefinition(new Identifier(iden.getName()));
         } else
@@ -94,9 +94,7 @@ public class Module extends Node {
 
     public void bind() {
         Context ctx = new Context(this, this.globalScope);
-        System.out.println("[DEBUG]: Start binding module " + this.name);
         bind(ctx);
-        System.out.println("[DEBUG]: Finished binding module " + this.name);
     }
 
     @Override
@@ -107,9 +105,7 @@ public class Module extends Node {
     @Override
     public void typecheck() {
         this.bind();
-        System.out.println("[DEBUG]: Start typechecking module " + this.name);
         super.typecheck();
-        System.out.println("[DEBUG]: Finished typechecking module " + this.name);
     }
 
     @Override

@@ -12,7 +12,7 @@ import ditto.ast.ProgramOutput;
 import ditto.ast.definitions.DefStruct;
 import ditto.ast.definitions.DefVar;
 import ditto.ast.expressions.Expr;
-import ditto.errors.SemanticError;
+import ditto.errors.BindingError;
 import ditto.errors.TypeError;
 
 public class StructLiteral extends Literal {
@@ -63,7 +63,7 @@ public class StructLiteral extends Literal {
         if (def instanceof DefStruct) {
             definition = (DefStruct) def;
         } else
-            throw new SemanticError("Couldn't find definition for module " + iden);
+            throw new BindingError("Couldn't find definition for module " + iden);
 
         super.bind(ctx);
     }

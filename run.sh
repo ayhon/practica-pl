@@ -7,6 +7,9 @@ cup(){
     java -cp $JAR_PATH/cup.jar java_cup.Main $@
     #-parser AnalizadorSintacticoTiny -symbols ClaseLexica -nopositions TinyErrors.cup
 }
+ditto_test(){
+    java -cp "$JAR_PATH/*:." ditto.Test $@
+}
 
 case $1 in
     build)
@@ -46,16 +49,10 @@ case $1 in
             all)
                 # Y el resto de veces ejecuto los tests sin compilar
                 export DO_NOT_COMPILE=1
-                for file in test/*.ditto; do 
-                    $0 test $task `basename $file .ditto` \
-                        || exit 1; 
-                done
+                java -cp "$JAR_PATH/*:." ditto.UnitTest $task test/pass/ test/fail/$task/
                 ;;
             *)
-                file=`[ -z $test_file ] && echo "test/keywords.ditto" || echo "test/$test_file.ditto"`
-                java -cp "$JAR_PATH/*:." ditto.Test $task $file \
-                && (echo -e "\e[32mPassed test $file\e[m") \
-                || (echo -e "\e[31mFailed test $file\e[m" && exit 1); 
+                ditto_test $task $test_file
                 ;;
         esac
         ;;

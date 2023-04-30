@@ -68,7 +68,6 @@ public class DefVar extends Definition {
     }
 
     public Type getType() {
-        // Como type(), pero getType() se puede usar antes del type-checking
         return type;
     }
 
@@ -89,6 +88,7 @@ public class DefVar extends Definition {
     public Type type() {
         return getType();
     }
+    
     
     @Override
     public void computeOffset(Delta delta) {

@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.StringJoiner;
 
 import ditto.ast.types.Type;
-import ditto.errors.SemanticError;
+import ditto.errors.BindingError;
 import ditto.errors.TypeError;
 
 public abstract class Node {
@@ -51,7 +51,7 @@ public abstract class Node {
                     || child.getProgress().equals(CompilationProgress.TYPE_SIZE))
                 child.computeTypeSize();
             else
-                throw new SemanticError("Intentamos entrar en un bucle infinito para calcular el tamaño de un tipo.");
+                throw new BindingError("Intentamos entrar en un bucle infinito para calcular el tamaño de un tipo.");
         }
     }
 

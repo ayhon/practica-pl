@@ -1,0 +1,5 @@
+func main()
+    struct Person is
+        int a;
+    end
+end

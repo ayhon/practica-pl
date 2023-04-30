@@ -1,0 +1,4 @@
+struct Huge is
+    int  give_me_a_bit;
+    Huge give_me_more;
+end

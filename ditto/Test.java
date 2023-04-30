@@ -2,8 +2,7 @@ package ditto;
 
 import ditto.ast.Module;
 import ditto.ast.ProgramOutput;
-import ditto.errors.SemanticError;
-import ditto.errors.TypeError;
+import ditto.errors.BindingError;
 import ditto.lexer.Lexer;
 import ditto.parser.Parser;
 
@@ -13,6 +12,9 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 
 public class Test {
+    public static final String[] tasks = { "ast", "bind", "typecheck", "typesize", "offsets", "code" };
+    public static boolean useAsMain = true;
+
     public static void main(String[] args) throws Exception {
         if (args.length != 2) {
             System.out.println("Usage: java Test <task> <filepath>");
@@ -20,35 +22,31 @@ public class Test {
         }
 
         String task = args[0];
-        for (int i = 1; i < args.length; i++) {
-            String filePath = args[i];
-            File file = new File(filePath);
-            if (!file.exists()) {
-                System.out.println("File not found: " + filePath);
-                return;
-            }
+        String filePath = args[1];
 
-            var classFolder = file.getParentFile().getAbsolutePath();
-            Reader input = new InputStreamReader(new FileInputStream(file));
-            Lexer lexer = new Lexer(input);
-            Parser parser = new Parser(lexer);
-            parser.parse();
-            Module main = parser.getRoot();
-            main.setClassFolder(classFolder);
-            main.setName(filePath);
+        File file = new File(filePath);
 
+        if (!file.exists()) {
+            System.out.println("File not found: " + filePath);
+            return;
+        }
+
+        var parentFolder = file.getParentFile();
+        Reader input = new InputStreamReader(new FileInputStream(file));
+        Lexer lexer = new Lexer(input);
+        Parser parser = new Parser(lexer);
+        parser.parse();
+        Module main = parser.getRoot();
+        main.setClassFolder(parentFolder.getAbsolutePath());
+        main.setName(filePath);
+
+        try {
             switch (task) {
                 case "ast" -> {
-                    System.out.println(main);
+                    if(useAsMain) System.out.println(main);
                 }
                 case "bind" -> {
-                    try {
-                        main.bind();
-                    } catch (SemanticError e) {
-                        System.out.println(e);
-                        e.printStackTrace();
-                        System.exit(1);
-                    }
+                    main.bind();
                 }
                 case "typecheck" -> {
                     main.typecheck();
@@ -63,6 +61,12 @@ public class Test {
                     main.compile(new ProgramOutput());
                 }
             }
+        } catch (Exception e) {
+            if(useAsMain){
+                System.out.println(e);
+                e.printStackTrace();
+            }
+            throw e;
         }
     }
 }

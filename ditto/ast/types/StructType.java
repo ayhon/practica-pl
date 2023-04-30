@@ -9,7 +9,7 @@ import ditto.ast.Identifier;
 import ditto.ast.Context;
 import ditto.ast.definitions.DefStruct;
 import ditto.ast.definitions.Definition;
-import ditto.errors.SemanticError;
+import ditto.errors.BindingError;
 
 public class StructType extends Type {
     private final Identifier iden;
@@ -38,7 +38,7 @@ public class StructType extends Type {
 
     public Type getFieldOrMethodType(String name) {
         if (definition == null)
-            throw new SemanticError("Can't get the field types before binding.");
+            throw new BindingError("Can't get the field types before binding.");
 
         if (fieldTypes.containsKey(name)) {
             return fieldTypes.get(name);
@@ -77,7 +77,7 @@ public class StructType extends Type {
     public void bind(Context ctx) {
         Definition def = ctx.get(this.iden);
         if (def == null)
-            throw new SemanticError("Couldn't find def " + iden);
+            throw new BindingError("Couldn't find def " + iden);
         definition = (DefStruct) def;
         fieldTypes = definition.getType().getFieldTypes();
         super.bind(ctx);

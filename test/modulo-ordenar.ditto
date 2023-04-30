@@ -1,7 +1,7 @@
 func subarray(array int ls, int offset, int size) -> array int
     ptr array int sub := new [0; size];
     for i from 0 to size - 1 do 
-        if i + offset < ls.size then
+        if i + offset < #ls then
             sub@[i] := ls[i + offset];
         else 
             return sub@;
@@ -11,7 +11,7 @@ func subarray(array int ls, int offset, int size) -> array int
 end
 
 func merge(array int rhs, array int lhs) -> array int
-    int size := rhs.size + lhs.size;
+    int size := #rhs + #lhs;
     ptr array int ls := new [0; size];
     int r := 0;
     int l := 0;
@@ -28,12 +28,12 @@ func merge(array int rhs, array int lhs) -> array int
 end
 
 func sort(array int ls) -> array int
-    if ls.size <= 1 then
+    if #ls <= 1 then
         return ls;
     else
-        int mid := ls.size / 2;
+        int mid := #ls / 2;
         array int lhs := subarray(ls, 0, mid);
-        array int rhs := subarray(ls, mid, ls.size - mid);
+        array int rhs := subarray(ls, mid, #ls - mid);
         lhs := sort(lhs);
         rhs := sort(rhs);
         return merge(lhs, rhs);

@@ -85,6 +85,8 @@ public abstract class Node {
         StringJoiner args = new StringJoiner(",\n");
         /// Nota: aqui es getAstArguments, no getAstChildren
         for (Object arg : getAstArguments()) {
+            if (arg == null)
+                continue;
             if (arg instanceof List) {
                 args.add(listAsString((List<Node>) arg));
             } else {

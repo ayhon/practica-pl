@@ -18,11 +18,15 @@ public class UnitTest {
         String[] newArgs = new String[2];
         newArgs[0] = task;
 
+        System.out.println("Testing " + task + " passSet");
+
         /// Deberian de pasar todos los tests anteriores, salvo etapa actual
         /// Iterar primero los archivos de passSet
-        if (!passSet.isDirectory()) {
+        if (passSet.isDirectory()) {
             for (File f : passSet.listFiles()) {
+                System.out.println("Testing " + f.getName() + " " + task);
                 newArgs[1] = f.getAbsolutePath();
+                System.out.println("args = " + Arrays.toString(newArgs));
 
                 try {
                     Test.main(newArgs);
@@ -31,6 +35,7 @@ public class UnitTest {
                     System.err.println(e);
                     e.printStackTrace();
                     System.err.println("❌ failed " + f.getName() + " as it shouldn't");
+                    throw e;
                 }
             }
         } else {
@@ -48,7 +53,15 @@ public class UnitTest {
                 for (int i = 0; i < taskIndex; i++) {
                     /// Estos tienen que pasar
                     newArgs[0] = Test.tasks[i];
-                    Test.main(newArgs);
+                    try {
+                        Test.main(newArgs);
+                        System.out.println("✅ passed " + f.getName() + " in " + newArgs[0] + " as it should");
+                    } catch (Exception e) {
+                        System.err.println(e);
+                        e.printStackTrace();
+                        System.err.println("❌ failed " + f.getName() + " in " + newArgs[0] + " as it shouldn't");
+                        throw e;
+                    }
                 }
 
                 newArgs[0] = task;

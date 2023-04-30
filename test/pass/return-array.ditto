@@ -1,0 +1,3 @@
+func identidad(array int ls)
+    return ls;
+end

@@ -31,7 +31,7 @@ public class ArrayType extends Type {
     }
 
     public Literal getDefault() { // Empty array
-        return this.defaultValue;
+        return new ArrayLiteral(this);
     }
 
     public Type getElementType() {
@@ -69,19 +69,11 @@ public class ArrayType extends Type {
     @Override
     public List<Node> getAstChildren() {
         List<Node> children = new ArrayList<>(Arrays.asList(elementType));
-        if (defaultValue != null)
-            children.add(defaultValue);
         return children;
     }
 
     @Override
     public int size() {
         return getLength() * elementType.size();
-    }
-
-    @Override
-    public void computeTypeSize() {
-        super.computeTypeSize();
-        this.defaultValue = new ArrayLiteral(this);
     }
 }

@@ -37,7 +37,7 @@ public class StructType extends Type {
 
     @Override
     public Literal getDefault() {
-        return defaultValue;
+        return new StructLiteral(this);
     }
 
     public Identifier getIden() {
@@ -103,17 +103,8 @@ public class StructType extends Type {
     public void computeTypeSize() {
         super.computeTypeSize(); // Compute size of children
         for (Type type : fieldTypes.values()) {
-            size += type.size(); // Add size of all attributes
+            this.size += type.size(); // Add size of all attributes
         }
-
-        /// El valor por defecto de un struct es el valor por defecto de cada uno de sus
-        /// campos
-        Map<String, Expr> fieldValues = new HashMap<>();
-        for (String fieldName : fieldTypes.keySet()) {
-            fieldValues.put(fieldName, fieldTypes.get(fieldName).getDefault());
-        }
-
-        this.defaultValue = new StructLiteral(this);
     }
 
     public Map<String, Expr> getDefaultFieldValues() {

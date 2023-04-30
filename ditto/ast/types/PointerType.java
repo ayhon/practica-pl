@@ -9,6 +9,7 @@ import java.util.List;
 
 public class PointerType extends Type {
     private final Type elementType;
+    private static final Null DEFAULT_POINTER = Null.getInstance();
 
     public PointerType(Type elementType) {
         this.elementType = elementType;
@@ -16,7 +17,7 @@ public class PointerType extends Type {
 
     @Override
     public Literal getDefault() {
-        return Null.getInstance();
+        return DEFAULT_POINTER;
     }
 
     public Type getElementType() {

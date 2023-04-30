@@ -6,13 +6,14 @@ import ditto.ast.literals.Literal;
 // Singleton
 public class BoolType extends Type {
     private static BoolType instance = new BoolType();
+    private static final False DEFAULT_BOOL = False.getInstance();
 
     private BoolType() {
     }
 
     @Override
     public Literal getDefault() {
-        return False.getInstance();
+        return DEFAULT_BOOL;
     }
 
     public static BoolType getInstance() {

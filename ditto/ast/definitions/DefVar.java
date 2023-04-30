@@ -102,9 +102,8 @@ public class DefVar extends Definition {
         if (expr == null) {
             this.expr = getType().getDefault();
             type = expr.type();
+            System.err.println(this.expr.type());
         }
-
-
     }
 
     @Override

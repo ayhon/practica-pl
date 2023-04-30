@@ -2,9 +2,9 @@
 
 array 10 int arr;
 
-// struct Pers is
-//     int a;
-//     array 30 int b;
-// end
-// 
-// array 5 Pers arr2;
+struct Pers is
+    int a;
+    array 30 int b;
+end
+
+array 5 Pers arr2;

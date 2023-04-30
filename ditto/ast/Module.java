@@ -96,26 +96,26 @@ public class Module extends Node {
         return Arrays.asList(modules, definitions);
     }
 
+    @Override
+    public Type type() {
+        return VoidType.getInstance();
+    }
+
     public void bind() {
         Context ctx = new Context(this, this.globalScope);
         bind(ctx);
     }
 
     @Override
-    public Type type() {
-        return VoidType.getInstance();
+    public void computeTypeSize() {
+        this.bind();
+        super.computeTypeSize();
     }
 
     @Override
     public void typecheck() {
-        this.bind();
+        this.computeTypeSize();
         super.typecheck();
-    }
-
-    @Override
-    public void computeTypeSize() {
-        this.typecheck();
-        super.computeTypeSize();
     }
 
     @Override
@@ -125,7 +125,7 @@ public class Module extends Node {
     }
 
     public void computeOffset() {
-        this.computeTypeSize();
+        this.typecheck();
         computeOffset(new Delta());
     }
 

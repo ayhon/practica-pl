@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import ditto.ast.definitions.DefFunc;
-import ditto.ast.definitions.DefVar;
 import ditto.ast.definitions.Definition;
 
 public class Scope {
@@ -26,4 +25,8 @@ public class Scope {
     public Definition get(String iden) {
         return defs.get(iden);
     }
+
+    public boolean contains(String iden) {
+        return defs.containsKey(iden);
+    }   
 }

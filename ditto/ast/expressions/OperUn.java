@@ -67,55 +67,58 @@ public class OperUn extends Expr {
         return Arrays.asList(expr);
     }
 
-    @Override
-    public Type type() {
+    private Type getExpectedType() {
         switch (this.op) {
-            case NOT:
+            case NOT -> {
                 return BoolType.getInstance();
-            case NEG:
+            }
+            case NEG, POS -> {
                 return IntegerType.getInstance();
-            case POS:
-                return IntegerType.getInstance();
-            case REF:
-                /// Se da con expresion `ptr x`,
-                /// que sirve para obtener el puntero a la variable x
-                return new PointerType(expr.type());
-            case LEN:
-                return IntegerType.getInstance();
-            default:
+            }
+            case REF -> {
+                /// Porque cualquier tipo puede ser referenciado
+                return null;
+            }
+            case LEN -> {
+                return new ArrayType(null);
+            }
+            default -> {
                 throw new IllegalArgumentException("Invalid operator '" + op + "'");
+            }
         }
     }
 
     @Override
     public void typecheck() {
         super.typecheck();
-        Type expectedType = null;
-        switch (this.op) {
-            case NOT -> {
-                expectedType = BoolType.getInstance();
-            }
-            case NEG, POS -> {
-                expectedType = IntegerType.getInstance();
-            }
-            case REF -> {
-                /// Porque cualquier tipo puede ser referenciado
-                expectedType = null;
-            }
-            case LEN -> {
-                expectedType = new ArrayType(null);
-            }
-            default -> {
-                throw new IllegalArgumentException("Invalid operator '" + op + "'");
-            }
-        }
-
-        if (expectedType != null && expectedType.getClass() != this.expr.type().getClass()) {
+        Type expectedType = getExpectedType();
+        if (expectedType != null && !expectedType.equals(this.expr.type())) {
             throw new TypeError(String.format("No se puede aplicar el operador '%s' a una expresión de tipo '%s'",
                     this.op, this.expr.type()));
         }
+        this.type = computeType();
     }
-        @Override
+
+    private Type computeType() {
+        switch (this.op) {
+            case NOT:
+                this.type = BoolType.getInstance();
+            case NEG:
+                this.type = IntegerType.getInstance();
+            case POS:
+                this.type = IntegerType.getInstance();
+            case REF:
+                /// Se da con expresion `ptr x`,
+                /// que sirve para obtener el puntero a la variable x
+                this.type = new PointerType(expr.type());
+            case LEN:
+                this.type = IntegerType.getInstance();
+            default:
+                throw new IllegalArgumentException("Invalid operator '" + op + "'");
+        }
+    }
+
+    @Override
     public void compileAsExpr(ProgramOutput out) {
         switch (this.op) {
             case NOT:
@@ -137,12 +140,14 @@ public class OperUn extends Expr {
             case REF:
                 // Se da con expresion `ptr x`,
                 expr.compile(out);
-                out.i32_const(((DefVar) (((Name) expr).getDefinition())).getDelta()); // Aqui hacemos i32.const delta(*id)
-                                                                                        // (TODO: revisar)
+                out.i32_const(((DefVar) (((Name) expr).getDefinition())).getDelta()); // Aqui hacemos i32.const
+                                                                                      // delta(*id)
+                                                                                      // (TODO: revisar)
                 out.i32_add();
                 break;
             case LEN:
-                // El tamaño de un array se guarda dereferenciando el array, en su primera posición
+                // El tamaño de un array se guarda dereferenciando el array, en su primera
+                // posición
                 expr.compileAsExpr(out);
                 break;
             default:

@@ -3,10 +3,13 @@ func main() -> int
     scan(x);
     match x is
         case 1 do
+            int a;
             print(1);
         case 2 do
+            int b;
             print(2);
         otherwise
+            int a;
             print(x);
     end
     print(0);

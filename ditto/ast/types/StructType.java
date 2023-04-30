@@ -15,6 +15,7 @@ public class StructType extends Type {
     private final Identifier iden;
     private Map<String, Type> fieldTypes;
     private DefStruct definition;
+    private int size = 0;
 
     public StructType(Identifier iden) {
         /// Este constructor se utiliza para CUP
@@ -52,6 +53,16 @@ public class StructType extends Type {
     }
 
     @Override
+    public int size() {
+        return size;
+    }
+
+    @Override
+    public List<Node> getAstChildren() {
+        return fieldTypes.values().stream().map(t -> (Node) t).toList();
+    }
+
+    @Override
     public boolean equals(Object obj) {
         /// Dos structs son iguales si tienen el mismo nombre
         /// Porque no aceptamos Duck Typing
@@ -62,23 +73,6 @@ public class StructType extends Type {
             return false;
         }
     }
-
-    @Override
-    public int size() {
-        /// Lo que ocupa un struct es la suma de lo que ocupan sus campos
-        /// TODO: las funciones no ocupan nada?
-        int size = 0;
-        for (Type type : fieldTypes.values()) {
-            size += type.size();
-        }
-        return size;
-    }
-
-    @Override
-    public List<Node> getAstChildren() {
-        return fieldTypes.values().stream().map(t -> (Node) t).toList();
-    }
-
     @Override
     public void bind(Context ctx) {
         Definition def = ctx.get(this.iden);
@@ -88,4 +82,13 @@ public class StructType extends Type {
         fieldTypes = definition.getType().getFieldTypes();
         super.bind(ctx);
     }
+
+    @Override
+    public void computeTypeSize() {
+        super.computeTypeSize(); // Compute size of children
+        for (Type type : fieldTypes.values()) {
+            size += type.size(); // Add size of all attributes
+        }
+    }
+
 }

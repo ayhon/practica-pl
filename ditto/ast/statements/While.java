@@ -5,10 +5,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 import ditto.ast.Context;
+import ditto.ast.Delta;
 import ditto.ast.Node;
 import ditto.ast.ProgramOutput;
 import ditto.ast.expressions.Expr;
-import ditto.ast.types.Type;
+import ditto.ast.types.BoolType;
+import ditto.errors.TypeError;
 
 public class While extends Statement {
     public final Expr cond;
@@ -30,20 +32,6 @@ public class While extends Statement {
     }
 
     @Override
-    public void bind(Context ctx) {
-        ctx.pushScope();
-        super.bind(ctx);
-        ctx.popScope();
-    }
-
-    @Override
-    public Type type() {
-        cond.type();
-
-        return null;
-    }
-
-    @Override
     public List<Node> getAstChildren() {
         List<Node> children = new ArrayList<Node>();
         children.add(cond);
@@ -52,7 +40,29 @@ public class While extends Statement {
     }
 
     @Override
+    public void bind(Context ctx) {
+        ctx.pushScope();
+        super.bind(ctx);
+        ctx.popScope();
+    }
+
+    @Override
+    public void typecheck() {
+        super.typecheck();
+        if (!cond.type.equals(BoolType.getInstance())) {
+            throw new TypeError(String.format("While condition must be of type Bool, got %s in %s", cond.type, cond));
+        }
+    }
+
+    @Override
     public void compileAsInstruction(ProgramOutput out) {
         out.block(null);
+    }
+
+    @Override
+    public void computeOffset(Delta lastDelta) {
+        lastDelta.enterBlock();
+        super.computeOffset(lastDelta);
+        lastDelta.exitBlock();
     }
 }

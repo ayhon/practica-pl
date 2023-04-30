@@ -3,8 +3,9 @@ package ditto.ast.definitions;
 import java.util.ArrayList;
 import java.util.List;
 
+import ditto.ast.CompilationProgress;
 import ditto.ast.Context;
-
+import ditto.ast.Delta;
 import ditto.ast.Node;
 import ditto.ast.ProgramOutput;
 import ditto.ast.expressions.Expr;
@@ -29,45 +30,16 @@ public class DefVar extends Definition {
 
     @Override
     public String getAstString() {
-        return "let";
+        String output = "var";
+
+        if (this.getProgress().atLeast(CompilationProgress.FUNC_SIZE_AND_DELTAS))
+            output += String.format(" [delta = %d]", this.getDelta());
+
+        return output;
     }
 
-    @Override
-    public List<Object> getAstArguments() {
-        List<Object> args = new ArrayList<>();
-        args.add(type);
-        args.add(iden);
-        if (this.expr != null)
-            args.add(expr);
-        return args;
-    }
-
-    public Type getType() {
-        // Como type(), pero getType() se puede usar antes del type-checking
-        return type;
-    }
-
-    @Override
-    public Type type() {
-        return getType();
-    }
-
-    @Override
-    public void typecheck() {
-        super.typecheck();
-        if (expr != null && !expr.type().equals(type))
-            throw new TypeError(String.format("Can't assign %s to variable %s of type %s", expr.type(), iden, type));
-    }
-
-    @Override
-    public String getIden() {
-        return iden;
-    }
-
-    @Override
-    public void bind(Context ctx) {
-        super.bind(ctx);
-        ctx.add(this);
+    public int getDelta() {
+        return this.position;
     }
 
     @Override
@@ -80,23 +52,52 @@ public class DefVar extends Definition {
     }
 
     @Override
+    public List<Object> getAstArguments() {
+        List<Object> args = new ArrayList<>();
+        args.add(type);
+        args.add(iden);
+        if (this.expr != null)
+            args.add(expr);
+        return args;
+    }
+
+
+    @Override
+    public String getIden() {
+        return iden;
+    }
+
+    public Type getType() {
+        // Como type(), pero getType() se puede usar antes del type-checking
+        return type;
+    }
+
+    @Override
+    public void bind(Context ctx) {
+        super.bind(ctx);
+        ctx.add(this);
+    }
+
+    @Override
+    public void typecheck() {
+        super.typecheck();
+        if (expr != null && !expr.type().equals(type))
+            throw new TypeError(String.format("Can't assign %s to variable %s of type %s", expr.type(), iden, type));
+    }
+
+    @Override
+    public Type type() {
+        return getType();
+    }
+    
+    @Override
+    public void computeOffset(Delta delta) {
+        position = delta.useNextOffset(type.size());
+    }
+
+    @Override
     public void compileAsInstruction(ProgramOutput out) {
         throw new UnsupportedOperationException("Unimplemented method 'compileAsInstruction'");
     }
 
-    @Override
-    public int computeDelta(int lastPosition) {
-        this.position = lastPosition;
-        lastPosition += this.type.size();
-        return lastPosition;
-    }
-
-    @Override
-    public int computeMaxFuncSize() {
-        return this.type.size();
-    }
-
-    public int getDelta() {
-        return this.position;
-    }
 }

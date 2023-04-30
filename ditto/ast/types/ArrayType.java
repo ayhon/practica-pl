@@ -54,12 +54,18 @@ public class ArrayType extends Type {
     }
 
     @Override
+    public List<Node> getAstChildren() {
+        return Arrays.asList(elementType);
+    }
+    
+    @Override
     public int size() {
         return size * elementType.size();
     }
 
     @Override
-    public List<Node> getAstChildren() {
-        return Arrays.asList(elementType);
+    public void computeTypeSize() {
+        super.computeTypeSize();
     }
+
 }

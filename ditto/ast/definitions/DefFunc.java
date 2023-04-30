@@ -4,20 +4,24 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import ditto.ast.Delta;
 import ditto.ast.Context;
 import ditto.ast.Node;
 import ditto.ast.ProgramOutput;
+import ditto.ast.statements.Return;
 import ditto.ast.statements.Statement;
 import ditto.ast.types.FuncType;
 import ditto.ast.types.Type;
 import ditto.ast.types.VoidType;
+import ditto.errors.TypeError;
 
 public class DefFunc extends Definition {
     private final String id;
     private final List<Param> params;
     private final List<Statement> body;
     private final Type result;
-    private int varSize;
+    private int size;
+
     private FuncType type;
 
     public List<Param> getParams() {
@@ -26,6 +30,14 @@ public class DefFunc extends Definition {
 
     public Type getResult() {
         return result;
+    }
+
+    public List<Statement> getBody() {
+        return body;
+    }
+
+    public int getSize() {
+        return size;
     }
 
     public DefFunc(String id, List<Param> params, List<Statement> body) {
@@ -58,6 +70,18 @@ public class DefFunc extends Definition {
         return Arrays.asList(id, params, result, body);
     }
 
+    public Type getType() {
+        return type;
+    }
+
+    @Override
+    public List<Node> getAstChildren() {
+        List<Node> children = new ArrayList<>();
+        children.add(type);
+        children.addAll(body);
+        return children;
+    }
+
     static public class Param extends DefVar {
         private final boolean isRef;
 
@@ -84,13 +108,36 @@ public class DefFunc extends Definition {
         ctx.popScope();
     }
 
-    public Type getType() {
-        return type;
+    @Override
+    public void typecheck() {
+        super.typecheck();
+        Type expected = type.getReturnType();
+        for (Statement stmt : body) {
+            if (stmt instanceof Return) {
+                Type actual = ((Return) stmt).getExpr().type();
+                if (!actual.equals(expected)) {
+                    throw new TypeError("Can't return " + actual + " in a function that returns " + expected);
+                }
+            }
+        }
     }
 
     @Override
     public Type type() {
         return getType();
+    }
+
+    @Override
+    public void computeOffset(Delta delta) {
+
+        Delta d = new Delta();
+        for (Param param : params) {
+            param.computeOffset(d);
+        }
+        for (Statement stmt : body) {
+            stmt.computeOffset(d);
+        }
+        size = d.getOffsetSize();
     }
 
     @Override
@@ -103,39 +150,7 @@ public class DefFunc extends Definition {
     }
 
     @Override
-    public List<Node> getAstChildren() {
-        List<Node> children = new ArrayList<>();
-        children.addAll(body);
-        children.add(type);
-        return children;
-    }
-
-    @Override
     public void compileAsInstruction(ProgramOutput out) {
         throw new UnsupportedOperationException("Unimplemented method 'compileAsInstruction'");
-    }
-
-    @Override
-    public int computeDelta(int lastPosition) {
-        int delta = type().size();
-        for (Statement stmt : body) {
-            delta = stmt.computeDelta(delta);
-        }
-        return lastPosition;
-    }
-
-    public int computeMaxFuncSize() {
-        int max = type.size();
-
-        for (Param param : params) {
-            max += param.getType().size();
-        }
-
-        for (Statement stmt : body) {
-            max += stmt.computeMaxFuncSize();
-        }
-
-        varSize = max;
-        return 0;
     }
 }

@@ -35,6 +35,15 @@ public class Name extends Designator {
     }
 
     @Override
+    public List<Node> getAstChildren() {
+        return Arrays.asList();
+    }
+
+    public Definition getDefinition() {
+        return definition;
+    }
+
+    @Override
     public void bind(Context ctx) {
         super.bind(ctx);
         definition = ctx.get(this.iden);
@@ -49,17 +58,8 @@ public class Name extends Designator {
     }
 
     @Override
-    public List<Node> getAstChildren() {
-        return Arrays.asList();
-    }
-
-    @Override
     public void compileAsDesig(ProgramOutput out) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'compileAsDesig'");
-    }
-
-    public Definition getDefinition() {
-        return definition;
     }
 }

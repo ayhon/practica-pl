@@ -26,7 +26,11 @@ public class New extends Expr {
     public String getAstString() {
         return "new";
     }
-
+    
+    @Override
+    public List<Node> getAstChildren() {
+        return Arrays.asList(value);
+    }
     @Override
     public List<Object> getAstArguments() {
         return Arrays.asList(value);
@@ -44,8 +48,4 @@ public class New extends Expr {
         // TODO: Implementar
     }
 
-    @Override
-    public List<Node> getAstChildren() {
-        return Arrays.asList(value);
-    }
 }

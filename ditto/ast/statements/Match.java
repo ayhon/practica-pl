@@ -4,35 +4,39 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import ditto.ast.Delta;
+import ditto.ast.Context;
 import ditto.ast.Node;
 import ditto.ast.ProgramOutput;
 import ditto.ast.expressions.Expr;
+
 import ditto.ast.types.Type;
+import ditto.ast.types.VoidType;
+import ditto.errors.TypeError;
 
 public class Match extends Statement {
     private Expr expr;
     private List<Case> cases;
-    private List<Statement> otherwise;
-
-    private Type type = null;
 
     public Match(Expr expr, List<Case> cases) {
         this.expr = expr;
         this.cases = cases;
-        this.otherwise = new ArrayList<Statement>();
     }
 
     public Match(Expr expr, List<Case> cases, List<Statement> otherwise) {
         this.expr = expr;
         this.cases = cases;
-        this.otherwise = otherwise;
+        this.cases.add(new Case(otherwise));
     }
 
     static public class Case extends Node {
         public final Expr expr;
         public final List<Statement> body;
-
         private Type type = null;
+
+        public Case(List<Statement> body) {
+            this(null, body);
+        }
 
         public Case(Expr expr, List<Statement> body) {
             this.expr = expr;
@@ -41,7 +45,10 @@ public class Match extends Statement {
 
         @Override
         public String getAstString() {
-            return "case";
+            if (expr == null)
+                return "otherwise";
+            else
+                return "case";
         }
 
         @Override
@@ -58,9 +65,24 @@ public class Match extends Statement {
         @Override
         public List<Node> getAstChildren() {
             List<Node> children = new ArrayList<Node>();
-            children.add(expr);
+            if (expr != null)
+                children.add(expr);
             children.addAll(body);
             return children;
+        }
+
+        @Override
+        public void bind(Context ctx) {
+            ctx.pushScope();
+            super.bind(ctx);
+            ctx.popScope();
+        }
+
+        @Override
+        public void computeOffset(Delta delta) {
+            delta.enterBlock();
+            super.computeOffset(delta);
+            delta.exitBlock();
         }
 
         @Override
@@ -78,22 +100,7 @@ public class Match extends Statement {
 
     @Override
     public List<Object> getAstArguments() {
-        if (otherwise.size() > 0)
-            return Arrays.asList(expr, cases, otherwise);
-        else
-            return Arrays.asList(expr, cases);
-    }
-
-    @Override
-    public Type type() {
-        Type aux = expr.type();
-        for(Case c : this.cases){
-            if(!aux.equals(c.expr.type())){
-                throw new RuntimeException("Type mismatch in case");
-            }
-        }
-        this.type = aux;
-        return this.type;
+        return Arrays.asList(expr, cases);
     }
 
     @Override
@@ -101,8 +108,23 @@ public class Match extends Statement {
         List<Node> children = new ArrayList<Node>();
         children.add(expr);
         children.addAll(cases);
-        children.addAll(otherwise);
         return children;
+    }
+
+    @Override
+    public Type type() {
+        return VoidType.getInstance();
+    }
+
+    @Override
+    public void typecheck() {
+        super.typecheck();
+        Type matchingType = expr.type();
+        for (Case c : this.cases) {
+            if (c.expr != null && !matchingType.equals(c.expr.type())) {
+                throw new TypeError("Type mismatch in case");
+            }
+        }   
     }
 
     @Override
@@ -110,4 +132,5 @@ public class Match extends Statement {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'compileAsInstruction'");
     }
+
 }

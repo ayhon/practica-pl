@@ -11,8 +11,6 @@ import ditto.ast.types.Type;
 public class Natural extends Literal {
     private final int value;
 
-    private Type type = null;
-
     public Natural(int value) {
         this.value = value;
     }

@@ -13,6 +13,7 @@ end
 func merge(array int rhs, array int lhs) -> array int
     int size := #rhs + #lhs;
     ptr array int ls := new [0; size];
+
     int r := 0;
     int l := 0;
     for i from 0 to size - 1 do

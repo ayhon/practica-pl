@@ -8,12 +8,11 @@ import ditto.ast.ProgramOutput;
 import ditto.ast.designators.Designator;
 import ditto.ast.expressions.Expr;
 import ditto.ast.types.Type;
+import ditto.errors.TypeError;
 
 public class Assign extends Statement {
     private final Designator place;
     private final Expr expr;
-
-    private Type type = null;
 
     public Assign(Designator place, Expr expr) {
         this.place = place;
@@ -22,6 +21,11 @@ public class Assign extends Statement {
 
     public Expr getExpr() {
         return expr;
+    }
+
+    @Override
+    public List<Node> getAstChildren() {
+        return Arrays.asList(place, expr);
     }
 
     public Designator getPlace() {
@@ -39,19 +43,13 @@ public class Assign extends Statement {
     }
 
     @Override
-    public Type type() {
-        Type aux = place.type();
-        if (!aux.equals(expr.type())) {
-            throw new RuntimeException(
-                    String.format("Can't assign %s to variable %s of type %s", expr.type(), place, aux));
+    public void typecheck() {
+        super.typecheck();
+        Type placeType = place.type();
+        if (!placeType.equals(expr.type())) {
+            throw new TypeError(
+                    String.format("Can't assign %s to variable %s of type %s", expr.type(), place, placeType));
         }
-        this.type = aux;
-        return this.type;
-    }
-
-    @Override
-    public List<Node> getAstChildren() {
-        return Arrays.asList(place, expr);
     }
 
     @Override

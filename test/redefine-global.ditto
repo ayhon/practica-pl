@@ -1,0 +1,13 @@
+func foo()
+end
+
+func foo()
+end
+
+int a;
+
+int a;
+
+struct Person is end
+
+struct Person is end

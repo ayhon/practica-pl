@@ -6,7 +6,6 @@ import java.util.List;
 import ditto.ast.Node;
 import ditto.ast.ProgramOutput;
 import ditto.ast.types.BoolType;
-import ditto.ast.types.Type;
 import ditto.errors.TypeError;
 import ditto.ast.types.IntegerType;
 
@@ -63,7 +62,6 @@ public class OperBin extends Expr {
     private final Operators op;
     private final Expr left;
     private final Expr right;
-    private Type type;
 
     public OperBin(Operators op, Expr left, Expr right) {
         this.op = op;
@@ -81,13 +79,6 @@ public class OperBin extends Expr {
 
     public Operators getOp() {
         return op;
-    }
-
-    @Override
-    public Type type() {
-        if (type == null)
-            throw new TypeError("Can't get type of expression before typechecking");
-        return type;
     }
 
     @Override

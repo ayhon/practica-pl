@@ -20,8 +20,9 @@ public class Module extends Node {
     private final Scope globalScope = new Scope();
     private String name;
     private String classFolder;
+    private int globalVarSize;
 
-    public Module(List<DefModule> imports, List<Definition> definitions) {
+	public Module(List<DefModule> imports, List<Definition> definitions) {
         this.modules = Collections
                 .unmodifiableMap(imports.stream().collect(Collectors.toMap(DefModule::getIden, Function.identity())));
         this.definitions = definitions;
@@ -62,9 +63,29 @@ public class Module extends Node {
     }
 
     @Override
+    public List<Node> getAstChildren() {
+        List<Node> children = new ArrayList<Node>();
+        children.addAll(this.modules.values());
+        children.addAll(this.definitions);
+        return children;
+    }
+
+    public void setClassFolder(String classFolder) {
+        this.classFolder = classFolder;
+    }
+
+    public String getClassFolder() {
+        return classFolder;
+    }
+    
+    @Override
     public String getAstString() {
         return "module";
     }
+
+    public int getGlobalVarSize() {
+		return globalVarSize;
+	}
 
     @Override
     public List<Object> getAstArguments() {
@@ -92,24 +113,18 @@ public class Module extends Node {
     }
 
     @Override
+    public void computeOffset(Delta lastDelta) {
+        Delta delta = new Delta();
+        for (Definition def : this.definitions) {
+            def.computeOffset(delta);
+        }
+        globalVarSize = delta.getOffsetSize();
+    }
+
+    @Override
     public void compile(ProgramOutput out) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'generateCode'");
     }
 
-    @Override
-    public List<Node> getAstChildren() {
-        List<Node> children = new ArrayList<Node>();
-        children.addAll(this.modules.values());
-        children.addAll(this.definitions);
-        return children;
-    }
-
-    public void setClassFolder(String classFolder) {
-        this.classFolder = classFolder;
-    }
-
-    public String getClassFolder() {
-        return classFolder;
-    }
 }

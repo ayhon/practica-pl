@@ -36,23 +36,6 @@ public class DefModule extends Node {
         return Arrays.asList(name);
     }
 
-    @Override
-    public void bind(Context ctx) {
-        if (module == null)
-            loadModule(ctx.getModule().getClassFolder());
-        module.bind();
-    }
-
-    @Override
-    public Type type() {
-        return VoidType.getInstance();
-    }
-
-    @Override
-    public void compile(ProgramOutput out) {
-        throw new UnsupportedOperationException("Unimplemented method 'generateCode'");
-    }
-
     public String getIden() {
         return name;
     }
@@ -66,7 +49,7 @@ public class DefModule extends Node {
         File file = new File(path, name + ".ditto");
         if (!file.exists())
             throw new ModuleImportError("Module " + name + " not found");
-            
+
         /// Obtener el módulo asociado leyendo el archivo
         try (Reader input = new InputStreamReader(new FileInputStream(file))) {
             Lexer lexer = new Lexer(input);
@@ -84,4 +67,22 @@ public class DefModule extends Node {
     public Module getModule() {
         return module;
     }
+
+    @Override
+    public void bind(Context ctx) {
+        if (module == null)
+            loadModule(ctx.getModule().getClassFolder());
+        module.bind();
+    }
+
+    @Override
+    public Type type() {
+        return VoidType.getInstance();
+    }
+
+    @Override
+    public void compile(ProgramOutput out) {
+        throw new UnsupportedOperationException("Unimplemented method 'generateCode'");
+    }
+
 }

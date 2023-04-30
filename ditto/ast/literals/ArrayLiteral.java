@@ -13,7 +13,6 @@ import ditto.ast.types.Type;
 public class ArrayLiteral extends Literal {
     private final List<Expr> elements;
     private final Expr numberOfElem;
-    private Type type = null;
 
     public List<Expr> getElements() {
         return elements;
@@ -46,13 +45,20 @@ public class ArrayLiteral extends Literal {
     }
 
     @Override
-    public List<Object> getAstArguments() {
-        return Arrays.asList(elements, numberOfElem);
+    public List<Node> getAstChildren() {
+        List<Node> children = new ArrayList<>(elements);
+        children.add(numberOfElem);
+        return children;
     }
 
     @Override
-    public Type type() {
-        return this.type;
+    public Object getValue() {
+        return this.elements;
+    }
+
+    @Override
+    public List<Object> getAstArguments() {
+        return Arrays.asList(elements, numberOfElem);
     }
 
     @Override
@@ -75,20 +81,9 @@ public class ArrayLiteral extends Literal {
     }
 
     @Override
-    public Object getValue() {
-        return this.elements;
-    }
-
-    @Override
     public void compileAsExpr(ProgramOutput out) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'compileAsExpr'");
     }
 
-    @Override
-    public List<Node> getAstChildren() {
-        List<Node> children = new ArrayList<>(elements);
-        children.add(numberOfElem);
-        return children;
-    }
 }

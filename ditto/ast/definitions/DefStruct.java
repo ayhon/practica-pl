@@ -12,8 +12,10 @@ import java.util.stream.Collectors;
 
 import ditto.ast.Identifier;
 import ditto.ast.Context;
+import ditto.ast.Delta;
 import ditto.ast.Node;
 import ditto.ast.ProgramOutput;
+import ditto.ast.definitions.DefFunc.Param;
 import ditto.ast.types.StructType;
 import ditto.ast.types.Type;
 
@@ -23,29 +25,40 @@ public class DefStruct extends Definition {
     private final Map<String, DefFunc> methods;
     private StructType type;
 
-    public DefStruct(String name) {
-        this.name = name;
-        this.attributes = new HashMap<>();
-        this.methods = new HashMap<>();
-    }
-
     public DefStruct(String name, List<Definition> definitions) {
         this.name = name;
         this.attributes = definitions.stream().filter(def -> def instanceof DefVar).map(def -> (DefVar) def)
                 .collect(Collectors.toMap(DefVar::getIden, Function.identity()));
-        this.methods = definitions.stream().filter(def -> def instanceof DefFunc).map(def -> (DefFunc) def)
-                .collect(Collectors.toMap(DefFunc::getIden, Function.identity()));
-        Map<String, Type> fieldTypes = new HashMap<>();
 
+        Map<String, Type> fieldTypes = new HashMap<>();
         for (DefVar attribute : this.attributes.values()) {
             fieldTypes.put(attribute.getIden(), attribute.getType());
         }
 
-        type = new StructType(new Identifier(name), fieldTypes);
+        this.type = new StructType(new Identifier(name), fieldTypes);
+
+        this.methods = definitions.stream().filter(def -> def instanceof DefFunc)
+                .map(def -> this.toMethod((DefFunc) def))
+                .collect(Collectors.toMap(DefFunc::getIden, Function.identity()));
+    }
+
+    /**
+     * Convertir un metodo de un struct en una funcion con un parametro extra this,
+     * que es el puntero al struct actual
+     */
+    private DefFunc toMethod(DefFunc func) {
+        List<Param> params = new ArrayList<>();
+        params.add(new DefFunc.Param(this.type, func.getIden(), true));
+        params.addAll(func.getParams());
+        return new DefFunc(func.getIden(), params, func.getResult(), func.getBody());
     }
 
     public DefVar getAttribute(String iden) {
         return this.attributes.get(iden);
+    }
+
+    public StructType getType() {
+        return this.type;
     }
 
     public DefFunc getMethod(String iden) {
@@ -78,21 +91,6 @@ public class DefStruct extends Definition {
         return Arrays.asList(name, attributes, methods);
     }
 
-    @Override
-    public void bind(Context ctx) {
-        ctx.add(this);
-        super.bind(ctx);
-    }
-
-    public StructType getType() {
-        return this.type;
-    }
-
-    @Override
-    public Type type() {
-        return getType();
-    }
-
     public String getIden() {
         return this.name;
     }
@@ -107,18 +105,28 @@ public class DefStruct extends Definition {
     }
 
     @Override
+    public void bind(Context ctx) {
+        ctx.add(this);
+        super.bind(ctx);
+    }
+
+    @Override
+    public Type type() {
+        return getType();
+    }
+
+    @Override
     public void compileAsInstruction(ProgramOutput out) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'compileAsInstruction'");
     }
 
     @Override
-    public int computeDelta(int lastPosition) {
-        int delta = 0;
-        for (Node child : getAstChildren()) {
-            delta = child.computeDelta(delta);
-        }
+    public void computeOffset(Delta delta) {
+        Delta d = new Delta();
 
-        return lastPosition + delta;
+        for (Node val : this.attributes.values()) {
+            val.computeOffset(d);
+        }
     }
 }

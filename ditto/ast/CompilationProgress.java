@@ -4,8 +4,9 @@ public enum CompilationProgress {
     NONE,
     BIND,
     TYPE,
-    SIZE, // Para detectar loops en calculo de size
-    DELTAS,
+    CALCULATING_TYPE_SIZE,
+    TYPE_SIZE, // Para detectar loops en calculo de size
+    FUNC_SIZE_AND_DELTAS,
     COMPILE;
 
     public boolean lessThan(CompilationProgress other) {

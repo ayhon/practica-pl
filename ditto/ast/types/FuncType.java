@@ -8,10 +8,14 @@ import java.util.List;
 public class FuncType extends Type {
     private final Type returnType;
     private final List<Type> argumentTypes;
+    private int argSize;
 
     public FuncType(Type returnType, List<Type> argumentTypes) {
         this.returnType = returnType;
         this.argumentTypes = argumentTypes;
+        for (Type t : argumentTypes) {
+            argSize += t.size();
+        }
     }
 
     public List<Type> getArgumentTypes() {
@@ -41,11 +45,11 @@ public class FuncType extends Type {
 
     @Override
     public int size() {
-        int cont = 0;
-        for (Type t : argumentTypes) {
-            cont += t.size();
-        }
-        return cont;
+        return 0;
+    }
+
+    public int getArgSize() {
+        return argSize;
     }
 
     @Override

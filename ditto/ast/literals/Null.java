@@ -10,10 +10,10 @@ import ditto.ast.types.Type;
 
 //Singleton
 public class Null extends Literal {
-    private static PointerType type = new PointerType(null);
     private static Null instance = new Null();
 
     private Null() {
+        this.type = new PointerType(null);
     }
 
     public static Null getInstance() {

@@ -8,13 +8,11 @@ import ditto.ast.Node;
 import ditto.ast.ProgramOutput;
 import ditto.ast.designators.Designator;
 import ditto.ast.types.FuncType;
-import ditto.ast.types.Type;
 import ditto.errors.TypeError;
 
 public class Call extends Expr {
     private final Designator func;
     private final List<Expr> args;
-    private Type type;
 
     public Call(Designator func) {
         this.func = func;
@@ -45,8 +43,11 @@ public class Call extends Expr {
     }
 
     @Override
-    public Type type() {
-        return type;
+    public List<Node> getAstChildren() {
+        List<Node> children = new ArrayList<Node>();
+        children.add(func);
+        children.addAll(args);
+        return children;
     }
 
     @Override
@@ -57,14 +58,6 @@ public class Call extends Expr {
             throw new TypeError(String.format("'%s' is not a function", this.func));
         }
         this.type = ((FuncType) this.func.type()).getReturnType();
-    }
-
-    @Override
-    public List<Node> getAstChildren() {
-        List<Node> children = new ArrayList<Node>();
-        children.add(func);
-        children.addAll(args);
-        return children;
     }
 
     @Override

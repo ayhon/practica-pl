@@ -3,6 +3,7 @@ package ditto;
 import ditto.ast.Module;
 import ditto.ast.ProgramOutput;
 import ditto.errors.SemanticError;
+import ditto.errors.TypeError;
 import ditto.lexer.Lexer;
 import ditto.parser.Parser;
 
@@ -19,47 +20,57 @@ public class Test {
         }
 
         String task = args[0];
-        String filePath = args[1];
-
-        File file = new File(filePath);
-        if (!file.exists()) {
-            System.out.println("File not found: " + filePath);
-            return;
-        }
-
-        var classFolder = file.getParentFile().getAbsolutePath();
-        Reader input = new InputStreamReader(new FileInputStream(file));
-        Lexer lexer = new Lexer(input);
-        Parser parser = new Parser(lexer);
-        parser.parse();
-        Module main = parser.getRoot();
-        main.setClassFolder(classFolder);
-        main.setName(filePath);
-
-        switch (task) {
-            case "ast" -> {
-                System.out.println(main);
-                break;
+        for (int i = 1; i < args.length; i++) {
+            String filePath = args[i];
+            File file = new File(filePath);
+            if (!file.exists()) {
+                System.out.println("File not found: " + filePath);
+                return;
             }
-            case "bind" -> {
-                try{
-                    main.bind();
-                } catch (SemanticError e) {
-                    System.out.println(e);
-                    e.printStackTrace();
-                    System.exit(1);
+
+            var classFolder = file.getParentFile().getAbsolutePath();
+            Reader input = new InputStreamReader(new FileInputStream(file));
+            Lexer lexer = new Lexer(input);
+            Parser parser = new Parser(lexer);
+            parser.parse();
+            Module main = parser.getRoot();
+            main.setClassFolder(classFolder);
+            main.setName(filePath);
+
+            switch (task) {
+                case "ast" -> {
+                    System.out.println(main);
                 }
-                break;
+                case "bind" -> {
+                    try {
+                        main.bind();
+                    } catch (SemanticError e) {
+                        System.out.println(e);
+                        e.printStackTrace();
+                        System.exit(1);
+                    }
+                }
+                case "typecheck" -> {
+                    try {
+                        main.typecheck();
+                    } catch (TypeError e) {
+                        System.err.println(e);
+                        e.printStackTrace();
+                        System.err.println(main);
+                        System.exit(1);
+                    }
+                }
+                case "typesize" -> {
+                    main.computeTypeSize();
+                }
+                case "offsets" -> {
+                    main.computeTypeSize();
+                }
+                case "code" -> {
+                    main.compile(new ProgramOutput());
+                }
             }
-            case "typecheck" -> {
-                main.typecheck();
-                System.out.println(main);
-                break;
-            }
-            case "code" -> {
-                main.compile(new ProgramOutput());
-                break;
-            }
+            System.err.println(main);
         }
     }
 }

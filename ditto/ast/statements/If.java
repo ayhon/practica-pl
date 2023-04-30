@@ -4,13 +4,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import ditto.ast.Module;
 import ditto.ast.Context;
+import ditto.ast.Delta;
 import ditto.ast.Node;
 import ditto.ast.ProgramOutput;
 import ditto.ast.expressions.Expr;
 import ditto.ast.types.BoolType;
-import ditto.ast.types.Type;
+import ditto.errors.TypeError;
 
 public class If extends Statement {
     private Expr cond;
@@ -35,6 +35,15 @@ public class If extends Statement {
     }
 
     @Override
+    public List<Node> getAstChildren() {
+        List<Node> children = new ArrayList<Node>();
+        children.add(cond);
+        children.addAll(then);
+        children.addAll(els);
+        return children;
+    }
+
+    @Override
     public List<Object> getAstArguments() {
         return Arrays.asList(cond, then, els);
     }
@@ -47,20 +56,31 @@ public class If extends Statement {
     }
 
     @Override
-    public Type type() {
+    public void typecheck() {
+        super.typecheck();
         if (!cond.type().equals(BoolType.getInstance())) {
-            throw new RuntimeException("Condition in if statement must be boolean.");
+            throw new TypeError(
+                    String.format("Condition of if statement must be of type bool, got %s in %s", cond.type(), cond));
         }
-        return null;
     }
 
     @Override
-    public List<Node> getAstChildren() {
-        List<Node> children = new ArrayList<Node>();
-        children.add(cond);
-        children.addAll(then);
-        children.addAll(els);
-        return children;
+    public void computeOffset(Delta delta) {
+        delta.enterBlock();
+        super.computeOffset(delta);
+        delta.exitBlock();
+        /**
+         * nextOffset offsetSize
+         * 0 0
+         * int a; delta=0 1 1
+         * if cond then (1) 1 1
+         * int b; delta=1 2 2
+         * if cond2 then (2) 2 2
+         * int c; delta=2 3 3
+         * end 2 3
+         * int d; delta=2 3 3
+         * end
+         */
     }
 
     @Override

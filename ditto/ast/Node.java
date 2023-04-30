@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.StringJoiner;
 
 import ditto.ast.types.Type;
+import ditto.errors.SemanticError;
 import ditto.errors.TypeError;
 
 public abstract class Node {
@@ -39,27 +40,30 @@ public abstract class Node {
 
     public Type type() {
         if (this.type == null)
-            throw new TypeError("Can't get type before typechekcing");
+            throw new TypeError(String.format("Can't get type before typechecking of %s", this.getAstString()));
         return this.type;
     }
 
-    // Calcula para cada definicion de variable su delta. El delta se resetea cuando
-    // entramos en bloque.
-    public int computeDelta(int lastPosition) {
+    public void computeTypeSize() {
+        this.progress = CompilationProgress.CALCULATING_TYPE_SIZE;
         for (Node child : getAstChildren()) {
-            lastPosition = child.computeDelta(lastPosition);
+            if (child.getProgress().lessThan(CompilationProgress.CALCULATING_TYPE_SIZE)
+                    || child.getProgress().equals(CompilationProgress.TYPE_SIZE))
+                child.computeTypeSize();
+            else
+                throw new SemanticError("Intentamos entrar en un bucle infinito para calcular el tamaño de un tipo.");
         }
-        return lastPosition;
     }
 
-    // Calcula para cada función el tamaño que habremos de reservar en la pila para
-    // parámetros y variables locales.
-    public int computeMaxFuncSize() {
-        int max = 0;
+    // Calcula para cada definicion de variable su delta. El delta se resetea cuando
+    // entramos en bloque. También calculamos el tamaño máximo a reservar en la pila
+    // pra funciones.
+    public void computeOffset(Delta lastDelta) {
+        this.progress = CompilationProgress.FUNC_SIZE_AND_DELTAS;
         for (Node child : getAstChildren()) {
-            max = child.computeMaxFuncSize();
+            if (child.getProgress().lessThan(CompilationProgress.FUNC_SIZE_AND_DELTAS))
+                child.computeOffset(lastDelta);
         }
-        return max;
     }
 
     public abstract void compile(ProgramOutput out);

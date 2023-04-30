@@ -12,7 +12,6 @@ import ditto.ast.ProgramOutput;
 import ditto.ast.definitions.DefStruct;
 import ditto.ast.definitions.DefVar;
 import ditto.ast.expressions.Expr;
-import ditto.ast.types.Type;
 import ditto.errors.SemanticError;
 import ditto.errors.TypeError;
 
@@ -41,19 +40,37 @@ public class StructLiteral extends Literal {
     }
 
     @Override
-    public Type type() {
-        return this.definition.type();
+    public Object getValue() {
+        return fieldValues;
+    }
+    
+    @Override
+    public List<Node> getAstChildren() {
+        List<Node> children = new ArrayList<Node>();
+        children.addAll(fieldValues.values());
+        return children;
+    }
+
+    @Override
+    public void compileAsExpr(ProgramOutput out) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'compileAsExpr'");
+    }
+
+    @Override
+    public void bind(Context ctx) {
+        var def = ctx.get(iden);
+        if (def instanceof DefStruct) {
+            definition = (DefStruct) def;
+        } else
+            throw new SemanticError("Couldn't find definition for module " + iden);
+
+        super.bind(ctx);
     }
 
     @Override
     public void typecheck() {
-        /// Hay que comprobar que no define campos de más,
-        /// y coincide el tipo de cada campo definido con su tipo correspondiente en
-        /// DefStruct
-
-        /// Antes de todo hacer el typecheck de sus campos
         super.typecheck();
-
         for (var entry : fieldValues.entrySet()) {
             DefVar field = this.definition.getAttribute(entry.getKey());
             if (field == null) {
@@ -67,33 +84,6 @@ public class StructLiteral extends Literal {
                         entry.getKey(), this.iden, field.type()));
             }
         }
-    }
-
-    @Override
-    public Object getValue() {
-        return fieldValues;
-    }
-
-    @Override
-    public void compileAsExpr(ProgramOutput out) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'compileAsExpr'");
-    }
-
-    @Override
-    public void bind(Context ctx) {
-        var def = ctx.get(iden);
-        if(def instanceof DefStruct){
-            definition = (DefStruct) def;
-        } else throw new SemanticError("Couldn't find definition for module " + iden);
-
-        super.bind(ctx);
-    }
-
-    @Override
-    public List<Node> getAstChildren() {
-        List<Node> children = new ArrayList<Node>();
-        children.addAll(fieldValues.values());
-        return children;
+        this.type = this.definition.type();
     }
 }

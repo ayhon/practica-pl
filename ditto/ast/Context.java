@@ -6,6 +6,7 @@ import java.util.List;
 
 import ditto.ast.definitions.DefFunc;
 import ditto.ast.definitions.Definition;
+import ditto.errors.SemanticError;
 
 public class Context {
     private final List<Scope> scopes;
@@ -35,6 +36,10 @@ public class Context {
     }
 
     public void add(Definition var) {
+        Scope actualScope = scopes.get(scopes.size() - 1);
+        if(actualScope.contains(var.getIden()))
+            throw new SemanticError("Definition " + var.getIden() + " already defined in this scope");
+            
         scopes.get(scopes.size() - 1).add(var);
     }
 

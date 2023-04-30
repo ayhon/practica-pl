@@ -6,15 +6,12 @@ import java.util.List;
 import ditto.ast.Node;
 import ditto.ast.ProgramOutput;
 import ditto.ast.types.BoolType;
-import ditto.ast.types.Type;
-
 // Singleton
 public class False extends Literal {
     private static False instance = new False();
 
-    private Type type = null;
-
     private False() {
+        this.type = BoolType.getInstance();
     }
 
     public static False getInstance() {
@@ -22,19 +19,19 @@ public class False extends Literal {
     }
 
     @Override
-    public Type type() {
-        this.type = BoolType.getInstance();
-        return this.type;
+    public String getAstString() {
+        return "false";
     }
 
     @Override
-    public String getAstString() { return "false"; }
+    public List<Object> getAstArguments() {
+        return Arrays.asList();
+    }
 
     @Override
-    public List<Object> getAstArguments() { return Arrays.asList(); }
-
-    @Override
-    public Object getValue() {  return false;   }
+    public Object getValue() {
+        return false;
+    }
 
     @Override
     public void compileAsExpr(ProgramOutput out) {

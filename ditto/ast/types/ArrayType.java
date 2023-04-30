@@ -1,6 +1,5 @@
 package ditto.ast.types;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -13,13 +12,6 @@ import ditto.ast.literals.ArrayLiteral;
 public class ArrayType extends Type {
     private final Type elementType;
     private int length;
-    private Literal defaultValue;
-
-    /// If size is null, then this type definition is only possible
-    /// in the arguments of a function definition.
-    public ArrayType(Type elementType) {
-        this(elementType, -1);
-    }
 
     public ArrayType(Type elementType, Natural size) {
         this(elementType, (int) size.getValue());
@@ -31,7 +23,7 @@ public class ArrayType extends Type {
     }
 
     public Literal getDefault() { // Empty array
-        return new ArrayLiteral(this);
+        return new ArrayLiteral(elementType.getDefault(), new Natural(length));
     }
 
     public Type getElementType() {
@@ -68,12 +60,16 @@ public class ArrayType extends Type {
 
     @Override
     public List<Node> getAstChildren() {
-        List<Node> children = new ArrayList<>(Arrays.asList(elementType));
-        return children;
+        return Arrays.asList(elementType);
     }
 
     @Override
     public int size() {
         return getLength() * elementType.size();
+    }
+
+    @Override
+    public void computeTypeSize() {
+        super.computeTypeSize();
     }
 }

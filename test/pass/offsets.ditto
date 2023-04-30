@@ -1,3 +1,5 @@
+import Math;
+
 func should_be_2()
     int a;
     if true then

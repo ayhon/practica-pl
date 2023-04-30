@@ -30,3 +30,9 @@ jobs:
         
       - name: Test Typecheck
         run: export DO_NOT_COMPILE=1 && ./run.sh test typecheck all
+
+      - name: Test Typesize
+        run: export DO_NOT_COMPILE=1 && ./run.sh test typesize all
+
+      - name: Test Offsets
+        run: export DO_NOT_COMPILE=1 && ./run.sh test offsets all

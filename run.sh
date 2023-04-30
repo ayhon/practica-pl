@@ -1,11 +1,11 @@
 #!/bin/bash
 JAR_PATH="./lib";
 TASKS=(
-    "ast"
-    "bind"
-    "typesize"
-    "typecheck"
-    "offsets"
+    "ast" 
+    "bind" 
+    "typecheck" 
+    "typesize" 
+    "offsets" 
     "code"
 );
 
@@ -78,7 +78,7 @@ case $1 in
                 # Hay que ejecutar todas las tareas que van antes de $task, y deberian de pasar sin problema
                 # Y cuando llega a la tarea $task deberia de fallar, y terminar
                 # Iterar por fichero fuera, y dentro por tareas
-                echo "🧪 Ejecutando los tests que deberian fallar"
+                echo "Ejecutando los tests que deberian fallar"
                 for test_file in test/fail/$task/*.ditto; do
                     [ -f $test_file ] || break # Si no hay ficheros, salir
                     echo "  📁 Ejecutando $test_file"
@@ -107,7 +107,7 @@ case $1 in
                         fi
 
                         # Pasar al siguiente fichero cuando se ha ejecutado la tarea $task
-                        if [ $task_i == $task ]; then
+                        if [ $task == $task ]; then
                             break
                         fi
                     done

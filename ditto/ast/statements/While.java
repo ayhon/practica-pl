@@ -49,8 +49,8 @@ public class While extends Statement {
     @Override
     public void typecheck() {
         super.typecheck();
-        if (!cond.type.equals(BoolType.getInstance())) {
-            throw new TypeError(String.format("While condition must be of type Bool, got %s in %s", cond.type, cond));
+        if (!cond.type().equals(BoolType.getInstance())) {
+            throw new TypeError(String.format("While condition must be of type Bool, got %s in %s", cond.type(), cond));
         }
     }
 

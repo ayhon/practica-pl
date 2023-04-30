@@ -140,6 +140,10 @@ public class LexerOperations {
         // System.out.println("Token Assign"); 
         return new Token(lexer.col(), lexer.row(), lexer.lexeme(), TokenKind.ASSIGN);
     }
+    Token scanHash(){
+        // System.out.println("Token Hash"); 
+        return new Token(lexer.col(), lexer.row(), lexer.lexeme(), TokenKind.HASH);
+    }
     /** PALABRAS RESERVADAS **/
     Token scanInt(){
         // System.out.println("Token Int");

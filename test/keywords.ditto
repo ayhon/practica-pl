@@ -59,7 +59,7 @@ struct Name is
 end
 
 func mat_mul(array array int A, array array int B) -> array array int
-    /// assert(A[0].size == B.size);
+    /// assert(#A[0] == #B);
     array array int C := [[0; 3]; 3];
     for i from 0 to 3 do
         for j from 0 to 3 do

@@ -44,7 +44,7 @@ init with {:
 /* PUNTUATION */
 terminal PLUS, MINUS, TIMES, DIV, MOD, NOT_EQUAL, EQUAL, GREATER, LESS, GREATER_EQUAL, LESS_EQUAL,
          OPEN_PAR, CLOSE_PAR, OPEN_BRACKET, CLOSE_BRACKET, OPEN_CURLY, CLOSE_CURLY,
-         SEMICOLON, COLON, COMMA, DOT, QUADOT, AT, R_ARROW, ASSIGN;
+         SEMICOLON, COLON, COMMA, DOT, QUADOT, AT, R_ARROW, ASSIGN, HASH;
 
 /* KEYWORDS */
 terminal AND, OR, NOT, FUNC, IF, ELSE, FOR, WHILE, IMPORT, RETURN, MATCH, CASE, IS, OTHERWISE,
@@ -200,6 +200,8 @@ UNARY                       ::= MINUS UNARY:expr
                                     {: RESULT = expr; :}
                                 | PTR UNARY:expr
                                     {: RESULT = new OperUn(OperUn.Operators.REF, expr); :}
+                                | HASH UNARY:expr
+                                    {: RESULT = new OperUn(OperUn.Operators.LEN, expr); :}
                                 | PRIMARY:expr
                                     {: RESULT = expr; :};
 

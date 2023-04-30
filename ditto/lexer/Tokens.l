@@ -83,6 +83,7 @@ colon = :
 quadot = ::
 dot = \.
 at = @
+hash = #
 
 /* Keywords */
 int = int
@@ -149,6 +150,7 @@ null = null
 {dot}                         {return ops.scanDot();}
 {at}                          {return ops.scanAt();}
 {assign}                      {return ops.scanAssign();}
+{hash}                        {return ops.scanHash();}
 
 {int}                         {return ops.scanInt();}
 {bool}                        {return ops.scanBool();}

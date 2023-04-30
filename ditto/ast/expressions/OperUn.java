@@ -7,6 +7,7 @@ import ditto.ast.Node;
 import ditto.ast.ProgramOutput;
 import ditto.ast.definitions.DefVar;
 import ditto.ast.designators.Name;
+import ditto.ast.types.ArrayType;
 import ditto.ast.types.BoolType;
 import ditto.ast.types.IntegerType;
 import ditto.ast.types.PointerType;
@@ -15,7 +16,7 @@ import ditto.errors.TypeError;
 
 public class OperUn extends Expr {
     public enum Operators {
-        NOT, NEG, POS, REF;
+        NOT, NEG, POS, REF, LEN;
 
         public String toString() {
             switch (this) {
@@ -27,6 +28,8 @@ public class OperUn extends Expr {
                     return "+";
                 case REF:
                     return "ptr";
+                case LEN:
+                    return "length";
                 default:
                     throw new IllegalArgumentException("Invalid operator");
             }
@@ -62,6 +65,8 @@ public class OperUn extends Expr {
                 /// Se da con expresion `ptr x`,
                 /// que sirve para obtener el puntero a la variable x
                 return new PointerType(expr.type());
+            case LEN:
+                return IntegerType.getInstance();
             default:
                 throw new IllegalArgumentException("Invalid operator '" + op + "'");
         }
@@ -81,6 +86,9 @@ public class OperUn extends Expr {
             case REF -> {
                 /// Porque cualquier tipo puede ser referenciado
                 expectedType = null;
+            }
+            case LEN -> {
+                expectedType = new ArrayType(null);
             }
             default -> {
                 throw new IllegalArgumentException("Invalid operator '" + op + "'");
@@ -128,6 +136,10 @@ public class OperUn extends Expr {
                 out.i32_const(((DefVar) (((Name) expr).getDefinition())).getDelta()); // Aqui hacemos i32.const delta(*id)
                                                                                   // (TODO: revisar)
                 out.i32_add();
+                break;
+            case LEN:
+                // El tamaño de un array se guarda dereferenciando el array, en su primera posición
+                expr.compileAsExpr(out);
                 break;
             default:
                 throw new IllegalArgumentException("Invalid operator '" + op + "'");

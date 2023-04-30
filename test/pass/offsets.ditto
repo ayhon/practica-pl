@@ -5,3 +5,20 @@ func should_be_2()
     end
     int c;
 end
+
+func should_be_1()
+    if true then
+        int a;
+    else 
+        int a2;
+    end
+    if true then
+        int b;
+    end
+    if true then
+        int c;
+    end
+    if true then
+        int d;
+    end
+end

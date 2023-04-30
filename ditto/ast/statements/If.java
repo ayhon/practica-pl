@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import ditto.ast.CompilationProgress;
 import ditto.ast.Context;
 import ditto.ast.Delta;
 import ditto.ast.Node;
@@ -66,9 +67,20 @@ public class If extends Statement {
 
     @Override
     public void computeOffset(Delta delta) {
+        super.setProgress(CompilationProgress.FUNC_SIZE_AND_DELTAS);
+        
         delta.enterBlock();
-        super.computeOffset(delta);
+        for (Statement s : then) {
+            s.computeOffset(delta);
+        }
         delta.exitBlock();
+
+        delta.enterBlock();
+        for (Statement s : els) {
+            s.computeOffset(delta);
+        }
+        delta.exitBlock();
+
         /**
          * nextOffset offsetSize
          * 0 0

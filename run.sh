@@ -1,11 +1,11 @@
 #!/bin/bash
 JAR_PATH="./lib";
 TASKS=(
-    "ast" 
-    "bind" 
-    "typecheck" 
-    "typesize" 
-    "offsets" 
+    "ast"
+    "bind"
+    "typesize"
+    "typecheck"
+    "offsets"
     "code"
 );
 
@@ -76,34 +76,33 @@ case $1 in
                 # Hay que ejecutar todas las tareas que van antes de $task, y deberian de pasar sin problema
                 # Y cuando llega a la tarea $task deberia de fallar, y terminar
                 # Iterar por fichero fuera, y dentro por tareas
-                echo "Ejecutando los tests que deberian fallar"
+                echo "🧪 Ejecutando los tests que deberian fallar"
                 for test_file in test/fail/$task/*.ditto; do
-                    echo "Ejecutando $test_file"
+                    echo "  📁 Ejecutando $test_file"
                     for task_i in "${TASKS[@]}"; do
-                        echo "Ejecutando $task_i - $test_file"
                         ditto_test $task_i $test_file $print_ast
                         RESULT=$?
                         # Deberia fallar la ejecucion si la tarea es $task
                         # Si no falla, lanza un mensaje de error
                         if [ $task_i == $task ]; then
                             if [ $RESULT -eq 0 ]; then
-                                echo "❌ passed $test_file - $task_i y NO deberia"
+                                echo "      ❌ passed $test_file - $task_i y NO deberia"
                                 exit 1
                             else 
-                                echo "✅ failed $test_file - $task_i y deberia"
+                                echo "      ✅ failed $test_file - $task_i y deberia"
                             fi
                         # si no, deberia pasar
                         else
                             if [ $RESULT -ne 0 ]; then
-                                echo "❌ failed $test_file - $task_i y NO deberia"
+                                echo "      ❌ failed $test_file - $task_i y NO deberia"
                                 exit 1
                             else
-                                echo "✅ passed $test_file - $task_i y deberia"
+                                echo "      ✅ passed $test_file - $task_i y deberia"
                             fi
                         fi
 
                         # Pasar al siguiente fichero cuando se ha ejecutado la tarea $task
-                        if [ $task == $task ]; then
+                        if [ $task_i == $task ]; then
                             break
                         fi
                     done

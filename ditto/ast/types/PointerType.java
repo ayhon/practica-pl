@@ -50,8 +50,8 @@ public class PointerType extends Type {
 
     @Override
     public List<Node> getAstChildren() {
-        List<Node> children = new ArrayList<Node>();
-        if (this.elementType != null)
+        List<Node> children = new ArrayList<>();
+        if (elementType != null)
             children.add(elementType);
         return children;
     }

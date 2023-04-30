@@ -60,7 +60,6 @@ public class Test {
                     main.compile(new ProgramOutput());
                 }
             }
-            
             if (printAST) {
                 System.out.println(main);
             }

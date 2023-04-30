@@ -57,7 +57,6 @@ public class For extends Statement {
     @Override
     public void bind(Context ctx) {
         ctx.pushScope();
-        ctx.add(index); // Add the for-loop's index to the new local scope
         super.bind(ctx);
         ctx.popScope();
     }

@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import ditto.ast.definitions.DefFunc;
 import ditto.ast.definitions.Definition;
 import ditto.errors.SemanticError;
 
@@ -25,11 +24,6 @@ public class Context {
         scopes.add(new Scope());
     }
 
-    public void pushScope(DefFunc func) {
-        assert(scopes.size() == 1);
-        scopes.add(new Scope(func));
-    }
-
     public void popScope() {
         assert (scopes.size() > 1);
         scopes.remove(scopes.size() - 1);
@@ -38,7 +32,7 @@ public class Context {
     public void add(Definition var) {
         Scope actualScope = scopes.get(scopes.size() - 1);
         if(actualScope.contains(var.getIden()))
-            throw new SemanticError("Definition " + var.getIden() + " already defined in this scope");
+            throw new SemanticError("Definition " + var.getIden() + " already defined in this scope: " + actualScope);
             
         scopes.get(scopes.size() - 1).add(var);
     }

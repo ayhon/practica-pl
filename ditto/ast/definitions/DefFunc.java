@@ -77,6 +77,7 @@ public class DefFunc extends Definition {
     @Override
     public List<Node> getAstChildren() {
         List<Node> children = new ArrayList<>();
+        children.addAll(params);
         children.add(type);
         children.addAll(body);
         return children;
@@ -103,7 +104,7 @@ public class DefFunc extends Definition {
     public void bind(Context ctx) {
         /// Llama a bind de los hijos con nuevo contexto local
         ctx.add(this);
-        ctx.pushScope(this);
+        ctx.pushScope();
         super.bind(ctx);
         ctx.popScope();
     }
@@ -129,7 +130,6 @@ public class DefFunc extends Definition {
 
     @Override
     public void computeOffset(Delta delta) {
-
         Delta d = new Delta();
         for (Param param : params) {
             param.computeOffset(d);

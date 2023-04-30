@@ -1,8 +1,9 @@
-import Std;
+func b(int a) -> int
+
+end
 
 func main() -> int
-    int a := 1;
-    bool b := false;
-    Std::scan_bool(b);
-    return not b;
+    ptr array int sub := new [b(1); 1];
+    ptr ptr array int test := ptr sub; 
+    array int i := test@@;
 end

@@ -77,6 +77,9 @@ public class ArrayLiteral extends Literal {
             }
         }
 
+        if (elementType == null)
+            throw new RuntimeException("ArrayLiteral: Cant determine type of array elements");
+
         Integer length = numberOfElem.evalIntAtCompileTime();
         if (length == null)
             throw new RuntimeException("ArrayLiteral: Number of elements cannot be determined at compile time");

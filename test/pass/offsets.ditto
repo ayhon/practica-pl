@@ -43,7 +43,7 @@ end
 func should_be_4()
     match 1 is
         case 1 do
-            array int a := [0; 4];
+            array int a := [0; 10 + (1 + 2)- 3 * (4 % 2) * -1];
         otherwise
             int a;
     end

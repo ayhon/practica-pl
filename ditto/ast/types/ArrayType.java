@@ -29,7 +29,7 @@ public class ArrayType extends Type {
     }
 
     public Literal getDefault() { // Empty array
-        return new ArrayLiteral();
+        return new ArrayLiteral(elementType.getDefault(), new Natural(length));
     }
 
     public Type getElementType() {
@@ -42,7 +42,7 @@ public class ArrayType extends Type {
         return length;
     }
 
-    public void setLength(int length){
+    public void setLength(int length) {
         this.length = length;
     }
 

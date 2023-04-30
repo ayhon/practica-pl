@@ -53,6 +53,7 @@ public abstract class Node {
             else
                 throw new BindingError("Intentamos entrar en un bucle infinito para calcular el tamaño de un tipo.");
         }
+        this.progress = CompilationProgress.TYPE_SIZE;
     }
 
     // Calcula para cada definicion de variable su delta. El delta se resetea cuando

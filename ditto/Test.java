@@ -2,7 +2,6 @@ package ditto;
 
 import ditto.ast.Module;
 import ditto.ast.ProgramOutput;
-import ditto.errors.BindingError;
 import ditto.lexer.Lexer;
 import ditto.parser.Parser;
 
@@ -13,16 +12,17 @@ import java.io.Reader;
 
 public class Test {
     public static final String[] tasks = { "ast", "bind", "typecheck", "typesize", "offsets", "code" };
-    public static boolean useAsMain = true;
 
     public static void main(String[] args) throws Exception {
-        if (args.length != 2) {
+        if (args.length < 2) {
             System.out.println("Usage: java Test <task> <filepath>");
             return;
         }
 
         String task = args[0];
         String filePath = args[1];
+        Boolean printAST = false;
+        printAST = args.length > 2 && args[2].equals("ast");
 
         File file = new File(filePath);
 
@@ -32,18 +32,17 @@ public class Test {
         }
 
         var parentFolder = file.getParentFile();
-        Reader input = new InputStreamReader(new FileInputStream(file));
-        Lexer lexer = new Lexer(input);
-        Parser parser = new Parser(lexer);
-        parser.parse();
-        Module main = parser.getRoot();
-        main.setClassFolder(parentFolder.getAbsolutePath());
-        main.setName(filePath);
 
-        try {
+        try (Reader input = new InputStreamReader(new FileInputStream(file));) {
+            Lexer lexer = new Lexer(input);
+            Parser parser = new Parser(lexer);
+            parser.parse();
+            Module main = parser.getRoot();
+            main.setClassFolder(parentFolder.getAbsolutePath());
+            main.setName(filePath);
+
             switch (task) {
                 case "ast" -> {
-                    if(useAsMain) System.out.println(main);
                 }
                 case "bind" -> {
                     main.bind();
@@ -53,21 +52,19 @@ public class Test {
                 }
                 case "typesize" -> {
                     main.computeTypeSize();
-                    if(useAsMain) System.out.println(main);
                 }
                 case "offsets" -> {
                     main.computeOffset();
-                    if(useAsMain) System.out.println(main);
                 }
                 case "code" -> {
                     main.compile(new ProgramOutput());
                 }
             }
-        } catch (Exception e) {
-            if(useAsMain){
-                System.out.println(e);
-                e.printStackTrace();
+
+            if (printAST) {
+                System.out.println(main);
             }
+        } catch (Exception e) {
             throw e;
         }
     }

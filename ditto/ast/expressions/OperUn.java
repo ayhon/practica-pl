@@ -101,21 +101,29 @@ public class OperUn extends Expr {
 
     private Type computeType() {
         switch (this.op) {
-            case NOT:
+            case NOT -> {
                 this.type = BoolType.getInstance();
-            case NEG:
+            }
+            case NEG -> {
                 this.type = IntegerType.getInstance();
-            case POS:
+            }
+            case POS -> {
                 this.type = IntegerType.getInstance();
-            case REF:
+            }
+            case REF -> {
                 /// Se da con expresion `ptr x`,
                 /// que sirve para obtener el puntero a la variable x
                 this.type = new PointerType(expr.type());
-            case LEN:
+            }
+            case LEN -> {
                 this.type = IntegerType.getInstance();
-            default:
+            }
+            default -> {
                 throw new IllegalArgumentException("Invalid operator '" + op + "'");
+            }
         }
+
+        return this.type;
     }
 
     @Override

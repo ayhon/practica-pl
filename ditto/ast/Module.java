@@ -80,7 +80,11 @@ public class Module extends Node {
 
     @Override
     public String getAstString() {
-        return "module";
+        var astString = "module";
+        if (this.getProgress().atLeast(CompilationProgress.FUNC_SIZE_AND_DELTAS)) {
+            astString += String.format(" [GLOBAL VAR SIZE = %d]", this.globalVarSize);
+        }
+        return astString;
     }
 
     public int getGlobalVarSize() {

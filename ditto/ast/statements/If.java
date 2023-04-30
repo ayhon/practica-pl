@@ -51,8 +51,22 @@ public class If extends Statement {
 
     @Override
     public void bind(Context ctx) {
+        super.setProgress(CompilationProgress.BIND);
+        cond.bind(ctx);
+
         ctx.pushScope();
-        super.bind(ctx);
+        for (Statement s : then) {
+            if(s.getProgress().lessThan(CompilationProgress.BIND))
+                s.bind(ctx);
+        }
+        ctx.popScope();
+
+        /// El scope de else es diferente al de condición principal
+        ctx.pushScope();
+        for (Statement s : els) {
+            if(s.getProgress().lessThan(CompilationProgress.BIND))
+                s.bind(ctx);
+        }
         ctx.popScope();
     }
 

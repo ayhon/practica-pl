@@ -5,6 +5,7 @@ import ditto.ast.literals.Literal;
 import ditto.ast.literals.Null;
 import ditto.ast.CompilationProgress;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class PointerType extends Type {
@@ -48,7 +49,10 @@ public class PointerType extends Type {
 
     @Override
     public List<Node> getAstChildren() {
-        return List.of(elementType);
+        List<Node> children = new ArrayList<Node>();
+        if (this.elementType != null)
+            children.add(elementType);
+        return children;
     }
 
     @Override

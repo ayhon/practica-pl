@@ -53,6 +53,21 @@ public class OperUn extends Expr {
     }
 
     @Override
+    public String getAstString() {
+        return op.toString();
+    }
+
+    @Override
+    public List<Object> getAstArguments() {
+        return Arrays.asList(expr);
+    }
+
+    @Override
+    public List<Node> getAstChildren() {
+        return Arrays.asList(expr);
+    }
+
+    @Override
     public Type type() {
         switch (this.op) {
             case NOT:
@@ -100,18 +115,7 @@ public class OperUn extends Expr {
                     this.op, this.expr.type()));
         }
     }
-
-    @Override
-    public String getAstString() {
-        return op.toString();
-    }
-
-    @Override
-    public List<Object> getAstArguments() {
-        return Arrays.asList(expr);
-    }
-
-    @Override
+        @Override
     public void compileAsExpr(ProgramOutput out) {
         switch (this.op) {
             case NOT:
@@ -134,7 +138,7 @@ public class OperUn extends Expr {
                 // Se da con expresion `ptr x`,
                 expr.compile(out);
                 out.i32_const(((DefVar) (((Name) expr).getDefinition())).getDelta()); // Aqui hacemos i32.const delta(*id)
-                                                                                  // (TODO: revisar)
+                                                                                        // (TODO: revisar)
                 out.i32_add();
                 break;
             case LEN:
@@ -146,8 +150,4 @@ public class OperUn extends Expr {
         }
     }
 
-    @Override
-    public List<Node> getAstChildren() {
-        return Arrays.asList(expr);
-    }
 }

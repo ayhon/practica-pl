@@ -14,7 +14,6 @@ public class ArrayLiteral extends Literal {
     private final List<Expr> elements;
     private final Expr numberOfElem;
     private Type type = null;
-    private final List<Object> ast_args;
 
     public List<Expr> getElements() {
         return elements;
@@ -22,7 +21,6 @@ public class ArrayLiteral extends Literal {
 
     public ArrayLiteral(List<Expr> elements) {
         this.elements = elements;
-        this.ast_args = Arrays.asList(elements); // ast_args es elements pero como List<Object> en vez de List<Expr>
         this.numberOfElem = new Natural(elements.size());
     }
 
@@ -40,10 +38,6 @@ public class ArrayLiteral extends Literal {
 
         this.elements = new ArrayList<>();
         this.elements.add(fill);
-
-        this.ast_args = new ArrayList<>();
-        this.ast_args.add("fill = " + fill.toString());
-        this.ast_args.add("numberOfElem = " + numberOfElem.toString());
     }
 
     @Override
@@ -53,7 +47,7 @@ public class ArrayLiteral extends Literal {
 
     @Override
     public List<Object> getAstArguments() {
-        return ast_args;
+        return Arrays.asList(elements, numberOfElem);
     }
 
     @Override
@@ -64,7 +58,7 @@ public class ArrayLiteral extends Literal {
     @Override
     public void typecheck() {
         super.typecheck();
-        
+
         Type elementType = null;
         for (Expr elem : elements) {
             if (elementType == null) {
@@ -93,8 +87,7 @@ public class ArrayLiteral extends Literal {
 
     @Override
     public List<Node> getAstChildren() {
-        List<Node> children = new ArrayList<>();
-        children.addAll(elements);
+        List<Node> children = new ArrayList<>(elements);
         children.add(numberOfElem);
         return children;
     }

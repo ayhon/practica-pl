@@ -36,16 +36,17 @@ public class UnitTest {
 
             try {
                 Test.main(newArgs);
-                System.out.println("✅ " + f.getName() + " passed as it should");
+                System.out.println("✅ passed " + f.getName() + " as it should");
             } catch (Exception e) {
                 System.err.println(e);
                 e.printStackTrace();
-                System.err.println("❌ " + f.getName() + " failed as it shouldn't");
+                System.err.println("❌ failed " + f.getName() + " as it shouldn't");
             }
         }
 
         /// Iterar los archivos de failSet
         /// Deberian pasar los tests anteriores, salvo etapa actual
+        System.out.println("Testing " + task + " failSet");
         for (File f : failSet.listFiles()) {
             newArgs[1] = f.getAbsolutePath();
 
@@ -58,9 +59,9 @@ public class UnitTest {
             newArgs[0] = task;
             try {
                 Test.main(newArgs);
-                System.out.println("❌ " + f.getName() + " passed " + task + " test, but it shouldn't");
+                System.out.println("❌ passed " + f.getName() + " " + task + " test, but it shouldn't");
             } catch (Exception e) {
-                System.out.println("✅ " + f.getName() + " failed " + task + " as it should");
+                System.out.println("✅ failed " + f.getName() + " " + task + " as it should");
             }
         }
     }

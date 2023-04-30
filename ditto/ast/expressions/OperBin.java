@@ -91,6 +91,21 @@ public class OperBin extends Expr {
     }
 
     @Override
+    public String getAstString() {
+        return op.toString();
+    }
+
+    @Override
+    public List<Object> getAstArguments() {
+        return Arrays.asList(left, right);
+    }
+
+    @Override
+    public List<Node> getAstChildren() {
+        return Arrays.asList(left, right);
+    }
+
+    @Override
     public void typecheck() {
         super.typecheck();
         /// El tipo resultante será el tipo de ambas expresiones
@@ -124,16 +139,6 @@ public class OperBin extends Expr {
                 throw new RuntimeException("Operador no soportada: " + op.toString());
             }
         }
-    }
-
-    @Override
-    public String getAstString() {
-        return op.toString();
-    }
-
-    @Override
-    public List<Object> getAstArguments() {
-        return Arrays.asList(left, right);
     }
 
     @Override
@@ -183,10 +188,5 @@ public class OperBin extends Expr {
             default:
                 throw new RuntimeException("Operador no soportada: " + op.toString());
         }
-    }
-
-    @Override
-    public List<Node> getAstChildren() {
-        return Arrays.asList(left, right);
     }
 }

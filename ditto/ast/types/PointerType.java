@@ -3,6 +3,7 @@ package ditto.ast.types;
 import ditto.ast.Node;
 import ditto.ast.literals.Literal;
 import ditto.ast.literals.Null;
+import ditto.ast.CompilationProgress;
 
 import java.util.List;
 
@@ -48,5 +49,10 @@ public class PointerType extends Type {
     @Override
     public List<Node> getAstChildren() {
         return List.of(elementType);
+    }
+
+    @Override
+    public void computeTypeSize() {
+        this.setProgress(CompilationProgress.TYPE_SIZE);
     }
 }

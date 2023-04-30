@@ -15,6 +15,10 @@ public abstract class Node {
         return progress;
     }
 
+    public void setProgress(CompilationProgress progress) {
+        this.progress = progress;
+    }
+
     public abstract String getAstString();
 
     public abstract List<Object> getAstArguments();

@@ -1,0 +1,7 @@
+func should_be_2()
+    int a;
+    if true then
+        int b;
+    end
+    int c;
+end

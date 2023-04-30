@@ -22,7 +22,7 @@ public class Module extends Node {
     private String classFolder;
     private int globalVarSize;
 
-	public Module(List<DefModule> imports, List<Definition> definitions) {
+    public Module(List<DefModule> imports, List<Definition> definitions) {
         this.modules = Collections
                 .unmodifiableMap(imports.stream().collect(Collectors.toMap(DefModule::getIden, Function.identity())));
         this.definitions = definitions;
@@ -77,15 +77,15 @@ public class Module extends Node {
     public String getClassFolder() {
         return classFolder;
     }
-    
+
     @Override
     public String getAstString() {
         return "module";
     }
 
     public int getGlobalVarSize() {
-		return globalVarSize;
-	}
+        return globalVarSize;
+    }
 
     @Override
     public List<Object> getAstArguments() {
@@ -109,12 +109,23 @@ public class Module extends Node {
     }
 
     @Override
+    public void computeTypeSize() {
+        this.typecheck();
+        super.computeTypeSize();
+    }
+
+    @Override
     public void computeOffset(Delta lastDelta) {
         Delta delta = new Delta();
         for (Definition def : this.definitions) {
             def.computeOffset(delta);
         }
         globalVarSize = delta.getOffsetSize();
+    }
+
+    public void computeOffset() {
+        this.computeTypeSize();
+        computeOffset(new Delta());
     }
 
     @Override

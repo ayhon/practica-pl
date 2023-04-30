@@ -53,10 +53,11 @@ public class Test {
                 }
                 case "typesize" -> {
                     main.computeTypeSize();
+                    if(useAsMain) System.out.println(main);
                 }
                 case "offsets" -> {
-                    main.computeTypeSize();
-                    System.out.println(main);
+                    main.computeOffset();
+                    if(useAsMain) System.out.println(main);
                 }
                 case "code" -> {
                     main.compile(new ProgramOutput());

@@ -74,20 +74,27 @@ public class DefVar extends Definition {
     public void bind(Context ctx) {
         super.bind(ctx);
         ctx.add(this);
-        if (expr == null)
-            this.expr = getType().getDefault();
     }
 
     @Override
     public void typecheck() {
         super.typecheck();
-        if (!expr.type().equals(type))
+        if (expr != null && !expr.type().equals(type))
             throw new TypeError(String.format("Can't assign %s to variable %s of type %s", expr.type(), iden, type));
     }
 
     @Override
     public Type type() {
         return getType();
+    }
+
+    @Override
+    public void computeTypeSize() {
+        super.computeTypeSize();
+        // Tras haber calculado los tamaños de los tipos
+        // ya sabemos si los tipos son representables o no
+        if (expr == null)
+            this.expr = getType().getDefault();
     }
 
     @Override

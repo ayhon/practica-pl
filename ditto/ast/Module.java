@@ -115,11 +115,8 @@ public class Module extends Node {
     }
 
     @Override
-    public void computeOffset(Delta lastDelta) {
-        Delta delta = new Delta();
-        for (Definition def : this.definitions) {
-            def.computeOffset(delta);
-        }
+    public void computeOffset(Delta delta) {
+        super.computeOffset(delta);
         globalVarSize = delta.getOffsetSize();
     }
 

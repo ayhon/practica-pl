@@ -99,6 +99,7 @@ public class DefVar extends Definition {
 
     @Override
     public void computeOffset(Delta delta) {
+        super.computeOffset(delta);
         position = delta.useNextOffset(type.size());
     }
 

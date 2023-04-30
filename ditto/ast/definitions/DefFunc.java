@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import ditto.ast.Delta;
+import ditto.ast.CompilationProgress;
 import ditto.ast.Context;
 import ditto.ast.Node;
 import ditto.ast.ProgramOutput;
@@ -62,7 +63,12 @@ public class DefFunc extends Definition {
 
     @Override
     public String getAstString() {
-        return "def-func";
+        String output = "def-func";
+
+        if (this.getProgress().atLeast(CompilationProgress.FUNC_SIZE_AND_DELTAS))
+            output += String.format(" [size = %d]", this.size);
+
+        return output;
     }
 
     @Override
@@ -131,12 +137,7 @@ public class DefFunc extends Definition {
     @Override
     public void computeOffset(Delta delta) {
         Delta d = new Delta();
-        for (Param param : params) {
-            param.computeOffset(d);
-        }
-        for (Statement stmt : body) {
-            stmt.computeOffset(d);
-        }
+        super.computeOffset(d);
         size = d.getOffsetSize();
     }
 

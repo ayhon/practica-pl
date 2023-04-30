@@ -46,15 +46,13 @@ public class Name extends Designator {
     @Override
     public void bind(Context ctx) {
         super.bind(ctx);
+        
         definition = ctx.get(this.iden);
         if (definition == null) {
             throw new SemanticError(String.format("'%s' is not defined", iden));
         }
-    }
 
-    @Override
-    public Type type() {
-        return definition.type();
+        this.type = definition.type();
     }
 
     @Override

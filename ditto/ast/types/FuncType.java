@@ -16,9 +16,6 @@ public class FuncType extends Type {
     public FuncType(Type returnType, List<Type> argumentTypes) {
         this.returnType = returnType;
         this.argumentTypes = argumentTypes;
-        for (Type t : argumentTypes) {
-            argSize += t.size();
-        }
     }
 
     @Override
@@ -48,6 +45,14 @@ public class FuncType extends Type {
             return returnType.equals(other.returnType) && argumentTypes.equals(other.argumentTypes);
         } else {
             return false;
+        }
+    }
+
+    @Override
+    public void computeTypeSize() {
+        super.computeTypeSize();
+        for (Type t : argumentTypes) {
+            argSize += t.size();
         }
     }
 

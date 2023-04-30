@@ -80,7 +80,13 @@ public class OperUn extends Expr {
                 return null;
             }
             case LEN -> {
-                return new ArrayType(null);
+                /// Guarreria:
+                if (!(this.expr.type() instanceof ArrayType)) {
+                    throw new TypeError(
+                            String.format("No se puede calcular la longitud de algo que no es un array"));
+                } else {
+                    return null;
+                }
             }
             default -> {
                 throw new IllegalArgumentException("Invalid operator '" + op + "'");

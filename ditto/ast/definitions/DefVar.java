@@ -103,8 +103,6 @@ public class DefVar extends Definition {
             this.expr = getType().getDefault();
             type = expr.type();
         }
-
-
     }
 
     @Override

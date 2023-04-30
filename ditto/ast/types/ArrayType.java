@@ -13,12 +13,6 @@ public class ArrayType extends Type {
     private final Type elementType;
     private int length;
 
-    /// If size is null, then this type definition is only possible
-    /// in the arguments of a function definition.
-    public ArrayType(Type elementType) {
-        this(elementType, -1);
-    }
-
     public ArrayType(Type elementType, Natural size) {
         this(elementType, (int) size.getValue());
     }

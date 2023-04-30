@@ -320,9 +320,7 @@ TYPE                        ::= QUAL_IDEN:iden
                                     {: RESULT = BoolType.getInstance(); :}
                                 | PTR TYPE:t 
                                     {: RESULT = new PointerType(t); :}
-                                | ARRAY TYPE:t
-                                    {: RESULT = new ArrayType(t); :}   // Esta descripción de tipo array solo se permite en argumentos de funciones A lo mejor si ponemos `array int a := [1,2]`, podemos "inferir" el tamaño de `a`con el tamaño del array literal */
-                                | ARRAY NAT:size TYPE:t                // TODO: Estudiar si es mejor otra sintaxis
+                                | ARRAY NAT:size TYPE:t
                                     {: RESULT = new ArrayType(t, size); :};
 
 IF_STMT                     ::= IF EXPR:cond THEN STMTs:then END

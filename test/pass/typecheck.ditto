@@ -3,7 +3,7 @@ func b(int a) -> int
 end
 
 func main() -> int
-    ptr array int sub := new [b(1); 1];
-    ptr ptr array int test := ptr sub; 
-    array int i := test@@;
+    ptr array 1 int sub := new [b(1); 1];
+    ptr ptr array 1 int test := ptr sub; 
+    array 1 int i := test@@;
 end

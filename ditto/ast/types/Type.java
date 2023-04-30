@@ -5,11 +5,14 @@ import java.util.List;
 
 import ditto.ast.Node;
 import ditto.ast.ProgramOutput;
+import ditto.ast.literals.Literal;
 import ditto.errors.TypeError;
 
 public abstract class Type extends Node {
     /// Lo que ocuparía en memoria. Se usa para calcular delta.
     public abstract int size();
+
+    public abstract Literal getDefault();
 
     public Type type() {
         throw new TypeError("What's the type of a type?");

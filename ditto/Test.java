@@ -56,6 +56,7 @@ public class Test {
                 }
                 case "offsets" -> {
                     main.computeTypeSize();
+                    System.out.println(main);
                 }
                 case "code" -> {
                     main.compile(new ProgramOutput());

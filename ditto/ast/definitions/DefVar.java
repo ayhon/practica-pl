@@ -14,7 +14,7 @@ import ditto.errors.TypeError;
 
 public class DefVar extends Definition {
     private final String iden;
-    private final Expr expr;
+    private Expr expr;
     private int position;
 
     public DefVar(Type type, String iden, Expr expr) {
@@ -61,7 +61,6 @@ public class DefVar extends Definition {
         return args;
     }
 
-
     @Override
     public String getIden() {
         return iden;
@@ -75,12 +74,14 @@ public class DefVar extends Definition {
     public void bind(Context ctx) {
         super.bind(ctx);
         ctx.add(this);
+        if (expr == null)
+            this.expr = getType().getDefault();
     }
 
     @Override
     public void typecheck() {
         super.typecheck();
-        if (expr != null && !expr.type().equals(type))
+        if (!expr.type().equals(type))
             throw new TypeError(String.format("Can't assign %s to variable %s of type %s", expr.type(), iden, type));
     }
 
@@ -88,8 +89,7 @@ public class DefVar extends Definition {
     public Type type() {
         return getType();
     }
-    
-    
+
     @Override
     public void computeOffset(Delta delta) {
         position = delta.useNextOffset(type.size());
@@ -99,5 +99,4 @@ public class DefVar extends Definition {
     public void compileAsInstruction(ProgramOutput out) {
         throw new UnsupportedOperationException("Unimplemented method 'compileAsInstruction'");
     }
-
 }

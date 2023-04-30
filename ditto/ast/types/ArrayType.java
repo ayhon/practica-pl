@@ -4,7 +4,9 @@ import java.util.Arrays;
 import java.util.List;
 
 import ditto.ast.Node;
+import ditto.ast.literals.Literal;
 import ditto.ast.literals.Natural;
+import ditto.ast.literals.ArrayLiteral;
 
 public class ArrayType extends Type {
     private final Type elementType;
@@ -23,6 +25,10 @@ public class ArrayType extends Type {
     public ArrayType(Type elementType, int size) {
         this.elementType = elementType;
         this.size = size;
+    }
+
+    public Literal getDefault() { // Empty array
+        return new ArrayLiteral();
     }
 
     public Type getElementType() {
@@ -57,7 +63,7 @@ public class ArrayType extends Type {
     public List<Node> getAstChildren() {
         return Arrays.asList(elementType);
     }
-    
+
     @Override
     public int size() {
         return size * elementType.size();
@@ -67,5 +73,4 @@ public class ArrayType extends Type {
     public void computeTypeSize() {
         super.computeTypeSize();
     }
-
 }

@@ -1,6 +1,7 @@
 package ditto.ast.types;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -9,12 +10,16 @@ import ditto.ast.Identifier;
 import ditto.ast.Context;
 import ditto.ast.definitions.DefStruct;
 import ditto.ast.definitions.Definition;
+import ditto.ast.literals.Literal;
+import ditto.ast.literals.StructLiteral;
 import ditto.errors.BindingError;
+import ditto.ast.expressions.Expr;
 
 public class StructType extends Type {
     private final Identifier iden;
     private Map<String, Type> fieldTypes;
     private DefStruct definition;
+    private Literal defaultValue = null;
     private int size = 0;
 
     public StructType(Identifier iden) {
@@ -26,6 +31,25 @@ public class StructType extends Type {
     public StructType(Identifier iden, Map<String, Type> fieldTypes) {
         this.iden = iden;
         this.fieldTypes = fieldTypes;
+    }
+
+    @Override
+    public Literal getDefault() {
+        /// El valor por defecto de un struct es el valor por defecto de cada uno de sus
+        /// campos
+        if (definition == null)
+            throw new BindingError("Can't construct default value before binding.");
+
+        if (defaultValue != null)
+            return defaultValue;
+
+        Map<String, Expr> fieldValues = new HashMap<>();
+        for (String fieldName : fieldTypes.keySet()) {
+            fieldValues.put(fieldName, fieldTypes.get(fieldName).getDefault());
+        }
+
+        defaultValue = new StructLiteral(iden, fieldValues);
+        return defaultValue;
     }
 
     public Identifier getIden() {
@@ -73,6 +97,7 @@ public class StructType extends Type {
             return false;
         }
     }
+
     @Override
     public void bind(Context ctx) {
         Definition def = ctx.get(this.iden);

@@ -8,7 +8,6 @@ import ditto.ast.Context;
 import ditto.ast.Node;
 import ditto.ast.ProgramOutput;
 import ditto.ast.definitions.Definition;
-import ditto.ast.types.Type;
 import ditto.errors.SemanticError;
 
 // A name designates a variable or a function.
@@ -46,7 +45,7 @@ public class Name extends Designator {
     @Override
     public void bind(Context ctx) {
         super.bind(ctx);
-        
+
         definition = ctx.get(this.iden);
         if (definition == null) {
             throw new SemanticError(String.format("'%s' is not defined", iden));

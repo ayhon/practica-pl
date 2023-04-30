@@ -51,14 +51,7 @@ public class Test {
                     }
                 }
                 case "typecheck" -> {
-                    try {
-                        main.typecheck();
-                    } catch (TypeError e) {
-                        System.err.println(e);
-                        e.printStackTrace();
-                        System.err.println(main);
-                        System.exit(1);
-                    }
+                    main.typecheck();
                 }
                 case "typesize" -> {
                     main.computeTypeSize();
@@ -70,7 +63,6 @@ public class Test {
                     main.compile(new ProgramOutput());
                 }
             }
-            System.err.println(main);
         }
     }
 }

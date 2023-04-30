@@ -3,9 +3,9 @@ package ditto.ast;
 public enum CompilationProgress {
     NONE,
     BIND,
+    TYPE,
     CALCULATING_TYPE_SIZE,
     TYPE_SIZE, // Para detectar loops en calculo de size
-    TYPE,
     FUNC_SIZE_AND_DELTAS,
     COMPILE;
 

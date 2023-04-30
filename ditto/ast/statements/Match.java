@@ -29,11 +29,10 @@ public class Match extends Statement {
         this.cases.add(new Case(otherwise));
     }
 
-    static public class Case extends Node {
+    static public class Case extends Statement {
         public final Expr expr;
         public final List<Statement> body;
-        private Type type = null;
-
+        /// Otherwise case
         public Case(List<Statement> body) {
             this(null, body);
         }
@@ -54,12 +53,6 @@ public class Match extends Statement {
         @Override
         public List<Object> getAstArguments() {
             return Arrays.asList(expr, body);
-        }
-
-        @Override
-        public Type type() {
-            this.type = expr.type();
-            return this.type;
         }
 
         @Override
@@ -91,6 +84,12 @@ public class Match extends Statement {
             throw new UnsupportedOperationException("Unimplemented method 'compile'");
         }
 
+        @Override
+        public void compileAsInstruction(ProgramOutput out) {
+            // TODO Auto-generated method stub
+            throw new UnsupportedOperationException("Unimplemented method 'compileAsInstruction'");
+        }
+
     }
 
     @Override
@@ -120,6 +119,7 @@ public class Match extends Statement {
     public void typecheck() {
         super.typecheck();
         Type matchingType = expr.type();
+        
         for (Case c : this.cases) {
             if (c.expr != null && !matchingType.equals(c.expr.type())) {
                 throw new TypeError("Type mismatch in case");

@@ -24,3 +24,18 @@ func should_be_1()
         int d;
     end
 end
+
+func should_also_be_1()
+    match 1 is
+        case 1 do
+            int a;
+        case 2 do
+            int b;
+        case 3 do
+            int c;
+        case 4 do
+            int c;
+        case 5 do
+            int d;
+    end
+end

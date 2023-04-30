@@ -341,7 +341,7 @@ WHILE_STMT                  ::= WHILE EXPR:cond DO STMTs:statements END
 /* Sintaxis del match */
 MATCH_STMT                  ::= MATCH EXPR:expr IS CASE_STMTs:cases OTHERWISE STMTs:otherwise END
                                     {: RESULT = new Match(expr, cases, otherwise); :}
-                                | MATCH EXPR:expr CASE_STMTs:cases END
+                                | MATCH EXPR:expr IS CASE_STMTs:cases END
                                     {: RESULT = new Match(expr, cases); :};
 
 CASE_STMTs                  ::= CASE EXPR:expr DO STMTs:body CASE_STMTs:rest

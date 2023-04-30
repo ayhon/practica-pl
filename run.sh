@@ -77,17 +77,16 @@ case $1 in
                 # Y cuando llega a la tarea $task deberia de fallar, y terminar
                 # Iterar por fichero fuera, y dentro por tareas
                 echo "Ejecutando los tests que deberian fallar"
-                failSet=(`ls test/fail/$task/`)
-                for test_file in "${failSet[@]}"; do
+                for test_file in test/fail/$task/*.ditto; do
                     echo "Ejecutando $test_file"
                     for task_i in "${TASKS[@]}"; do
                         echo "Ejecutando $task_i - $test_file"
                         ditto_test $task_i $test_file $print_ast
-
+                        RESULT=$?
                         # Deberia fallar la ejecucion si la tarea es $task
                         # Si no falla, lanza un mensaje de error
                         if [ $task_i == $task ]; then
-                            if [ $? -eq 0 ]; then
+                            if [ $RESULT -eq 0 ]; then
                                 echo "❌ passed $test_file - $task_i y NO deberia"
                                 exit 1
                             else 
@@ -95,7 +94,7 @@ case $1 in
                             fi
                         # si no, deberia pasar
                         else
-                            if [ $? -ne 0 ]; then
+                            if [ $RESULT -ne 0 ]; then
                                 echo "❌ failed $test_file - $task_i y NO deberia"
                                 exit 1
                             else

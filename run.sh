@@ -59,14 +59,16 @@ case $1 in
             all)
                 # Y el resto de veces ejecuto los tests sin compilar
                 export DO_NOT_COMPILE=1
+                failure="no"
 
                 # Ejecutar todos los casos de prueba que hay en test/pass/*.ditto
                 # Mediante un for
+                echo "🧪 Ejecutando los tests que deberian pasar"
                 for test_file in test/pass/*.ditto; do
                     ditto_test $task $test_file $print_ast
                     if [ $? -ne 0 ]; then
                         echo "❌ failed $test_file - $task"
-                        exit 1
+                        failue="yes"
                     else
                         echo "✅ passed $test_file - $task"
                     fi
@@ -78,26 +80,29 @@ case $1 in
                 # Iterar por fichero fuera, y dentro por tareas
                 echo "🧪 Ejecutando los tests que deberian fallar"
                 for test_file in test/fail/$task/*.ditto; do
+                    [ -f $test_file ] || break # Si no hay ficheros, salir
                     echo "  📁 Ejecutando $test_file"
                     for task_i in "${TASKS[@]}"; do
-                        ditto_test $task_i $test_file $print_ast
+                        test_output=$(ditto_test $task_i $test_file $print_ast 2>&1)
                         RESULT=$?
                         # Deberia fallar la ejecucion si la tarea es $task
                         # Si no falla, lanza un mensaje de error
                         if [ $task_i == $task ]; then
                             if [ $RESULT -eq 0 ]; then
-                                echo "      ❌ passed $test_file - $task_i y NO deberia"
-                                exit 1
+                                # echo "$test_output"
+                                echo "      ❌ passed [$task_i] $test_file  y NO deberia"
+                                failue="yes"
                             else 
-                                echo "      ✅ failed $test_file - $task_i y deberia"
+                                echo "      ✅ failed [$task_i] $test_file  y deberia"
                             fi
                         # si no, deberia pasar
                         else
                             if [ $RESULT -ne 0 ]; then
-                                echo "      ❌ failed $test_file - $task_i y NO deberia"
-                                exit 1
+                                # echo "$test_output"
+                                echo "      ❌ failed [$task_i] $test_file  y NO deberia"
+                                failue="yes"
                             else
-                                echo "      ✅ passed $test_file - $task_i y deberia"
+                                echo "      ✅ passed [$task_i] $test_file  y deberia"
                             fi
                         fi
 
@@ -107,6 +112,11 @@ case $1 in
                         fi
                     done
                 done
+                if [ "$failure" == "yes" ]; then
+                    exit 1
+                else
+                    echo "🎉 ¡Hecho!"
+                fi
                 ;;
             *)
                 ditto_test $task $test_file $print_ast

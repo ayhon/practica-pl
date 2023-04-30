@@ -25,7 +25,7 @@ case $1 in
                 javac -cp "$JAR_PATH/*:." ditto/*/*.java ditto/*.java
                 ;;
             all)
-                $0 build lexer && $0 build parser
+                $0 build lexer && $0 build parser && $0 build java
                 ;;
             *)
                 echo "Nou entiendo"

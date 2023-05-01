@@ -32,7 +32,10 @@ public class Name extends Designator {
 
     @Override
     public List<Object> getAstArguments() {
-        return Arrays.asList(iden);
+        if (this.definition != null)
+            return Arrays.asList(iden + " --> " + definition.getIden());
+        else
+            return Arrays.asList(iden);
     }
 
     @Override

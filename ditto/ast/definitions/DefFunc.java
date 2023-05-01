@@ -17,12 +17,10 @@ import ditto.ast.types.VoidType;
 import ditto.errors.TypeError;
 
 public class DefFunc extends Definition {
-    private final String id;
     private final List<Param> params;
     private final List<Statement> body;
     private final Type result;
     private int size;
-    private String wasmString;
 
     private FuncType type;
 
@@ -32,10 +30,6 @@ public class DefFunc extends Definition {
 
     public List<Statement> getBody() {
         return body;
-    }
-
-    public String getIden() {
-        return id;
     }
 
     public Type getResult() {
@@ -51,7 +45,7 @@ public class DefFunc extends Definition {
     }
 
     public DefFunc(String id, List<Param> params, Type result, List<Statement> body) {
-        this.id = id;
+        super(id);
         this.params = params;
         this.result = result;
         this.body = body;
@@ -95,11 +89,7 @@ public class DefFunc extends Definition {
 
     @Override
     public List<Object> getAstArguments() {
-        return Arrays.asList(id, params, result, body);
-    }
-
-    public String getWasmString() {
-        return wasmString;
+        return Arrays.asList(this.getIden(), params, result, body);
     }
 
     @Override

@@ -6,7 +6,6 @@ import java.util.List;
 import ditto.ast.CompilationProgress;
 import ditto.ast.Context;
 import ditto.ast.Delta;
-import ditto.ast.Identifier;
 import ditto.ast.Node;
 import ditto.ast.ProgramOutput;
 import ditto.ast.expressions.Expr;
@@ -15,14 +14,13 @@ import ditto.errors.SemanticError;
 import ditto.errors.TypeError;
 
 public class DefVar extends Definition {
-    private final String iden;
     private Expr expr;
     private int position;
     private boolean isGlobal;
 
     public DefVar(Type type, String iden, Expr expr) {
         // Argumentos en este orden para representar como se escribe en el lenguaje
-        this.iden = iden;
+        super(iden);
         this.type = type;
         this.expr = expr;
     }
@@ -58,15 +56,10 @@ public class DefVar extends Definition {
     public List<Object> getAstArguments() {
         List<Object> args = new ArrayList<>();
         args.add(type);
-        args.add(iden);
+        args.add(this.getIden());
         if (this.expr != null)
             args.add(expr);
         return args;
-    }
-
-    @Override
-    public String getIden() {
-        return iden;
     }
 
     public Type getType() {
@@ -77,14 +70,15 @@ public class DefVar extends Definition {
     public void bind(Context ctx) {
         super.bind(ctx);
         ctx.add(this);
-        isGlobal = ctx.isGlobal(this.iden);
+        isGlobal = ctx.isGlobal(this.getIden());
     }
 
     @Override
     public void typecheck() {
         super.typecheck();
         if (expr != null && !expr.type().equals(type))
-            throw new TypeError(String.format("Can't assign %s to variable %s of type %s", expr.type(), iden, type));
+            throw new TypeError(
+                    String.format("Can't assign %s to variable %s of type %s", expr.type(), this.getIden(), type));
         else if (expr != null)
             type = expr.type();
         // Así adivinamos la longitud del array, para)
@@ -116,10 +110,10 @@ public class DefVar extends Definition {
 
     @Override
     public void compileAsInstruction(ProgramOutput out) {
-        //Es como una asignación de valores por defecto
+        // Es como una asignación de valores por defecto
         out.mem_location(this);
         expr.compileAsExpr(out);
-        // TODO: Esto no es correcto si la expresión 
+        // TODO: Esto no es correcto si la expresión
         // tiene más de un tipo
         out.i32_store();
     }

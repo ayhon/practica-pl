@@ -81,9 +81,40 @@ public class For extends Statement {
         lastDelta.exitBlock();
     }
 
+    private void loadIndex(ProgramOutput out, int start){
+        // Iniciar índice //
+        // Cargar índice
+        out.get_local(ProgramOutput.LOCAL_START); 
+        out.i32_const(index.getOffset());
+        out.i32_add();
+    
+        out.i32_const(start);
+        out.i32_store();
+    }
+
     @Override
     public void compileAsInstruction(ProgramOutput out) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'compileAsInstruction'");
+        int start = from.evalIntAtCompileTime();
+        int stop  = to.evalIntAtCompileTime();
+        int step  = by.evalIntAtCompileTime();
+
+        loadIndex(out, start);
+        out.block_loop(() -> {
+            //Comprobar condicion
+            
+
+            for (Statement s : body) {
+                s.compileAsInstruction(out);
+            }
+
+            // Incrementar índice
+
+            // Comprobar condición
+        });
+
+        //Signo positivo pero no vale less than
+
+        // for i from 10 to 1 by 1
+        // 
     }
 }

@@ -53,17 +53,7 @@ public class Context {
         }
     }
 
-    public String getWASMString(Identifier iden) {
-        return this.module.getName() + "_" + iden.WASMString();
-    }
-
     public boolean isGlobal(String name) {
-        if(iden.hasModule()) {
-            /// Una variable global del otro modulo es global
-            /// No se pueden exportar variables locales
-            return true;
-        }
-        /// Sino, tiene que ser nuestro variable global
         return this.scopes.get(0).contains(name);
     }
 }

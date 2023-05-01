@@ -17,7 +17,6 @@ public class DefVar extends Definition {
     private final String iden;
     private Expr expr;
     private int position;
-    private String wasmString;
     private boolean isGlobal;
 
     public DefVar(Type type, String iden, Expr expr) {
@@ -73,16 +72,11 @@ public class DefVar extends Definition {
         return type;
     }
 
-    public String getWasmString() {
-        return wasmString;
-    }
-
     @Override
     public void bind(Context ctx) {
         super.bind(ctx);
         ctx.add(this);
         isGlobal = ctx.isGlobal(this.iden);
-        wasmString = ctx.getWASMString(this.iden);
     }
 
     @Override

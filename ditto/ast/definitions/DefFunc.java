@@ -114,8 +114,6 @@ public class DefFunc extends Definition {
 
     @Override
     public void bind(Context ctx) {
-        wasmString = ctx.getWASMString(new Identifier(this.id));
-
         /// Llama a bind de los hijos con nuevo contexto local
         ctx.add(this);
         ctx.pushScope();

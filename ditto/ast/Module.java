@@ -100,26 +100,31 @@ public class Module extends Node {
         return Arrays.asList(modules, definitions);
     }
 
+    @Override
+    public Type type() {
+        return VoidType.getInstance();
+    }
+
     public void bind() {
         Context ctx = new Context(this, this.globalScope);
         bind(ctx);
     }
 
     @Override
-    public Type type() {
-        return VoidType.getInstance();
+    public void computeTypeSize() {
+        this.bind();
+        super.computeTypeSize();
     }
 
     @Override
     public void typecheck() {
-        this.bind();
+        this.computeTypeSize();
         super.typecheck();
     }
 
-    @Override
-    public void computeTypeSize() {
+    public void computeOffset() {
         this.typecheck();
-        super.computeTypeSize();
+        computeOffset(new Delta());
     }
 
     @Override
@@ -128,15 +133,11 @@ public class Module extends Node {
         globalVarSize = delta.getOffsetSize();
     }
 
-    public void computeOffset() {
-        this.computeTypeSize();
-        computeOffset(new Delta());
-    }
-
     @Override
     public void compile(ProgramOutput out) {
         /**
-         * Para generar el codigo, tiene que calcular primero el offset (a su vez llamara a -> computeTypeSize() -> typecheck() -> bind())
+         * Para generar el codigo, tiene que calcular primero el offset (a su vez
+         * llamara a -> computeTypeSize() -> typecheck() -> bind())
          */
         this.computeOffset();
 

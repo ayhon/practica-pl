@@ -12,8 +12,6 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 
 public class Test {
-    public static final String[] tasks = { "ast", "bind", "typecheck", "typesize", "offsets", "code" };
-
     public static void main(String[] args) throws Exception {
         if (args.length < 2) {
             System.out.println("Usage: java Test <task> <filepath>");

@@ -216,12 +216,9 @@ public class Module extends Node {
             /// Poner SP a globalVarSize + locales del main + posiciones de SP y MP antiguos
             out.i32_const(newSP);
             out.set_global("SP");
-            /// Guardar SP en el stack, posicion globalVarSize + 4
-            out.i32_const(globalVarSize + 4);
+            /// Guardar SP en el stack, posicion absoluta 4
+            out.i32_const(4);
             out.i32_const(newSP);
             out.i32_store();
-            /// Actualizamos localStart
-            out.i32_const(globalVarSize + 4 + 4);
-            out.set_global(ProgramOutput.LOCAL_START);
     }
 }

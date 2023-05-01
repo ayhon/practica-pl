@@ -39,19 +39,19 @@ public class ProgramOutput {
 
     public String toStringNoBoilerplate() {
         return """
-               ;; ESTAS COMPILANDO SIN BUILTINS ESTAS COMPILANDO SIN BUILTINS ESTAS COMPILANDO SIN BULTINS
-               ;; ESTAS COMPILANDO SIN BUILTINS ESTAS COMPILANDO SIN BUILTINS ESTAS COMPILANDO SIN BULTINS
-               ;; ESTAS COMPILANDO SIN BUILTINS ESTAS COMPILANDO SIN BUILTINS ESTAS COMPILANDO SIN BULTINS
-               ;; ESTAS COMPILANDO SIN BUILTINS ESTAS COMPILANDO SIN BUILTINS ESTAS COMPILANDO SIN BULTINS
-               ;; ESTAS COMPILANDO SIN BUILTINS ESTAS COMPILANDO SIN BUILTINS ESTAS COMPILANDO SIN BULTINS
-               ;; ESTAS COMPILANDO SIN BUILTINS ESTAS COMPILANDO SIN BUILTINS ESTAS COMPILANDO SIN BULTINS
-               ;; ESTAS COMPILANDO SIN BUILTINS ESTAS COMPILANDO SIN BUILTINS ESTAS COMPILANDO SIN BULTINS
-               ;; ESTAS COMPILANDO SIN BUILTINS ESTAS COMPILANDO SIN BUILTINS ESTAS COMPILANDO SIN BULTINS
-               ;; ESTAS COMPILANDO SIN BUILTINS ESTAS COMPILANDO SIN BUILTINS ESTAS COMPILANDO SIN BULTINS
-               ;; ESTAS COMPILANDO SIN BUILTINS ESTAS COMPILANDO SIN BUILTINS ESTAS COMPILANDO SIN BULTINS
-               ;; ESTAS COMPILANDO SIN BUILTINS ESTAS COMPILANDO SIN BUILTINS ESTAS COMPILANDO SIN BULTINS
-               ;; ESTAS COMPILANDO SIN BUILTINS ESTAS COMPILANDO SIN BUILTINS ESTAS COMPILANDO SIN BULTINS
-               """ + sb.toString();
+                ;; ESTAS COMPILANDO SIN BUILTINS ESTAS COMPILANDO SIN BUILTINS ESTAS COMPILANDO SIN BULTINS
+                ;; ESTAS COMPILANDO SIN BUILTINS ESTAS COMPILANDO SIN BUILTINS ESTAS COMPILANDO SIN BULTINS
+                ;; ESTAS COMPILANDO SIN BUILTINS ESTAS COMPILANDO SIN BUILTINS ESTAS COMPILANDO SIN BULTINS
+                ;; ESTAS COMPILANDO SIN BUILTINS ESTAS COMPILANDO SIN BUILTINS ESTAS COMPILANDO SIN BULTINS
+                ;; ESTAS COMPILANDO SIN BUILTINS ESTAS COMPILANDO SIN BUILTINS ESTAS COMPILANDO SIN BULTINS
+                ;; ESTAS COMPILANDO SIN BUILTINS ESTAS COMPILANDO SIN BUILTINS ESTAS COMPILANDO SIN BULTINS
+                ;; ESTAS COMPILANDO SIN BUILTINS ESTAS COMPILANDO SIN BUILTINS ESTAS COMPILANDO SIN BULTINS
+                ;; ESTAS COMPILANDO SIN BUILTINS ESTAS COMPILANDO SIN BUILTINS ESTAS COMPILANDO SIN BULTINS
+                ;; ESTAS COMPILANDO SIN BUILTINS ESTAS COMPILANDO SIN BUILTINS ESTAS COMPILANDO SIN BULTINS
+                ;; ESTAS COMPILANDO SIN BUILTINS ESTAS COMPILANDO SIN BUILTINS ESTAS COMPILANDO SIN BULTINS
+                ;; ESTAS COMPILANDO SIN BUILTINS ESTAS COMPILANDO SIN BUILTINS ESTAS COMPILANDO SIN BULTINS
+                ;; ESTAS COMPILANDO SIN BUILTINS ESTAS COMPILANDO SIN BUILTINS ESTAS COMPILANDO SIN BULTINS
+                """ + sb.toString();
     }
 
     @Override
@@ -59,13 +59,11 @@ public class ProgramOutput {
         StringJoiner buf = new StringJoiner("\n");
         buf.add("(module");
         buf.add("""
-                (import "runtime" "print" (func $print (type $_sig_i32)))""");
-        buf.add("""
-                (import "runtime" "scan" (func $scan (type $_sig_ri32)))""");
+                (import "runtime" "print" (func $print (param i32)))
+                (import "runtime" "scan" (func $scan (result i32)))""");
         buf.add("""
                 (import "runtime" "exceptionHandler" (func $exception (type $_sig_i32)))""");
         buf.add(String.format("(memory %d)", memory_size));
-        buf.add("(start $start)");
         buf.add("(type $_sig_i32i32i32 (func (param i32 i32 i32) ))");
         buf.add("(type $_sig_i32 (func (param i32)))");
         buf.add("(type $_sig_ri32 (func (result i32)))");
@@ -79,6 +77,7 @@ public class ProgramOutput {
         buf.add(sb.toString());
         buf.add("""
                 (export "memory" (memory 0))
+                (export "init" (func $start))
                 """); // For debugging purposes
         buf.add(")");
 
@@ -364,7 +363,7 @@ public class ProgramOutput {
             mem_local(var.getOffset());
         }
     }
-    
+
     public void mem_local(int offset) {
         get_local(ProgramOutput.LOCAL_START);
         i32_const(offset);
@@ -445,15 +444,15 @@ public class ProgramOutput {
         append(fun.getResult().asWasmResult());
         append(String.format("(local $%s i32)", ProgramOutput.LOCAL_START));
         append("(local $temp i32)");
-        
+
         int stackSize = fun.getSize() + 4 + 4;
         i32_const(stackSize);
         reserveStack();
 
         runnable.run(); // La idea es que haga algo con el ProgramOutput dentro del runnable
-                
+
         freeStack();
-        
+
         dedent();
         append(")");
     }
@@ -504,6 +503,8 @@ public class ProgramOutput {
         dedent();
         append("else");
         indent();
+        els.run();
+        dedent();
         append("end");
     }
 

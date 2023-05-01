@@ -3,7 +3,8 @@
         "**/*.jar"
     ],
     "files.exclude": {
-        "**/*.class": true
+        "**/*.class": true,
+        "**/*.wasm": true
     },
     "files.watcherExclude": {
         "**/target": true

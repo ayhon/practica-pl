@@ -38,7 +38,7 @@ public class Module extends Node {
         this.globalScope.add(
                 new DefFunc(
                         "scan",
-                        Arrays.asList(new DefFunc.Param(IntegerType.getInstance(), "dest", true)),
+                        Arrays.asList(),
                         IntegerType.getInstance()));
 
         /// print recibe un entero y devuelve un entero

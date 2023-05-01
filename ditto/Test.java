@@ -38,7 +38,7 @@ public class Test {
             parser.parse();
             Module main = parser.getRoot();
             main.setClassFolder(parentFolder.getAbsolutePath());
-            main.setName(filePath);
+            main.setName(file.getName().replace(".ditto", ""));
 
             switch (task) {
                 case "ast" -> {

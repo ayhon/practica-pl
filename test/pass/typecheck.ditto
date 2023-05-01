@@ -1,3 +1,9 @@
+import Std;
+
+int var := 1;
+
+int Std__var := 2;
+
 func b(int a) -> int
 
 end
@@ -6,4 +12,5 @@ func main() -> int
     ptr array 1 int sub := new [b(1); 1];
     ptr ptr array 1 int test := ptr sub; 
     array 1 int i := test@@;
+    int a := var + Std::var;
 end

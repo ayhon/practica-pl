@@ -57,7 +57,7 @@ public class DefModule extends Node {
             Parser parser = new Parser(lexer);
             parser.parse();
             this.module = parser.getRoot();
-            this.module.setName(path + "/" + name);
+            this.module.setName(name);
             this.module.setClassFolder(path);
         } catch (IOException e) {
             throw new ModuleImportError("Error IO parsing module " + name);

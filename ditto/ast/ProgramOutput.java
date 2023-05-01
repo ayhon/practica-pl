@@ -171,6 +171,13 @@ public class ProgramOutput {
                 """);
     }
 
+    public void inStart(Runnable runnable){
+        append("(func $inStart (type $_sig_void)");
+        runnable.run();
+        call("main"); // TODO: Encontrar el main actual
+        append(")");
+    }
+
     private void dedent() {
         indent_level = Math.max(0, indent_level - INDENT_WIDTH);
     }

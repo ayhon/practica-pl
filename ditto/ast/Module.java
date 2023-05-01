@@ -149,7 +149,11 @@ public class Module extends Node {
             }
         }
 
-        newDefinitions.addAll(this.definitions);
+        for (Definition def : this.definitions) {
+            def.addModuleToIden(this.name);
+            newDefinitions.add(def);
+        }
+        
         this.definitions = newDefinitions;
         this.astChildren.clear();
         this.astChildren.addAll(this.definitions);

@@ -503,6 +503,8 @@ public class ProgramOutput {
         dedent();
         append("else");
         indent();
+        els.run();
+        dedent();
         append("end");
     }
 

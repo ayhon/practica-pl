@@ -46,7 +46,8 @@ public class Deref extends Designator {
 
     @Override
     public void compileAsDesig(ProgramOutput out) {
-        throw new UnsupportedOperationException("Unimplemented method 'compileAsDesig'");
+        pointer.compileAsDesig(out);
+        out.i32_load();
     }
 
     @Override

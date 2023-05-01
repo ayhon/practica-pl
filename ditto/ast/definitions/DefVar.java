@@ -10,7 +10,6 @@ import ditto.ast.Node;
 import ditto.ast.ProgramOutput;
 import ditto.ast.expressions.Expr;
 import ditto.ast.types.Type;
-import ditto.errors.SemanticError;
 import ditto.errors.TypeError;
 
 public class DefVar extends Definition {

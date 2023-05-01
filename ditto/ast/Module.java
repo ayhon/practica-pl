@@ -152,7 +152,7 @@ public class Module extends Node {
             def.addModuleToIden(this.name);
             newDefinitions.add(def);
         }
-        
+
         this.definitions = newDefinitions;
         this.astChildren.clear();
         this.astChildren.addAll(this.definitions);
@@ -175,7 +175,17 @@ public class Module extends Node {
          * llamara a -> computeTypeSize() -> typecheck() -> bind())
          */
         this.computeOffset();
+        out.inStart(() -> {
+            for (Definition def : this.definitions) {
+                if (def instanceof DefVar)
+                    def.compile(out);
+            }
+        });
 
-        //
+        /// Y ahora llamar a compile de cada uno
+        for (Definition def : this.definitions) {
+            if (def instanceof DefFunc || def instanceof DefStruct)
+                def.compile(out);
+        }
     }
 }

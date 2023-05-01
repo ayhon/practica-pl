@@ -15,7 +15,7 @@ public class ProgramOutput {
     public final static String RESERVE_STACK = "reserveStack";
     public final static String FREE_STACK = "freeStack";
 
-    private final String FUNC_SIG = "_sig_func";
+    private final String FUNC_SIG = "_sig_void";
     private final int INDENT_WIDTH = 2;
 
     public ProgramOutput(int memory_size) {
@@ -56,7 +56,7 @@ public class ProgramOutput {
         f.append("(export \"memory\" (memory 0))"); // For debugging purposes
         f.append(")");
 
-        return sb.toString();
+        return f.toString();
     }
 
     public void loadBuiltins(StringBuilder sb) {
@@ -135,6 +135,39 @@ public class ProgramOutput {
                     end
                 )
                 """);
+        // ADDR 0 0 0 0 0 0 0 0 0 0 0 0
+        //
+        sb.append("""
+                (func $copyn (type $_sig_i32i32i32) ;; copy $n i32 slots from $src to $dest
+                    (param $src i32)
+                    (param $dest i32)
+                    (param $n i32)
+                    block
+                    loop
+                        get_local $n
+                        i32.eqz
+                        br_if 1
+                        get_local $n
+                        i32.const 1
+                        i32.sub
+                        set_local $n
+                        get_local $dest
+                        get_local $src
+                        i32.load
+                        i32.store
+                        get_local $dest
+                        i32.const 4
+                        i32.add
+                        set_local $dest
+                        get_local $src
+                        i32.const 4
+                        i32.add
+                        set_local $src
+                        br 0
+                    end
+                    end
+                )
+                """);
     }
 
     public void comment(String comment) {
@@ -183,7 +216,7 @@ public class ProgramOutput {
     public void inStart(Runnable runnable) {
         if (has_start)
             throw new SemanticError("Can't have more than one start of the program");
-        append("(func $start (type $_sig_void)");
+        append("(func $start (type $%s)", FUNC_SIG);
         runnable.run();
         call("main"); // TODO: Encontrar el main actual
         append(")");

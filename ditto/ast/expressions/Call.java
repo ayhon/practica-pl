@@ -84,10 +84,14 @@ public class Call extends Expr {
             // No debería darse si se hace el typecheck bien
             throw new TypeError(String.format("'%s' is not a function", this.func));
         }
-
+        if (def == null) {
+            throw new TypeError(String.format("'%s' is not a function", this.func));
+        }
         if (!(def instanceof DefFunc)) {
             throw new TypeError(String.format("'%s' points to '%s' which is not a function", this.func, def));
         }
+
+        System.out.println("DefFunc: " + def);
         funcDef = (DefFunc) def;
     }
 

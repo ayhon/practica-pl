@@ -176,6 +176,7 @@ public class Module extends Node {
 
         String mainFunction = String.format("%s__main", this.name);
         Boolean hasMainFunction = false;
+        int mainLocals = 0;
         for (Definition def : definitions) {
             if (def instanceof DefFunc) {
                 DefFunc func = (DefFunc) def;
@@ -183,6 +184,7 @@ public class Module extends Node {
                     if (hasMainFunction)
                         throw new RuntimeException("Multiple main functions found");
                     hasMainFunction = true;
+                    mainLocals = func.getSize();
                 }
             }
         }
@@ -190,11 +192,14 @@ public class Module extends Node {
         if (!hasMainFunction)
             throw new RuntimeException("No main function found");
 
+
+        int newSP = globalVarSize + 4 + 4 + mainLocals;
         out.inStart(mainFunction, () -> {
             for (Definition def : this.definitions) {
                 if (def instanceof DefVar)
                     def.compile(out);
             }
+            prepararStackParaLlamadasAFunciones(out, globalVarSize, newSP);
         });
 
         /// Y ahora llamar a compile de cada uno
@@ -202,5 +207,21 @@ public class Module extends Node {
             if (def instanceof DefFunc || def instanceof DefStruct)
                 def.compile(out);
         }
+    }
+
+    private void prepararStackParaLlamadasAFunciones(ProgramOutput out, int globalVarSize, int newSP){
+            // Poner MP a globalVarSize
+            out.i32_const(globalVarSize);
+            out.set_global("MP");
+            /// Poner SP a globalVarSize + locales del main + posiciones de SP y MP antiguos
+            out.i32_const(newSP);
+            out.set_global("SP");
+            /// Guardar SP en el stack, posicion globalVarSize + 4
+            out.i32_const(globalVarSize + 4);
+            out.i32_const(newSP);
+            out.i32_store();
+            /// Actualizamos localStart
+            out.i32_const(globalVarSize + 4 + 4);
+            out.set_global(ProgramOutput.LOCAL_START);
     }
 }

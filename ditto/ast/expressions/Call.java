@@ -115,31 +115,36 @@ public class Call extends Expr {
             return;
         }
 
-        /// Reservar la memoria para los argumentos + variables locales + MP + SP
-        int stackSize = this.funcDef.getSize() + (2 * 4);
-        out.i32_const(stackSize);
-        out.reserveStack();
+        var params = this.funcDef.getParams();
 
-        /// Copiar los argumentos a LOCALS_START ...
-        for (int i = 0; i < this.args.size(); ++i) {
+        out.comment("Copying arguments to stack");
+        //Vamos eliminando las direcciones de parámetros con su expresion correspondiente        
+        for(int i = 0; i < this.args.size(); ++i){
+            var param = params.get(i);
             var expr = this.args.get(i);
+            /// Calcular primero las direcciones de los parámetros
+            out.get_global("SP");
+            out.i32_const(4 + 4 + param.getOffset());
+            out.i32_add();
 
-            var param = this.funcDef.getParams().get(i);
-            /// Guardar este resultado en LOCALS_START + 4 * i
-            /// Calcular primero la direccion
-            out.mem_local(param.getOffset());
+            /*
 
-            /// Calcular el valor
+             * func foo(ref int a)
+             *   a := 5;
+             * end
+
+             * func foo(ptr int a)
+             *   a@ := 5;
+             * end
+
+             */
             expr.compileAsExpr(out);
-
-            /// Guardar el resultado en la direccion
-            out.i32_store();
+            out.i32_store(); // Con la posición calculada en el bucle anterior
         }
 
-        /// Llamar a la funcion desde WASM
+        out.comment("PERFORMING FUNCTION CALL");
         out.call(this.funcDef.getIden());
 
-        /// Liberar la memoria reservada
-        out.freeStack();
+        out.comment("FUNCTION CALL DONE");
     }
 }

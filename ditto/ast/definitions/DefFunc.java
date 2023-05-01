@@ -70,6 +70,15 @@ public class DefFunc extends Definition {
             this.isRef = isRef;
         }
 
+        /// Binding
+        /// devolvemos como tipo new Poiner(this.getType())
+        
+
+        /*
+        
+        
+         */
+
         @Override
         public String toString() {
             if (this.isRef)

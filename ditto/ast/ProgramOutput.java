@@ -38,7 +38,20 @@ public class ProgramOutput {
     }
 
     public String toStringNoBoilerplate() {
-        return sb.toString();
+        return """
+               ;; ESTAS COMPILANDO SIN BUILTINS ESTAS COMPILANDO SIN BUILTINS ESTAS COMPILANDO SIN BULTINS
+               ;; ESTAS COMPILANDO SIN BUILTINS ESTAS COMPILANDO SIN BUILTINS ESTAS COMPILANDO SIN BULTINS
+               ;; ESTAS COMPILANDO SIN BUILTINS ESTAS COMPILANDO SIN BUILTINS ESTAS COMPILANDO SIN BULTINS
+               ;; ESTAS COMPILANDO SIN BUILTINS ESTAS COMPILANDO SIN BUILTINS ESTAS COMPILANDO SIN BULTINS
+               ;; ESTAS COMPILANDO SIN BUILTINS ESTAS COMPILANDO SIN BUILTINS ESTAS COMPILANDO SIN BULTINS
+               ;; ESTAS COMPILANDO SIN BUILTINS ESTAS COMPILANDO SIN BUILTINS ESTAS COMPILANDO SIN BULTINS
+               ;; ESTAS COMPILANDO SIN BUILTINS ESTAS COMPILANDO SIN BUILTINS ESTAS COMPILANDO SIN BULTINS
+               ;; ESTAS COMPILANDO SIN BUILTINS ESTAS COMPILANDO SIN BUILTINS ESTAS COMPILANDO SIN BULTINS
+               ;; ESTAS COMPILANDO SIN BUILTINS ESTAS COMPILANDO SIN BUILTINS ESTAS COMPILANDO SIN BULTINS
+               ;; ESTAS COMPILANDO SIN BUILTINS ESTAS COMPILANDO SIN BUILTINS ESTAS COMPILANDO SIN BULTINS
+               ;; ESTAS COMPILANDO SIN BUILTINS ESTAS COMPILANDO SIN BUILTINS ESTAS COMPILANDO SIN BULTINS
+               ;; ESTAS COMPILANDO SIN BUILTINS ESTAS COMPILANDO SIN BUILTINS ESTAS COMPILANDO SIN BULTINS
+               """ + sb.toString();
     }
 
     @Override
@@ -213,7 +226,7 @@ public class ProgramOutput {
                 ;; Calcular el inicio del stack para las variables locales (8 + MP porque usamos 2 casillas para puntero dinamico)
                         get_global $MP
                         i32.const 8
-                    i32.add
+                i32.add
                 """);
         set_local(LOCAL_START);
     }
@@ -232,7 +245,11 @@ public class ProgramOutput {
         append("(func $start (type $%s)", FUNC_SIG);
         indent();
         runnable.run();
+        /// Para poder hacer esto, MEM[0] y MEM[4] tienen que ser MP y SP
+        /// Y nuestra variable global no empiezan en 0, sino 8
+        reserveStack();
         call(mainFunction);
+        freeStack();
         dedent();
         append(")");
     }
@@ -346,12 +363,12 @@ public class ProgramOutput {
     /* MEMORY LOCALS */
     public void mem_location(DefVar var) {
         if (var.isGlobal()) {
-            i32_const(var.getOffset());
+            i32_const(8 + var.getOffset());
         } else {
             mem_local(var.getOffset());
         }
     }
-
+    
     public void mem_local(int offset) {
         get_local(ProgramOutput.LOCAL_START);
         i32_const(offset);
@@ -428,10 +445,19 @@ public class ProgramOutput {
     public void func(DefFunc fun, Runnable runnable) {
         append("(func $%s", fun.getIden());
         indent();
+
         append(fun.getResult().asWasmResult());
         append(String.format("(local $%s i32)", ProgramOutput.LOCAL_START));
         append("(local $temp i32)");
+        
+        int stackSize = fun.getSize() + 4 + 4;
+        i32_const(stackSize);
+        reserveStack();
+
         runnable.run(); // La idea es que haga algo con el ProgramOutput dentro del runnable
+                
+        freeStack();
+        
         dedent();
         append(")");
     }

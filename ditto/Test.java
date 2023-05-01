@@ -64,7 +64,7 @@ public class Test {
                     watFile.getParentFile().mkdirs();
 
                     try (FileWriter fileWriter = new FileWriter(watFile)) {
-                        fileWriter.write(output.toStringNoBoilerplate());
+                        fileWriter.write(output.toString());
                     } catch (Exception e) {
                         System.err.println(String.format(
                                 "[ERROR]: Se ha producido un error al intentar escribir el código en el archivo %s",

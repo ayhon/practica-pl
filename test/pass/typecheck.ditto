@@ -1,12 +1,8 @@
 // import Std;
 
-int var := 1;
+int var := 3;
 
-func acho(int a) -> int
-    return a;
-end
-
-func main() -> int
-    int result := var;
-    acho(result);
+func main()
+    int a := 1;
+    print(var);
 end

@@ -84,6 +84,7 @@ case $1 in
                     echo "  📁 Ejecutando $test_file"
                     for task_i in "${TASKS[@]}"; do
                         test_output=$(ditto_test $task_i $test_file $print_ast 2>&1)
+
                         RESULT=$?
                         # Deberia fallar la ejecucion si la tarea es $task
                         # Si no falla, lanza un mensaje de error
@@ -120,6 +121,14 @@ case $1 in
                 ;;
             *)
                 ditto_test $task $test_file $print_ast
+
+                if [ "$task" == "code" ]; then
+                    # Ejecutar el codigo generado
+                    # Tiene mismo nombre, pero extension .wat, en carpeta compiled
+                    dir=$(dirname $test_file)
+                    wat_file=$(basename $test_file .ditto).wat
+                    node main.js $dir/compiled/$wat_file
+                fi
                 ;;
         esac
         ;;

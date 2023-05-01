@@ -69,18 +69,18 @@ async function start(wasmFile) {
 
 exec(`./wat2wasm ${watFilePath} -o ${wasmFile}`, async (error, stdout, stderr) => {
     if (error) {
-        console.err(`error wat2wasm: ${error.message}`);
+        console.error(`error wat2wasm: ${error.message}`);
         process.exit(1);
     }
 
     if (stderr) {
-        console.err(`stderr wat2wasm: ${stderr}`);
+        console.error(`stderr wat2wasm: ${stderr}`);
         process.exit(1);
     }
 
     /// Leer los ficheros de entrada y salida
     if (!fs.existsSync(inputFile)) {
-        console.err(`Input file ${inputFile} does not exist`);
+        console.error(`Input file ${inputFile} does not exist`);
         process.exit(1);
     }
 

@@ -47,8 +47,9 @@ public class DefModule extends Node {
 
     private void loadModule(String path) {
         File file = new File(path, name + ".ditto");
-        if (!file.exists())
-            throw new ModuleImportError("Module " + name + " not found");
+        if (!file.exists()) {
+            throw new ModuleImportError("Module " + name + " not found under " + path);
+        }
 
         /// Obtener el módulo asociado leyendo el archivo
         try (Reader input = new InputStreamReader(new FileInputStream(file))) {
@@ -57,6 +58,7 @@ public class DefModule extends Node {
             parser.parse();
             this.module = parser.getRoot();
             this.module.setName(path + "/" + name);
+            this.module.setClassFolder(path);
         } catch (IOException e) {
             throw new ModuleImportError("Error IO parsing module " + name);
         } catch (Exception e) {
@@ -70,8 +72,9 @@ public class DefModule extends Node {
 
     @Override
     public void bind(Context ctx) {
-        if (module == null)
+        if (module == null){
             loadModule(ctx.getModule().getClassFolder());
+        }
         module.bind();
     }
 

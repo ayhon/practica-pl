@@ -79,6 +79,7 @@ public class ProgramOutput {
         buf.add(sb.toString());
         buf.add("""
                 (export "memory" (memory 0))
+                (export "init" (func $start))
                 """); // For debugging purposes
         buf.add(")");
 
@@ -245,11 +246,7 @@ public class ProgramOutput {
         append("(func $start (type $%s)", FUNC_SIG);
         indent();
         runnable.run();
-        /// Para poder hacer esto, MEM[0] y MEM[4] tienen que ser MP y SP
-        /// Y nuestra variable global no empiezan en 0, sino 8
-        reserveStack();
         call(mainFunction);
-        freeStack();
         dedent();
         append(")");
     }

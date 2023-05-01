@@ -1,27 +1,37 @@
 const { readFileSync } = require("fs");
-const readline = require('readline');
+const { exec } = require("child_process");
+const fs = require("fs");
+const path = require("path");
 
-const insrc = readline.createInterface({
-    input: process.stdin,
-    output: process.stdout
-});
+/// Recibo como parametro el nombre del archivo a compilar (.wat)
+/// Ejemplo: node main.js typecheck.wat
+/// El script compila el archivo .wat con wat2wasm y luego ejecuta el modulo
+/// Lee como entrada el fichero situado en la carpeta inputs/$name.txt de la misma carpeta que el .wat
+/// E imprime el resultado en carpeta outputs/$name.txt
+/// Si el archivo no existe, se crea
 
-entrada = [];
-i = 0;
-
-async function readInput(n) {
-    var line;
-    //    console.log(line);
-    for await (line of insrc) {
-        //	console.log(line);
-        entrada.push(parseInt(line));
-        n--;
-        if (n == 0) return;
-    }
-    insrc.close();
+if (process.argv.length < 3) {
+    console.log("Usage: node main.js <wat file>");
+    process.exit();
 }
 
-var importObjects = {
+let watFilePath = process.argv[2];
+
+/// input esta en el mismo directorio que el .wat
+/// output esta en el mismo directorio que el .wat
+const watFile = path.join(__dirname, watFilePath);
+const name = path.basename(watFile, ".wat");
+const folder = path.dirname(watFile);
+console.log(`watFile: ${watFile}`);
+
+const wasmFile = path.join(folder, `${name}.wasm`);
+const inputFile = path.join(folder, "input", `${name}.txt`);
+const outputFile = path.join(folder, "output", `${name}.txt`);
+
+let entrada = [];
+let i = 0;
+
+const importObjects = {
     runtime: {
         exceptionHandler: function (code) {
             let errStr;
@@ -38,6 +48,9 @@ var importObjects = {
         },
         print: function (n) {
             console.log(n);
+            if (outputFile) {
+                fs.appendFileSync(outputFile, n + "\n");
+            }
         },
         scan: function () {
             let val = entrada[i];
@@ -47,17 +60,48 @@ var importObjects = {
     }
 };
 
-async function start() {
-    const code = readFileSync("typecheck.wasm");
+async function start(wasmFile) {
+    const code = readFileSync(wasmFile);
     wasmModule = await WebAssembly.compile(code);
     instance = await WebAssembly.instantiate(wasmModule, importObjects);
-    //    await instance.exports.init();
+    await instance.exports.init();
 }
 
 async function run() {
-    //await readInput(2);
     start();
 }
 
-run();
+exec(`./wat2wasm ${watFilePath} -o ${wasmFile}`, async (error, stdout, stderr) => {
+    if (error) {
+        console.log(`error wat2wasm: ${error.message}`);
+        process.exit(1);
+    }
 
+    if (stderr) {
+        console.log(`stderr wat2wasm: ${stderr}`);
+        process.exit(1);
+    }
+
+    console.log(`stdout wat2wasm: ${stdout}`);
+
+    /// Leer los ficheros de entrada y salida
+    if (!fs.existsSync(inputFile)) {
+        console.log(`Input file ${inputFile} does not exist`);
+        process.exit(1);
+    }
+
+    if (!fs.existsSync(outputFile)) {
+        console.log(`Output file ${outputFile} does not exist`);
+        /// Crear el fichero de salida vacio para que no de error
+        fs.writeFileSync(outputFile, "");
+
+    }
+
+    /// Cargar en memoria el fichero de entrada
+    /// Partirlo por lineas
+    const input = fs.readFileSync(inputFile, "utf8");
+    entrada = input.split("\n");
+
+    await start(watFilePath.replace(".wat", ".wasm"));
+    process.exit(0);
+});

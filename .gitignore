@@ -25,3 +25,5 @@ replay_pid*
 ditto/lexer/Lexer.java
 ditto/parser/Parser.java
 ditto/parser/TokenKind.java
+*.wat
+*.wasm

@@ -16,6 +16,7 @@ public class ProgramOutput {
     public final static String LOCAL_START = "localsStart";
     public final static String RESERVE_STACK = "reserveStack";
     public final static String FREE_STACK = "freeStack";
+    public final static String RESERVE_HEAP = "reserveHeap";
 
     private final String FUNC_SIG = "_sig_void";
     private final int INDENT_WIDTH = 4;
@@ -28,11 +29,11 @@ public class ProgramOutput {
         this(2000);
     }
 
-    public void append(String instruction) {
+    private void append(String instruction) {
         sb.append(instruction.indent(indent_level));
     }
 
-    public void append(String instruction, Object... args) {
+    private void append(String instruction, Object... args) {
         append(String.format(instruction, args));
     }
 
@@ -132,7 +133,7 @@ public class ProgramOutput {
          * espacio.
          */
         sb.add("""
-                (func $reserveHeapSpace (param $size i32) (result i32)
+                (func $reserveHeap (param $size i32) (result i32)
                     get_local $size
                     get_global $NP
                     i32.sub

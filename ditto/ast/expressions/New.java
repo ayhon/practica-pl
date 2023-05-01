@@ -26,11 +26,12 @@ public class New extends Expr {
     public String getAstString() {
         return "new";
     }
-    
+
     @Override
     public List<Node> getAstChildren() {
         return Arrays.asList(value);
     }
+
     @Override
     public List<Object> getAstArguments() {
         return Arrays.asList(value);
@@ -48,13 +49,12 @@ public class New extends Expr {
         this.allocHeap(out);
     }
 
-    //Reserva el tamaño necesario en el heap y devuelve la dirección de inicio
-    //en la cima de la pila
-    private void allocHeap(ProgramOutput out){
+    // Reserva el tamaño necesario en el heap y devuelve la dirección de inicio
+    // en la cima de la pila
+    private void allocHeap(ProgramOutput out) {
         Integer size = value.type().size();
-        out.append("call $reserveHeapSpace " + size.toString());
-        out.get_global("$NP");
-        //Asegurarse de la función está definida en ProgramOutput
+        out.i32_const(size);
+        out.call(ProgramOutput.RESERVE_HEAP);
+        out.get_global("NP"); // Esta es la dirección donde empieza el nuevo array
     }
-
 }

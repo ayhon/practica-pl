@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WASM Loader</title>
+</head>
+<body>
+    <!--  Selects a wasm file from current directory  -->
+    <input type="file" id="wasm-file" accept=".wasm">
+    <button id="load-wasm">Load WASM</button>
+    <script>
+        const loadWasm = document.getElementById('load-wasm');
+        const wasmFile = document.getElementById('wasm-file');
+        loadWasm.addEventListener('click', () => {
+            var importObjects = {
+                runtime: {
+                    exceptionHandler: function (code) {
+                        let errStr;
+                        if (code == 1) {
+                            errStr = "Error 1. ";
+                        } else if (code == 2) {
+                            errStr = "Error 2. ";
+                        } else if (code == 3) {
+                            errStr = "Not enough memory. ";
+                        } else {
+                            errStr = "Unknown error\n";
+                        }
+                        throw new Error(errStr);
+                    },
+                    print: function (n) {
+                        console.log(n);
+                    },
+                    scan: function () {
+                        let num_str = window.prompt("Enter a number");
+                        let val = parseInt(num_str);
+                        return val;
+                    }
+                }
+            };
+
+            const reader = new FileReader();
+            console.debug(wasmFile.files)
+            reader.readAsArrayBuffer(wasmFile.files[0]);
+            console.debug(reader.result)
+            reader.addEventListener('load', async () => {
+                const wasmModule = await WebAssembly.compile(reader.result);
+                const instance = await WebAssembly.instantiate(wasmModule, importObjects);
+            });          
+        });
+    </script>
+</body>
+</html>

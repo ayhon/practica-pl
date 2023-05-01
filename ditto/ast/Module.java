@@ -175,7 +175,7 @@ public class Module extends Node {
          */
         this.computeOffset();
 
-        String mainFunction = String.format("%s_main", this.name);
+        String mainFunction = String.format("%s__main", this.name);
         Boolean hasMainFunction = false;
         for (Definition def : definitions) {
             if (def instanceof DefFunc) {
@@ -187,6 +187,9 @@ public class Module extends Node {
                 }
             }
         }
+
+        if (!hasMainFunction)
+            throw new RuntimeException("No main function found");
 
         out.inStart(mainFunction, () -> {
             for (Definition def : this.definitions) {

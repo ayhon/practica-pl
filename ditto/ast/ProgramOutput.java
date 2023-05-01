@@ -44,9 +44,16 @@ public class ProgramOutput {
     @Override
     public String toString() {
         StringJoiner buf = new StringJoiner("\n");
-        buf.add("(module\n");
+        buf.add("(module");
+        buf.add("""
+                (import "runtime" "print" (func $print (type $_sig_i32)))""");
+        buf.add("""
+                (import "runtime" "scan" (func $scan (type $_sig_ri32)))""");
+        buf.add("""
+                (import "runtime" "exceptionHandler" (func $exception (type $_sig_i32)))""");
         buf.add(String.format("(memory %d)", memory_size));
         buf.add("(start $start)");
+        buf.add("(type $_sig_i32i32i32 (func (param i32 i32 i32) ))");
         buf.add("(type $_sig_i32 (func (param i32)))");
         buf.add("(type $_sig_ri32 (func (result i32)))");
         buf.add(String.format("(type $%s (func))", FUNC_SIG)); // TODO: Mirar si esto tiene sentido en WASM
@@ -55,12 +62,6 @@ public class ProgramOutput {
         buf.add("(global $NP (mut i32) (i32.const 131071996)) ;; heap 2000*64*1024-4");
         // Este es el tipo de todas nuestras funciones, pues nos
         // pasamos los argumentos y valores de retorno por memoria
-        buf.add("""
-                (import "runtime" "print" (func $print (type $_sig_i32)))
-                    """);
-        buf.add("""
-                (import "runtime" "scan" (func $scan (type $_sig_ri32)))
-                    """);
         loadBuiltins(buf);
         buf.add(sb.toString());
         buf.add("""
@@ -133,7 +134,7 @@ public class ProgramOutput {
          * espacio.
          */
         sb.add("""
-                (func $reserveHeap (param $size i32) (result i32)
+                (func $reserveHeap (param $size i32)
                     get_local $size
                     get_global $NP
                     i32.sub
@@ -428,6 +429,8 @@ public class ProgramOutput {
         append("(func $%s", fun.getIden());
         indent();
         append(fun.getResult().asWasmResult());
+        append(String.format("(local $%s i32)", ProgramOutput.LOCAL_START));
+        append("(local $temp i32)");
         runnable.run(); // La idea es que haga algo con el ProgramOutput dentro del runnable
         dedent();
         append(")");

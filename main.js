@@ -67,35 +67,30 @@ async function start(wasmFile) {
     await instance.exports.init();
 }
 
-async function run() {
-    start();
-}
-
 exec(`./wat2wasm ${watFilePath} -o ${wasmFile}`, async (error, stdout, stderr) => {
     if (error) {
-        console.log(`error wat2wasm: ${error.message}`);
+        console.err(`error wat2wasm: ${error.message}`);
         process.exit(1);
     }
 
     if (stderr) {
-        console.log(`stderr wat2wasm: ${stderr}`);
+        console.err(`stderr wat2wasm: ${stderr}`);
         process.exit(1);
     }
 
-    console.log(`stdout wat2wasm: ${stdout}`);
-
     /// Leer los ficheros de entrada y salida
     if (!fs.existsSync(inputFile)) {
-        console.log(`Input file ${inputFile} does not exist`);
+        console.err(`Input file ${inputFile} does not exist`);
         process.exit(1);
     }
 
     if (!fs.existsSync(outputFile)) {
-        console.log(`Output file ${outputFile} does not exist`);
         /// Crear el fichero de salida vacio para que no de error
-        fs.writeFileSync(outputFile, "");
-
+        fs.mkdirSync(path.dirname(outputFile), { recursive: true });
     }
+
+    /// Vaciar el fichero de salida
+    fs.writeFileSync(outputFile, "");
 
     /// Cargar en memoria el fichero de entrada
     /// Partirlo por lineas

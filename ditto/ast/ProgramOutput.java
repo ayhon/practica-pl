@@ -1,5 +1,7 @@
 package ditto.ast;
 
+import java.util.StringJoiner;
+
 import ditto.ast.definitions.DefFunc;
 import ditto.ast.definitions.DefVar;
 import ditto.errors.SemanticError;
@@ -16,7 +18,7 @@ public class ProgramOutput {
     public final static String FREE_STACK = "freeStack";
 
     private final String FUNC_SIG = "_sig_void";
-    private final int INDENT_WIDTH = 2;
+    private final int INDENT_WIDTH = 4;
 
     public ProgramOutput(int memory_size) {
         this.memory_size = memory_size;
@@ -28,38 +30,47 @@ public class ProgramOutput {
 
     public void append(String instruction) {
         sb.append(instruction.indent(indent_level));
-        sb.append('\n');
     }
 
     public void append(String instruction, Object... args) {
         append(String.format(instruction, args));
     }
 
-    @Override
-    public String toString() {
-        StringBuilder f = new StringBuilder();
-        f.append("(module\n");
-        f.append(String.format("(memory %d)", memory_size));
-        f.append("(start $main)");
-        f.append("(type $_sig_i32 (func (param i32)))");
-        f.append("(type $_sig_ri32 (func (result i32)))");
-        f.append(String.format("(type $%s (func))", FUNC_SIG)); // TODO: Mirar si esto tiene sentido en WASM
-        f.append("(global $SP (mut i32) (i32.const 0))         ;; start of stack");
-        f.append("(global $MP (mut i32) (i32.const 0))         ;; mark pointer");
-        f.append("(global $NP (mut i32) (i32.const 131071996)) ;; heap 2000*64*1024-4");
-        // Este es el tipo de todas nuestras funciones, pues nos
-        // pasamos los argumentos y valores de retorno por memoria
-        f.append("(import \"runtime\" \"print\" (func $print (type $_sig_i32)))");
-        f.append("(import \"runtime\" \"scan\" (func $scan (type $_sig_ri32)))");
-        loadBuiltins(f);
-        f.append(sb.toString());
-        f.append("(export \"memory\" (memory 0))"); // For debugging purposes
-        f.append(")");
-
-        return f.toString();
+    public String toStringNoBoilerplate() {
+        return sb.toString();
     }
 
-    public void loadBuiltins(StringBuilder sb) {
+    @Override
+    public String toString() {
+        StringJoiner buf = new StringJoiner("\n");
+        buf.add("(module\n");
+        buf.add(String.format("(memory %d)", memory_size));
+        buf.add("(start $start)");
+        buf.add("(type $_sig_i32 (func (param i32)))");
+        buf.add("(type $_sig_ri32 (func (result i32)))");
+        buf.add(String.format("(type $%s (func))", FUNC_SIG)); // TODO: Mirar si esto tiene sentido en WASM
+        buf.add("(global $SP (mut i32) (i32.const 0))         ;; start of stack");
+        buf.add("(global $MP (mut i32) (i32.const 0))         ;; mark pointer");
+        buf.add("(global $NP (mut i32) (i32.const 131071996)) ;; heap 2000*64*1024-4");
+        // Este es el tipo de todas nuestras funciones, pues nos
+        // pasamos los argumentos y valores de retorno por memoria
+        buf.add("""
+                (import "runtime" "print" (func $print (type $_sig_i32)))
+                    """);
+        buf.add("""
+                (import "runtime" "scan" (func $scan (type $_sig_ri32)))
+                    """);
+        loadBuiltins(buf);
+        buf.add(sb.toString());
+        buf.add("""
+                (export "memory" (memory 0))
+                """); // For debugging purposes
+        buf.add(")");
+
+        return buf.toString();
+    }
+
+    public void loadBuiltins(StringJoiner sb) {
         /**
          * Funcion que reserva espacio en la pila
          * Pasa por parametro de WASM el tamaño que se quiere reservar
@@ -72,28 +83,28 @@ public class ProgramOutput {
          * NP: Puntero que apunta a la cota inferior de zona de heap (porque crece hacia
          * abajo)
          */
-        sb.append(
+        sb.add(
                 """
-                        (func $reserveStack (param $size i32) (result i32)
-                            get_global $MP          ;; Para devolver al final
+                                (func $reserveStack (param $size i32) (result i32)
+                                    get_global $MP          ;; Para devolver al final
 
-                                get_global $SP
-                            set_global $MP          ;; Ahora MP vale SP (Cota superior de la zona de memoria reservada en Stack anterior = Inicio de la zona de memoria reservada en Stack actual)
+                                        get_global $SP
+                                    set_global $MP          ;; Ahora MP vale SP (Cota superior de la zona de memoria reservada en Stack anterior = Inicio de la zona de memoria reservada en Stack actual)
 
-                                    get_global $SP
-                                    get_local $size
-                                i32.add
-                            set_global $SP          ;; Nuevo SP = SP anterior + size que reservamos ahora
+                                            get_global $SP
+                                            get_local $size
+                                        i32.add
+                                    set_global $SP          ;; Nuevo SP = SP anterior + size que reservamos ahora
 
-                                get_global $SP
-                                get_global $NP      ;; Obtener el valor de NP
-                            i32.gt_u                ;; Si resulta que SP > NP, entonces hay overflow
+                                        get_global $SP
+                                        get_global $NP      ;; Obtener el valor de NP
+                                    i32.gt_u                ;; Si resulta que SP > NP, entonces hay overflow
 
-                            if
-                                i32.const 3
-                                call $exception     ;; Lanzar excepcion con codigo 3
-                            end
-                        )
+                                    if
+                                        i32.const 3
+                                        call $exception     ;; Lanzar excepcion con codigo 3
+                                    end
+                                )
                         """);
         /**
          * Funcion que libera espacio en la pila
@@ -103,7 +114,7 @@ public class ProgramOutput {
          * ↓ ↓ ↓ ↓
          * |SP| | | | | | | | | |SP|MP| | | | | | |
          */
-        sb.append("""
+        sb.add("""
                 (func $freeStack (type $_sig_void) ;;
                                 get_global $MP
                             i32.load            ;; a la casila MEM[MP] (contiene MP antiguo)
@@ -120,7 +131,7 @@ public class ProgramOutput {
          * quiere reservar. Devuelve la dirección de memoria donde se ha reservado el
          * espacio.
          */
-        sb.append("""
+        sb.add("""
                 (func $reserveHeapSpace (param $size i32) (result i32)
                     get_local $size
                     get_global $NP
@@ -137,7 +148,7 @@ public class ProgramOutput {
                 """);
         // ADDR 0 0 0 0 0 0 0 0 0 0 0 0
         //
-        sb.append("""
+        sb.add("""
                 (func $copyn (type $_sig_i32i32i32) ;; copy $n i32 slots from $src to $dest
                     (param $src i32)
                     (param $dest i32)
@@ -213,12 +224,14 @@ public class ProgramOutput {
         call("reserveHeapSpace");
     }
 
-    public void inStart(Runnable runnable) {
+    public void inStart(String mainFunction, Runnable runnable) {
         if (has_start)
             throw new SemanticError("Can't have more than one start of the program");
         append("(func $start (type $%s)", FUNC_SIG);
+        indent();
         runnable.run();
-        call("main"); // TODO: Encontrar el main actual
+        call(mainFunction);
+        dedent();
         append(")");
     }
 

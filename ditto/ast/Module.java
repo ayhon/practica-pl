@@ -27,7 +27,6 @@ public class Module extends Node {
         this.modules = Collections
                 .unmodifiableMap(imports.stream().collect(Collectors.toMap(DefModule::getIden, Function.identity())));
         this.definitions = definitions;
-
         astChildren.addAll(this.modules.values());
         astChildren.addAll(this.definitions);
         loadBuiltins();
@@ -175,7 +174,21 @@ public class Module extends Node {
          * llamara a -> computeTypeSize() -> typecheck() -> bind())
          */
         this.computeOffset();
-        out.inStart(() -> {
+
+        String mainFunction = String.format("%s_main", this.name);
+        Boolean hasMainFunction = false;
+        for (Definition def : definitions) {
+            if (def instanceof DefFunc) {
+                DefFunc func = (DefFunc) def;
+                if (func.getIden().equals(mainFunction)) {
+                    if (hasMainFunction)
+                        throw new RuntimeException("Multiple main functions found");
+                    hasMainFunction = true;
+                }
+            }
+        }
+
+        out.inStart(mainFunction, () -> {
             for (Definition def : this.definitions) {
                 if (def instanceof DefVar)
                     def.compile(out);

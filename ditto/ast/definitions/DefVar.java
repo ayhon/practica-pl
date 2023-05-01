@@ -6,10 +6,10 @@ import java.util.List;
 import ditto.ast.CompilationProgress;
 import ditto.ast.Context;
 import ditto.ast.Delta;
+import ditto.ast.Identifier;
 import ditto.ast.Node;
 import ditto.ast.ProgramOutput;
 import ditto.ast.expressions.Expr;
-import ditto.ast.types.ArrayType;
 import ditto.ast.types.Type;
 import ditto.errors.TypeError;
 
@@ -17,6 +17,8 @@ public class DefVar extends Definition {
     private final String iden;
     private Expr expr;
     private int position;
+    private String wasmString;
+    private boolean isGlobal;
 
     public DefVar(Type type, String iden, Expr expr) {
         // Argumentos en este orden para representar como se escribe en el lenguaje
@@ -71,10 +73,16 @@ public class DefVar extends Definition {
         return type;
     }
 
+    public String getWasmString() {
+        return wasmString;
+    }
+
     @Override
     public void bind(Context ctx) {
         super.bind(ctx);
         ctx.add(this);
+        isGlobal = ctx.isGlobal(this.iden);
+        wasmString = ctx.getWASMString(this.iden);
     }
 
     @Override
@@ -84,7 +92,7 @@ public class DefVar extends Definition {
             throw new TypeError(String.format("Can't assign %s to variable %s of type %s", expr.type(), iden, type));
         else if (expr != null)
             type = expr.type();
-        // Así adivinamos la longitud del array, para
+        // Así adivinamos la longitud del array, para)
         // casos como este:
         // array int a = [10; 1];
     }
@@ -113,6 +121,14 @@ public class DefVar extends Definition {
 
     @Override
     public void compileAsInstruction(ProgramOutput out) {
-        throw new UnsupportedOperationException("Unimplemented method 'compileAsInstruction'");
+        
+    }
+
+    public int getOffset() {
+        return this.position;
+    }
+
+    public boolean isGlobal() {
+        return isGlobal;
     }
 }

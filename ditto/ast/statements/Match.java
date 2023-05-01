@@ -1,6 +1,9 @@
 package ditto.ast.statements;
 
 import java.util.List;
+
+import javax.swing.text.html.HTMLDocument.HTMLReader.BlockAction;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -32,6 +35,7 @@ public class Match extends Statement {
     static public class Case extends Statement {
         public final Expr expr;
         public final List<Statement> body;
+
         /// Otherwise case
         public Case(List<Statement> body) {
             this(null, body);
@@ -86,8 +90,7 @@ public class Match extends Statement {
 
         @Override
         public void compileAsInstruction(ProgramOutput out) {
-            // TODO Auto-generated method stub
-            throw new UnsupportedOperationException("Unimplemented method 'compileAsInstruction'");
+            this.expr.compileAsInstruction(out);
         }
 
     }
@@ -124,13 +127,28 @@ public class Match extends Statement {
             if (c.expr != null && !matchingType.equals(c.expr.type())) {
                 throw new TypeError("Type mismatch in case");
             }
-        }   
+        }
     }
 
     @Override
     public void compileAsInstruction(ProgramOutput out) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'compileAsInstruction'");
-    }
+        expr.compileAsExpr(out);
+        
+        // Comienzo de los bloques
+        int n = cases.size();
+        for (int i = 0; i < n; i++) {
+            out.block();
+        }
 
+        // Tabla de branching
+        out.br_table(n);
+
+        // Cuerpo de los bloques
+        for (int i = 0; i < n; i++) {
+            out.end();
+            cases.get(i).compileAsInstruction(out);
+            out.br(n - i);
+        }
+        out.end();
+    }
 }

@@ -7,6 +7,7 @@ import ditto.parser.Parser;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileWriter;
 import java.io.InputStreamReader;
 import java.io.Reader;
 
@@ -57,7 +58,20 @@ public class Test {
                     main.computeOffset();
                 }
                 case "code" -> {
-                    main.compile(new ProgramOutput());
+                    var output = new ProgramOutput();
+                    main.compile(output);
+
+                    File watFile = new File(parentFolder,
+                            String.format("compiled/%s", file.getName().replace(".ditto", ".wat")));
+                    watFile.getParentFile().mkdirs();
+
+                    try (FileWriter fileWriter = new FileWriter(watFile)) {
+                        fileWriter.write(output.toString());
+                    } catch (Exception e) {
+                        System.err.println(String.format(
+                                "[ERROR]: Se ha producido un error al intentar escribir el código en el archivo %s",
+                                watFile.getName()));
+                    }
                 }
             }
             if (printAST) {

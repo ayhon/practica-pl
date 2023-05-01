@@ -32,4 +32,14 @@ public abstract class Type extends Node {
     public List<Node> getAstChildren() {
         return new ArrayList<Node>();
     }
+
+    public String asWasmResult() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("(result ");
+        for(int i = 0; i < size(); i++) {
+            sb.append("i32 ");
+        }
+        sb.append(")");
+        return sb.toString();
+    }
 }

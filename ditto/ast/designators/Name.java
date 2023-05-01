@@ -7,8 +7,10 @@ import ditto.ast.Identifier;
 import ditto.ast.Context;
 import ditto.ast.Node;
 import ditto.ast.ProgramOutput;
+import ditto.ast.definitions.DefVar;
 import ditto.ast.definitions.Definition;
 import ditto.errors.BindingError;
+import ditto.errors.SemanticError;
 
 // A name designates a variable or a function.
 public class Name extends Designator {
@@ -56,7 +58,16 @@ public class Name extends Designator {
 
     @Override
     public void compileAsDesig(ProgramOutput out) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'compileAsDesig'");
+        if (definition instanceof DefVar) {
+            DefVar defVar = (DefVar) definition;
+            if (defVar.isGlobal()) {
+                out.i32_const(defVar.getOffset());
+            } else {
+                out.get_local(ProgramOutput.LOCAL_START);
+                out.i32_const(defVar.getOffset());
+                out.i32_add();
+            }
+        } else
+            throw new SemanticError("Can't compile a definition to " + definition + " from a name");
     }
 }

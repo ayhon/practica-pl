@@ -19,6 +19,7 @@ public class StructType extends Type {
     private final Identifier iden;
     private Map<String, Type> fieldTypes;
     private DefStruct definition;
+
     private Literal defaultValue = null;
     private int size = 0;
 
@@ -31,6 +32,11 @@ public class StructType extends Type {
     public StructType(Identifier iden, Map<String, Type> fieldTypes) {
         this.iden = iden;
         this.fieldTypes = fieldTypes;
+    }
+
+
+    public Definition getFieldDefinition(String name) {
+        return definition.getAttributeOrMethod(name);
     }
 
     @Override
@@ -54,6 +60,11 @@ public class StructType extends Type {
 
     public Identifier getIden() {
         return iden;
+    }
+
+    public int getOffset(String name) {
+        /// Devuelve el offset de un campo del struct
+        return definition.getOffset(name);
     }
 
     public Map<String, Type> getFieldTypes() {

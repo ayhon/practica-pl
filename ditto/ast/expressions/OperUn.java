@@ -13,6 +13,7 @@ import ditto.ast.types.IntegerType;
 import ditto.ast.types.PointerType;
 import ditto.ast.types.Type;
 import ditto.errors.TypeError;
+import ditto.ast.designators.Designator;
 
 public class OperUn extends Expr {
     public enum Operators {
@@ -153,16 +154,14 @@ public class OperUn extends Expr {
                 break;
             case REF:
                 // Se da con expresion `ptr x`,
-                expr.compile(out);
-                out.i32_const(((DefVar) (((Name) expr).getDefinition())).getDelta()); // Aqui hacemos i32.const
-                                                                                      // delta(*id)
-                                                                                      // (TODO: revisar)
-                out.i32_add();
+                //Cargamos la direccion de x y la dejamos en el tope de la pila
+                ((Designator) expr).compileAsDesig(out);
                 break;
             case LEN:
                 // El tamaño de un array se guarda dereferenciando el array, en su primera
                 // posición
-                expr.compileAsExpr(out);
+                expr.compileAsExpr(out);    // Deja en el tope de la pila la dirección del array
+                out.i32_load();             //Cargamos la primera posicion del array(la que contiene su tamaño)
                 break;
             default:
                 throw new IllegalArgumentException("Invalid operator '" + op + "'");

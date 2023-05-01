@@ -45,7 +45,16 @@ public class New extends Expr {
     public void compileAsExpr(ProgramOutput out) {
         // Llama a la funcion que reserva el espacio necesario
         // y deja en la cima la dirección de inicio de ese espacio.
-        // TODO: Implementar
+        this.allocHeap(out);
+    }
+
+    //Reserva el tamaño necesario en el heap y devuelve la dirección de inicio
+    //en la cima de la pila
+    private void allocHeap(ProgramOutput out){
+        Integer size = value.type().size();
+        out.append("call $reserveHeapSpace " + size.toString());
+        out.get_global("$NP");
+        //Asegurarse de la función está definida en ProgramOutput
     }
 
 }

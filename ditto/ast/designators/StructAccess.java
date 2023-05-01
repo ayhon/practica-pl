@@ -5,6 +5,7 @@ import java.util.List;
 
 import ditto.ast.Node;
 import ditto.ast.ProgramOutput;
+import ditto.ast.definitions.Definition;
 import ditto.ast.types.ArrayType;
 import ditto.ast.types.IntegerType;
 import ditto.ast.types.StructType;
@@ -28,6 +29,11 @@ public class StructAccess extends Designator {
         return name;
     }
 
+    public Definition getDefinition(String name) {
+        StructType st = (StructType) struct.type();
+        return st.getFieldDefinition(name);
+    }
+
     @Override
     public String getAstString() {
         return "field";
@@ -37,7 +43,7 @@ public class StructAccess extends Designator {
     public List<Object> getAstArguments() {
         return Arrays.asList(struct, name);
     }
-    
+
     @Override
     public List<Node> getAstChildren() {
         return Arrays.asList(struct);
@@ -69,7 +75,11 @@ public class StructAccess extends Designator {
 
     @Override
     public void compileAsDesig(ProgramOutput out) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'compileAsDesig'");
+        // 1) Calculamos la direccion del designador
+        // 2) Cargamos el offset del campo
+        // 3) Sumamos ambos valores
+        struct.compileAsDesig(out);
+        out.i32_const(((StructType) struct.type()).getOffset(name)); // i32.const delta(*id)
+        out.i32_add(); // i32.add
     }
 }

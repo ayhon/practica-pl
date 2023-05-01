@@ -62,6 +62,10 @@ public class Module extends Node {
         this.name = name;
     }
 
+    public String getName() {
+        return name;
+    }
+
     @Override
     public List<Node> getAstChildren() {
         List<Node> children = new ArrayList<Node>();
@@ -131,8 +135,11 @@ public class Module extends Node {
 
     @Override
     public void compile(ProgramOutput out) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'generateCode'");
-    }
+        /**
+         * Para generar el codigo, tiene que calcular primero el offset (a su vez llamara a -> computeTypeSize() -> typecheck() -> bind())
+         */
+        this.computeOffset();
 
+        //
+    }
 }

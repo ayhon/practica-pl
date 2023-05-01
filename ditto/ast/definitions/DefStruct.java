@@ -57,6 +57,11 @@ public class DefStruct extends Definition {
         return this.attributes.get(iden);
     }
 
+    public int getOffset(String name) {
+        //Devolvemos el offset(delta) del campo
+        return this.attributes.get(name).getOffset();
+    }
+
     public StructType getType() {
         return this.type;
     }

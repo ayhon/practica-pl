@@ -9,6 +9,7 @@ public class ProgramOutput {
     private final int memory_size;
     private int indent_level = 0;
 
+    public final static String LOCAL_START = "localsStart";
     private final String FUNC_SIG = "_sig_func";
     private final int INDENT_WIDTH = 2;
 
@@ -38,6 +39,9 @@ public class ProgramOutput {
         f.append("(type $_sig_i32 (func (param i32)))");
         f.append("(type $_sig_ri32 (func (result i32)))");
         f.append(String.format("(type $%s (func))", FUNC_SIG)); // TODO: Mirar si esto tiene sentido en WASM
+        f.append("(global $SP (mut i32) (i32.const 0))         ;; start of stack");
+        f.append("(global $MP (mut i32) (i32.const 0))         ;; mark pointer");
+        f.append("(global $NP (mut i32) (i32.const 131071996)) ;; heap 2000*64*1024-4");
         // Este es el tipo de todas nuestras funciones, pues nos
         // pasamos los argumentos y valores de retorno por memoria
         f.append("(import \"runtime\" \"print\" (func $print (type $_sig_i32)))");
@@ -47,6 +51,123 @@ public class ProgramOutput {
         f.append(")");
 
         return sb.toString();
+    }
+
+    public void comment(String comment) {
+        append(";; %s", comment);
+    }
+
+    public void reserveStack() {
+        /**
+         * Funcion que reserva espacio en la pila
+         * Pasa por parametro de WASM el tamaño que se quiere reservar
+         * Deberia devolver la posicion del antiguo MP (dynamic link)
+         * 
+         * MP: Mark Pointer, indica la posicion inicial de la zona de memoria reservada
+         * en Stack
+         * SP: Stack Pointer, indica la cota superior de la zona de memoria reservada en
+         * Stack
+         * NP: Puntero que apunta a la cota inferior de zona de heap (porque crece hacia
+         * abajo)
+         */
+        append("""
+                (func $reserveStack (param $size i32) (result i32)
+                    get_global $MP          ;; Para devolver al final
+
+                        get_global $SP
+                    set_global $MP          ;; Ahora MP vale SP (Cota superior de la zona de memoria reservada en Stack anterior = Inicio de la zona de memoria reservada en Stack actual)
+
+                            get_global $SP
+                            get_local $size
+                        i32.add
+                    set_global $SP          ;; Nuevo SP = SP anterior + size que reservamos ahora
+
+                        get_global $SP
+                        get_global $NP      ;; Obtener el valor de NP
+                    i32.gt_u                ;; Si resulta que SP > NP, entonces hay overflow
+
+                    if
+                        i32.const 3
+                        call $exception     ;; Lanzar excepcion con codigo 3
+                    end
+                )
+                """);
+    }
+
+    public void postReserveStack() {
+        /**
+         * MEM[MP] = MP antiguo
+         * MEM[MP+4]= SP actual
+         */
+        append("""
+                ;; Guarda en $temp el valor de $MP antiguo
+                set_local $temp
+
+                ;; Guarda en MEM[$MP] el valor de $MP antiguo
+                get_global $MP       ;;; Este es MP nuevo = SP antiguo
+                get_local $temp
+                i32.store            ;;; Guarda en MEM[MP] el valor de MP antiguo
+
+                    get_global $MP
+                    get_global $SP       ;;; Este es SP nuevo (con el espacio reservado)
+                i32.store offset=4       ;;; Guarda en MEM[MP+4] el valor de SP nuevo
+
+                ;; Calcular el inicio del stack para las variables locales (8 + MP porque usamos 2 casillas para puntero dinamico)
+                        get_global $MP
+                        i32.const 8
+                    i32.add
+                """);
+        set_local(LOCAL_START);
+    }
+
+    public void freeStack() {
+        /**
+         * Funcion que libera espacio en la pila
+         * Hay que tener en la cima el valor del MP antiguo (el que queremos restaurar)
+         * MP' SP'
+         * MP SP | |
+         * ↓ ↓ ↓ ↓
+         * |SP| | | | | | | | | |SP|MP| | | | | | |
+         */
+
+        append("""
+                (func $freeStack (type $_sig_void) ;;
+                                get_global $MP
+                            i32.load            ;; a la casila MEM[MP] (contiene MP antiguo)
+                        i32.load offset=4       ;; a la casilla MEM[MP_ANTIGUO + 4] (contiene SP antiguo)
+                    set_global $SP              ;; SP = SP antiguo
+
+                            get_global $MP
+                        i32.load
+                    set_global $MP
+                )
+                """); /**
+                       * MEM[MEM[$MP] + 4] = SP antiguo
+                       * MEM[$MP] = MP antiguo
+                       */
+    }
+
+    public void reserveHeapSpace() {
+        /*
+         * Función que reserva memoria en el heap. Recibe por parámetro el tamaño que se
+         * quiere reservar. Devuelve la dirección de memoria donde se ha reservado el
+         * espacio.
+         */
+        append("""
+                (func $reserveHeapSpace (param $size i32) (result i32)
+                    get_local $size
+                    get_global $NP
+                    i32.sub
+                    set_global $NP  ;; NP = NP - size
+                    get_global $SP
+                    get_global $NP  ;; Comprobamos que no haya overflow
+                    i32.gt_u
+                    if
+                    i32.const 3
+                    call $exception
+                    end
+                )
+                """);
     }
 
     private void dedent() {
@@ -79,10 +200,6 @@ public class ProgramOutput {
         append("(i32.load offset=%d (%s))", offset, x);
     }
 
-    public void i32_store(String expr) {
-        append("i32.store $%s", expr);
-    }
-
     public void i32_store() {
         append("i32.store");
     }
@@ -92,25 +209,14 @@ public class ProgramOutput {
         append("i32.const %d", i);
     }
 
-    public void i32_add(String x, String y) {
-        append("(i32.add (%s) (%s))", x, y);
-    }
-
     public void i32_add() {
         append("i32.add");
-    }
-
-    public void i32_sub(String x, String y) {
-        append("(i32.sub (%s) (%s))", x, y);
     }
 
     public void i32_sub() {
         append("i32.sub");
     }
 
-    public void i32_mul(String x, String y) {
-        append("(i32.mul (%s) (%s))", x, y);
-    }
 
     public void i32_mul() {
         append("i32.mul");
@@ -120,88 +226,45 @@ public class ProgramOutput {
         append("i32.i32_div_s");
     }
 
-    public void i32_div_s(String x, String y) {
-        append("(i32.i32_div_s (%s) (%s))", x, y);
-    }
-
     public void i32_rem_s() {
         append("i32.rem_s");
     }
 
-    public void i32_rem_s(String x, String y) {
-        append("(i32.rem_s (%s) (%s))", x, y);
-    }
 
     public void i32_eq() {
         append("i32.eq");
-    }
-
-    public void i32_eq(String x, String y) {
-        append("(i32.eq (%s) (%s))", x, y);
     }
 
     public void i32_ne() {
         append("i32.ne");
     }
 
-    public void i32_ne(String x, String y) {
-        append("(i32.ne (%s) (%s))", x, y);
-    }
-
     public void i32_eq_z() {
         append("i32.eq_z");
-    }
-
-    public void i32_eq_z(String x, String y) {
-        append("(i32.eq_z (%s) (%s))", x, y);
     }
 
     public void i32_le_s() {
         append("i32.le_s");
     }
 
-    public void i32_le_s(String x, String y) {
-        append("(i32.le_s (%s) (%s))", x, y);
-    }
-
     public void i32_lt_s() {
         append("i32.lt_s");
-    }
-
-    public void i32_lt_s(String x, String y) {
-        append("(i32.lt_s (%s) (%s))", x, y);
     }
 
     public void i32_ge_s() {
         append("i32.ge_s");
     }
 
-    public void i32_ge_s(String x, String y) {
-        append("(i32.ge_s (%s) (%s))", x, y);
-    }
-
     public void i32_gt_s() {
         append("i32.gt_s");
-    }
-
-    public void i32_gt_s(String x, String y) {
-        append("(i32.gt_s (%s) (%s))", x, y);
     }
 
     public void i32_and() {
         append("i32.and");
     }
 
-    public void i32_and(String x, String y) {
-        append("(i32.and (%s) (%s))", x, y);
-    }
-
     public void i32_or() {
         append("i32.or");
-    }
-
-    public void i32_or(String x, String y) {
-        append("(i32.or (%s) (%s))", x, y);
     }
 
     public void i32_xor() {
@@ -276,17 +339,10 @@ public class ProgramOutput {
     }
 
     public void func(DefFunc fun, Runnable runnable) {
-        append("(func $%s (type $%s)", fun.getIden(), FUNC_SIG);
+        append("(func $%s", fun.getIden());
         indent();
-
-        for (DefFunc.Param var : fun.getParams()) {
-            append("(param $%s %s)", var.getIden(), var.getType());
-        }
-        if (fun.getResult() != VoidType.getInstance()) {
-            append("(result %s)");
-        }
+        append(fun.getResult().asWasmResult());
         runnable.run(); // La idea es que haga algo con el ProgramOutput dentro del runnable
-
         dedent();
         append(")");
     }
@@ -327,18 +383,40 @@ public class ProgramOutput {
     //
     // }
 
-    public void _if() {
+    public void if_else(Runnable then, Runnable els) {
         append("if");
         indent();
-    }
-
-    public void _else() {
+        then.run();
         dedent();
         append("else");
         indent();
+        append("end");
     }
 
-    public void _end() {
+    public void if_(Runnable then){
+        append("if");
+        indent();
+        then.run();
+        dedent();
+        append("end");
+    }
+
+    public void br_table(int size) {
+        append("br_table");
+        indent();
+        for (int i = 0; i < size; i++) {
+            append("%d", i);
+        }
+        dedent();
+    }
+
+    //Solo usar estos dos metodos en el match
+    public void block() {
+        append("block");
+        indent();
+    }
+
+    public void end() {
         dedent();
         append("end");
     }

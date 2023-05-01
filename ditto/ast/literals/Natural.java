@@ -41,8 +41,7 @@ public class Natural extends Literal {
 
     @Override
     public void compileAsExpr(ProgramOutput out) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'compileAsExpr'");
+        out.i32_const(this.value);
     }
 
     @Override

@@ -35,8 +35,7 @@ public class False extends Literal {
 
     @Override
     public void compileAsExpr(ProgramOutput out) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'compileAsExpr'");
+        out.i32_const(1);
     }
 
     @Override

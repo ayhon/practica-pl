@@ -55,14 +55,22 @@ public class While extends Statement {
     }
 
     @Override
-    public void compileAsInstruction(ProgramOutput out) {
-        out.block(null);
-    }
-
-    @Override
     public void computeOffset(Delta lastDelta) {
         lastDelta.enterBlock();
         super.computeOffset(lastDelta);
         lastDelta.exitBlock();
+    }
+
+    @Override
+    public void compileAsInstruction(ProgramOutput out) {
+        out.block_loop(() -> {
+            this.cond.compileAsExpr(out);   // Cargamos en la cima de la pila la expresion
+            out.i32_eq_z();                 // if cond == 0 (true)
+            out.br_if(1);
+            for (Statement s : statements) {// Compilamos las intrucciones    
+                s.compileAsInstruction(out);
+            }
+            out.br(0);
+        });
     }
 }

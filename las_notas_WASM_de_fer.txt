@@ -1,0 +1,38 @@
+(func $reserveStack (param $size i32) (result i32)
+    get_global $MP
+        
+    (set_global $MP
+        (get_global $SP)) // MP = SP
+
+    (set_global $SP       // SP = SP + size
+        (i32.add
+            (get_global $SP)
+            (get_local $size)))     0 | | | | | | | | | | ->    <- | | | | | | | | | |
+
+    (i32.gt_u
+        (get_global $SP)
+        (get_global $NP)
+    if
+        i32.const 3
+        call $exception     ;; Lanzar excepcion con codigo 3
+    end
+)
+
+;; Post reserveStack
+
+(set_local $temp
+    (call $reserveStack));; TEMP = MP_old
+
+(i32.store
+    (get_global $MP)
+    (get_local $temp))   ;; MEM[MP] = TEMP = MP_OLD
+
+(i32.store offset=4      ;; MEM[MP + 4] = SP
+    (get_global $MP)
+    (get_global $SP))
+
+
+(set_local $localsStart
+    (i32.add
+        (get_global $MP)
+        (i32.const 8))) 

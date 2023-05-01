@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import ditto.ast.Delta;
+import ditto.ast.Identifier;
 import ditto.ast.CompilationProgress;
 import ditto.ast.Context;
 import ditto.ast.Node;
@@ -22,6 +23,7 @@ public class DefFunc extends Definition {
     private final List<Statement> body;
     private final Type result;
     private int size;
+    private String wasmString;
 
     private FuncType type;
 
@@ -29,12 +31,16 @@ public class DefFunc extends Definition {
         return params;
     }
 
-    public Type getResult() {
-        return result;
-    }
-
     public List<Statement> getBody() {
         return body;
+    }
+
+    public String getIden() {
+        return id;
+    }
+
+    public Type getResult() {
+        return result;
     }
 
     public int getSize() {
@@ -57,38 +63,6 @@ public class DefFunc extends Definition {
         type = new FuncType(result, paramTypes);
     }
 
-    public String getIden() {
-        return id;
-    }
-
-    @Override
-    public String getAstString() {
-        String output = "def-func";
-
-        if (this.getProgress().atLeast(CompilationProgress.FUNC_SIZE_AND_DELTAS))
-            output += String.format(" [size = %d]", this.size);
-
-        return output;
-    }
-
-    @Override
-    public List<Object> getAstArguments() {
-        return Arrays.asList(id, params, result, body);
-    }
-
-    public Type getType() {
-        return type;
-    }
-
-    @Override
-    public List<Node> getAstChildren() {
-        List<Node> children = new ArrayList<>();
-        children.addAll(params);
-        children.add(type);
-        children.addAll(body);
-        return children;
-    }
-
     static public class Param extends DefVar {
         private final boolean isRef;
 
@@ -106,8 +80,42 @@ public class DefFunc extends Definition {
         }
     }
 
+    public Type getType() {
+        return type;
+    }
+
+    @Override
+    public String getAstString() {
+        String output = "def-func";
+
+        if (this.getProgress().atLeast(CompilationProgress.FUNC_SIZE_AND_DELTAS))
+            output += String.format(" [size = %d]", this.size);
+
+        return output;
+    }
+
+    @Override
+    public List<Object> getAstArguments() {
+        return Arrays.asList(id, params, result, body);
+    }
+
+    public String getWasmString() {
+        return wasmString;
+    }
+
+    @Override
+    public List<Node> getAstChildren() {
+        List<Node> children = new ArrayList<>();
+        children.addAll(params);
+        children.add(type);
+        children.addAll(body);
+        return children;
+    }
+
     @Override
     public void bind(Context ctx) {
+        wasmString = ctx.getWASMString(new Identifier(this.id));
+
         /// Llama a bind de los hijos con nuevo contexto local
         ctx.add(this);
         ctx.pushScope();
@@ -152,6 +160,11 @@ public class DefFunc extends Definition {
 
     @Override
     public void compileAsInstruction(ProgramOutput out) {
-        throw new UnsupportedOperationException("Unimplemented method 'compileAsInstruction'");
+        out.func(this, () -> {
+            for (Statement stmt : body) {
+                stmt.compileAsInstruction(out);
+            }
+        });
     }
+
 }

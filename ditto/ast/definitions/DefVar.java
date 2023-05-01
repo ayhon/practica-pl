@@ -13,7 +13,6 @@ import ditto.ast.types.Type;
 import ditto.errors.TypeError;
 
 public class DefVar extends Definition {
-    private String iden;
     private Expr expr;
     private int position;
     private boolean isGlobal;
@@ -56,7 +55,7 @@ public class DefVar extends Definition {
     public List<Object> getAstArguments() {
         List<Object> args = new ArrayList<>();
         args.add(type);
-        args.add(iden);
+        args.add(this.getIden());
         if (this.expr != null)
             args.add(expr);
         return args;
@@ -70,14 +69,15 @@ public class DefVar extends Definition {
     public void bind(Context ctx) {
         super.bind(ctx);
         ctx.add(this);
-        isGlobal = ctx.isGlobal(this.iden);
+        isGlobal = ctx.isGlobal(this.getIden());
     }
 
     @Override
     public void typecheck() {
         super.typecheck();
         if (expr != null && !expr.type().equals(type))
-            throw new TypeError(String.format("Can't assign %s to variable %s of type %s", expr.type(), iden, type));
+            throw new TypeError(
+                    String.format("Can't assign %s to variable %s of type %s", expr.type(), this.getIden(), type));
         else if (expr != null)
             type = expr.type();
         // Así adivinamos la longitud del array, para)

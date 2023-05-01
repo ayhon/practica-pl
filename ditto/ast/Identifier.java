@@ -42,8 +42,4 @@ public class Identifier {
     public String toString() {
         return (module == null ? "" : module + "::") + name;
     }
-
-    public String WASMString() {
-        return (module == null ? "" : module + "__") + name;
-    }
 }

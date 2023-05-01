@@ -16,16 +16,20 @@ import ditto.errors.BindingError;
 
 public class Module extends Node {
     private final Map<String, DefModule> modules;
-    private final List<Definition> definitions;
+    private List<Definition> definitions;
     private final Scope globalScope = new Scope();
     private String name;
     private String classFolder;
     private int globalVarSize;
+    private final List<Node> astChildren = new ArrayList<>();
 
     public Module(List<DefModule> imports, List<Definition> definitions) {
         this.modules = Collections
                 .unmodifiableMap(imports.stream().collect(Collectors.toMap(DefModule::getIden, Function.identity())));
         this.definitions = definitions;
+
+        astChildren.addAll(this.modules.values());
+        astChildren.addAll(this.definitions);
         loadBuiltins();
     }
 
@@ -68,10 +72,7 @@ public class Module extends Node {
 
     @Override
     public List<Node> getAstChildren() {
-        List<Node> children = new ArrayList<Node>();
-        children.addAll(this.modules.values());
-        children.addAll(this.definitions);
-        return children;
+        return Collections.unmodifiableList(astChildren);
     }
 
     public void setClassFolder(String classFolder) {
@@ -97,7 +98,9 @@ public class Module extends Node {
 
     @Override
     public List<Object> getAstArguments() {
-        return Arrays.asList(modules, definitions);
+        List<Object> args = new ArrayList<>();
+        args.addAll(astChildren);
+        return args;
     }
 
     @Override
@@ -124,7 +127,36 @@ public class Module extends Node {
 
     public void computeOffset() {
         this.typecheck();
+
+        /// Para calcular el offset, necesito mover las funciones de modulos a mi modulo
+        /// actual, sino no podre calcular
+        /// el offset de las variables globales
+        moveGlobal();
         computeOffset(new Delta());
+    }
+
+    public void moveGlobal() {
+        /// Mover las funciones de los modulos a mi modulo actual
+        /// Esta llamada seria recursiva, porque los modulos tambien tienen que mover
+        /// las funciones de sus modulos
+        List<Definition> newDefinitions = new ArrayList<>();
+        for (DefModule mod : modules.values()) {
+            mod.getModule().moveGlobal();
+            for (Definition def : mod.getModule().getDefinitions()) {
+                def.addModuleToIden(mod.getIden());
+                newDefinitions.add(def);
+                this.globalScope.add(def);
+            }
+        }
+
+        newDefinitions.addAll(this.definitions);
+        this.definitions = newDefinitions;
+        this.astChildren.clear();
+        this.astChildren.addAll(this.definitions);
+    }
+
+    public List<Definition> getDefinitions() {
+        return definitions;
     }
 
     @Override

@@ -6,7 +6,6 @@ import java.util.List;
 import ditto.ast.CompilationProgress;
 import ditto.ast.Context;
 import ditto.ast.Delta;
-import ditto.ast.Identifier;
 import ditto.ast.Node;
 import ditto.ast.ProgramOutput;
 import ditto.ast.expressions.Expr;
@@ -14,14 +13,14 @@ import ditto.ast.types.Type;
 import ditto.errors.TypeError;
 
 public class DefVar extends Definition {
-    private final String iden;
+    private String iden;
     private Expr expr;
     private int position;
     private boolean isGlobal;
 
     public DefVar(Type type, String iden, Expr expr) {
         // Argumentos en este orden para representar como se escribe en el lenguaje
-        this.iden = iden;
+        super(iden);
         this.type = type;
         this.expr = expr;
     }
@@ -61,11 +60,6 @@ public class DefVar extends Definition {
         if (this.expr != null)
             args.add(expr);
         return args;
-    }
-
-    @Override
-    public String getIden() {
-        return iden;
     }
 
     public Type getType() {
@@ -115,7 +109,7 @@ public class DefVar extends Definition {
 
     @Override
     public void compileAsInstruction(ProgramOutput out) {
-        
+
     }
 
     public int getOffset() {

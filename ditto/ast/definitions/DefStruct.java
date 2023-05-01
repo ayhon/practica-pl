@@ -20,13 +20,12 @@ import ditto.ast.types.StructType;
 import ditto.ast.types.Type;
 
 public class DefStruct extends Definition {
-    private final String name;
     private final Map<String, DefVar> attributes;
     private final Map<String, DefFunc> methods;
     private StructType type;
 
     public DefStruct(String name, List<Definition> definitions) {
-        this.name = name;
+        super(name);
         this.attributes = definitions.stream().filter(def -> def instanceof DefVar).map(def -> (DefVar) def)
                 .collect(Collectors.toMap(DefVar::getIden, Function.identity()));
 
@@ -58,7 +57,7 @@ public class DefStruct extends Definition {
     }
 
     public int getOffset(String name) {
-        //Devolvemos el offset(delta) del campo
+        // Devolvemos el offset(delta) del campo
         return this.attributes.get(name).getOffset();
     }
 
@@ -93,11 +92,7 @@ public class DefStruct extends Definition {
 
     @Override
     public List<Object> getAstArguments() {
-        return Arrays.asList(name, attributes, methods);
-    }
-
-    public String getIden() {
-        return this.name;
+        return Arrays.asList(this.getIden(), attributes, methods);
     }
 
     @Override

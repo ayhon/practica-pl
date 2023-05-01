@@ -71,6 +71,10 @@ public class Test {
                                 watFile.getName()));
                     }
                 }
+                default -> {
+                    System.out.println("Invalid task: " + task);
+                    return;
+                }
             }
             if (printAST) {
                 System.out.println(main);

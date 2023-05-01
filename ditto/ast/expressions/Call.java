@@ -97,7 +97,7 @@ public class Call extends Expr {
         out.postReserveStack();
 
         /// Llamar a la funcion desde WASM
-        out.call(this.funcDef.getWasmString());
+        out.call(this.funcDef.getIden());
 
         /// Liberar la memoria reservada
         out.freeStack();

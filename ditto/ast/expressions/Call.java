@@ -90,8 +90,7 @@ public class Call extends Expr {
         if (!(def instanceof DefFunc)) {
             throw new TypeError(String.format("'%s' points to '%s' which is not a function", this.func, def));
         }
-
-        System.out.println("DefFunc: " + def);
+        
         funcDef = (DefFunc) def;
     }
 

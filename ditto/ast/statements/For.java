@@ -82,7 +82,13 @@ public class For extends Statement {
     }
 
     @Override
+    public String toString() {
+        return "For(" + index.decompile() + " = " + from.decompile() + " to " + to.decompile() + " by " + by.decompile() + ")";
+    }
+
+    @Override
     public void compileAsInstruction(ProgramOutput out) {
+        out.comment("INSTRUCTION: " + this.decompile());
         int start = from.evalIntAtCompileTime();
         int stop  = to.evalIntAtCompileTime();
         int step  = by.evalIntAtCompileTime();

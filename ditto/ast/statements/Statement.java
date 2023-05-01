@@ -13,6 +13,9 @@ public abstract class Statement extends Node {
 
     @Override
     public void compile(ProgramOutput out) {
+        // out.comment("INSTRUCCION: " + decompile());
         compileAsInstruction(out);
     }
+
+    public String decompile(){ return getAstString(); }
 }

@@ -53,7 +53,13 @@ public class Assign extends Statement {
     }
 
     @Override
+    public String decompile(){
+        return place.decompile() + " := " + expr.decompile();
+    }
+
+    @Override
     public void compileAsInstruction(ProgramOutput out) {
+        out.comment("INSTRUCTION: " + this.decompile());
         place.compileAsDesig(out);
         expr.compileAsExpr(out);
         out.i32_store();

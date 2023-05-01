@@ -114,13 +114,18 @@ public class DefFunc extends Definition {
     public void typecheck() {
         super.typecheck();
         Type expected = type.getReturnType();
+        boolean hasReturn = false;
         for (Statement stmt : body) {
             if (stmt instanceof Return) {
+                hasReturn = true;
                 Type actual = ((Return) stmt).getExpr().type();
                 if (!actual.equals(expected)) {
                     throw new TypeError("Can't return " + actual + " in a function that returns " + expected);
                 }
             }
+        }
+        if (hasReturn && expected.equals(VoidType.getInstance())) {
+            throw new TypeError("Function " + getIden() + " must return " + expected);
         }
     }
 

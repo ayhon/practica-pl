@@ -110,11 +110,17 @@ public class DefVar extends Definition {
     @Override
     public void compileAsInstruction(ProgramOutput out) {
         // Es como una asignación de valores por defecto
+        out.comment("INSTRUCCION: " + decompile());
         out.mem_location(this);
         expr.compileAsExpr(out);
         // TODO: Esto no es correcto si la expresión
         // tiene más de un tipo
         out.i32_store();
+    }
+
+    @Override
+    public String decompile(){
+        return getIden() + "[delta=" + getOffset() + "] := " + expr.decompile();
     }
 
     public int getOffset() {

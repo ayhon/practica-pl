@@ -97,7 +97,14 @@ public class If extends Statement {
     }
 
     @Override
+    public String decompile(){
+        return String.format("if (%s) { then } else { else }", cond.decompile());
+    }
+
+
+    @Override
     public void compileAsInstruction(ProgramOutput out) {
+        out.comment("INSTRUCTION: " + this.decompile());
         cond.compileAsExpr(out);
         out.if_else(
             () -> {

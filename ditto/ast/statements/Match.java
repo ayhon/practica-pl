@@ -81,6 +81,11 @@ public class Match extends Statement {
         }
 
         @Override
+        public String decompile(){
+            return String.format("case %s:  body", expr.decompile());
+        }
+        
+        @Override
         public void compileAsInstruction(ProgramOutput out) {
             this.expr.compileAsInstruction(out);
         }
@@ -122,8 +127,18 @@ public class Match extends Statement {
         }
     }
 
+    @Override 
+    public String decompile(){
+        String res = String.format("match %s: \n", expr.decompile());
+        for(Case c : this.cases){
+            res += c.decompile();
+        }
+        return res;
+    }
+
     @Override
     public void compileAsInstruction(ProgramOutput out) {
+        out.comment("INSTRUCTION: " + this.decompile());
         expr.compileAsExpr(out);
 
         // Comienzo de los bloques

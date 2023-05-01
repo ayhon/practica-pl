@@ -96,6 +96,11 @@ public class Call extends Expr {
     }
 
     @Override
+    public String decompile() {
+        return String.format("%s(%s)", func.decompile(), String.join(", ", args.stream().map(Expr::decompile).toArray(String[]::new)));
+    }
+
+    @Override
     public void compileAsExpr(ProgramOutput out) {
         /// Reservar la memoria para los argumentos + variables locales + MP + SP
         int stackSize = this.funcDef.getSize() + (2 * 4);

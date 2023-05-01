@@ -62,7 +62,13 @@ public class While extends Statement {
     }
 
     @Override
+    public String decompile(){
+        return String.format("while %s do body end", cond.decompile());
+    }
+
+    @Override
     public void compileAsInstruction(ProgramOutput out) {
+        out.comment("INSTRUCTION: " + this.decompile());
         out.block_loop(() -> {
             this.cond.compileAsExpr(out);   // Cargamos en la cima de la pila la expresion
             out.i32_eq_z();                 // if cond == 0 (true)

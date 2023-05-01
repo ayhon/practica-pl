@@ -52,6 +52,15 @@ public class StructLiteral extends Literal {
     }
 
     @Override
+    public String decompile() {
+        return iden.toString() + " { " + fieldValues.entrySet()
+            .stream()
+            .map(entry -> entry.getKey() + ": " + entry.getValue().decompile())
+            .reduce("", (a, b) -> b + ", " + a)
+                + " }";
+    }
+
+    @Override
     public void compileAsExpr(ProgramOutput out) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'compileAsExpr'");

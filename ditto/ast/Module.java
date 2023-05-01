@@ -39,15 +39,14 @@ public class Module extends Node {
                 new DefFunc(
                         "scan",
                         Arrays.asList(new DefFunc.Param(IntegerType.getInstance(), "dest", true)),
-                        new ArrayList<>()));
+                        IntegerType.getInstance()));
 
         /// print recibe un entero y devuelve un entero
         this.globalScope.add(
                 new DefFunc(
                         "print",
                         Arrays.asList(new DefFunc.Param(IntegerType.getInstance(), "src", false)),
-                        IntegerType.getInstance(),
-                        new ArrayList<>()));
+                        VoidType.getInstance()));
     }
 
     public Definition getDefinition(Identifier iden) {

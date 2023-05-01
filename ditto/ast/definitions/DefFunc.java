@@ -21,6 +21,7 @@ public class DefFunc extends Definition {
     private final List<Statement> body;
     private final Type result;
     private int size;
+    private Boolean external = false;
 
     private FuncType type;
 
@@ -38,6 +39,11 @@ public class DefFunc extends Definition {
 
     public int getSize() {
         return size;
+    }
+
+    public DefFunc(String id, List<Param> params, Type result) {
+        this(id, params, result, new ArrayList<Statement>());
+        this.external = true;
     }
 
     public DefFunc(String id, List<Param> params, List<Statement> body) {
@@ -75,6 +81,10 @@ public class DefFunc extends Definition {
 
     public Type getType() {
         return type;
+    }
+
+    public Boolean isExternal() {
+        return external;
     }
 
     @Override

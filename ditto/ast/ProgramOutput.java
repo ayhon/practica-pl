@@ -60,7 +60,7 @@ public class ProgramOutput {
         buf.add("(module");
         buf.add("""
                 (import "runtime" "print" (func $print (param i32)))
-                (import "runtime" "scan" (func $read (result i32)))""");
+                (import "runtime" "scan" (func $scan (result i32)))""");
         buf.add("""
                 (import "runtime" "exceptionHandler" (func $exception (type $_sig_i32)))""");
         buf.add(String.format("(memory %d)", memory_size));

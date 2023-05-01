@@ -181,6 +181,10 @@ public class OperBin extends Expr {
         }
     }
 
+    public String decompile() {
+        return String.format("(%s %s %s)", left.decompile(), op.toString(), right.decompile());
+    }
+
     @Override
     public Integer evalIntAtCompileTime() {
         Integer left = this.left.evalIntAtCompileTime();

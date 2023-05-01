@@ -60,6 +60,11 @@ public class Name extends Designator {
     }
 
     @Override
+    public String decompile() {
+        return String.format("%s", iden);
+    }
+
+    @Override
     public void compileAsDesig(ProgramOutput out) {
         if (definition instanceof DefVar) {
             DefVar defVar = (DefVar) definition;

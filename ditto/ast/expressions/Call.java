@@ -95,6 +95,11 @@ public class Call extends Expr {
     }
 
     @Override
+    public String decompile() {
+        return String.format("%s(%s)", func.decompile(), String.join(", ", args.stream().map(Expr::decompile).toArray(String[]::new)));
+    }
+
+    @Override
     public void compileAsExpr(ProgramOutput out) {
         /// Si son funciones scan y print, tratarlos diferente porque no hacen falta
         /// reserverStack ni freeStack

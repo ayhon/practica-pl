@@ -5,8 +5,6 @@ import java.util.List;
 
 import ditto.ast.Node;
 import ditto.ast.ProgramOutput;
-import ditto.ast.definitions.DefVar;
-import ditto.ast.designators.Name;
 import ditto.ast.types.ArrayType;
 import ditto.ast.types.BoolType;
 import ditto.ast.types.IntegerType;
@@ -135,6 +133,11 @@ public class OperUn extends Expr {
         }
 
         return this.type;
+    }
+
+    @Override
+    public String decompile() {
+        return String.format("%s %s", this.op, this.expr.decompile());
     }
 
     @Override

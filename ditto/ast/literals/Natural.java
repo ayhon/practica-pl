@@ -40,6 +40,11 @@ public class Natural extends Literal {
     }
 
     @Override
+    public String decompile() {
+        return Integer.toString(this.value);
+    }
+
+    @Override
     public void compileAsExpr(ProgramOutput out) {
         out.i32_const(this.value);
     }

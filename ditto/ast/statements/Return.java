@@ -46,7 +46,13 @@ public class Return extends Statement {
     }
 
     @Override
+    public String decompile(){
+        return String.format("return %s;", expr != null ? expr.decompile() : "");
+    }
+
+    @Override
     public void compileAsInstruction(ProgramOutput out) {
+        out.comment("INSTRUCTION: " + this.decompile());
         expr.compileAsExpr(out);
         // Dejarlo en la cima de la pila para que el llamador lo saque
     }

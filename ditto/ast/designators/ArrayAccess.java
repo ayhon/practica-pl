@@ -59,6 +59,11 @@ public class ArrayAccess extends Designator {
     }
 
     @Override
+    public String decompile() {
+        return String.format("%s[%s]", array.decompile(), index.decompile());
+    }
+
+    @Override
     public void compileAsDesig(ProgramOutput out) {
         ArrayType type = (ArrayType) array.type();
         int elemSize = type.getElementType().size();    /// ya tiene en cuenta 4 *

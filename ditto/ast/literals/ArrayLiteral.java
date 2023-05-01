@@ -88,6 +88,11 @@ public class ArrayLiteral extends Literal {
     }
 
     @Override
+    public String decompile() {
+        return "[" + elements.stream().map(Expr::decompile).reduce("", (a, b) -> a + ", " + b) + "]";
+    }
+
+    @Override
     public void compileAsExpr(ProgramOutput out) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'compileAsExpr'");

@@ -10,6 +10,7 @@ public abstract class Expr extends Statement {
 
     @Override
     public void compileAsInstruction(ProgramOutput out) {
+        out.comment("INSTRUCTION: " + this.decompile());
         compileAsExpr(out);
 
         /// Si no es de tipo void, hacer drop de sus resultados

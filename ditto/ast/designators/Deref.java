@@ -45,6 +45,11 @@ public class Deref extends Designator {
     }
 
     @Override
+    public String decompile() {
+        return String.format("ptr %s", pointer.decompile());
+    }
+
+    @Override
     public void compileAsDesig(ProgramOutput out) {
         pointer.compileAsDesig(out);
         out.i32_load();

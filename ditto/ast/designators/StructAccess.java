@@ -74,6 +74,11 @@ public class StructAccess extends Designator {
     }
 
     @Override
+    public String decompile() {
+        return String.format("%s.%s", struct.decompile(), name);
+    }
+
+    @Override
     public void compileAsDesig(ProgramOutput out) {
         // 1) Calculamos la direccion del designador
         // 2) Cargamos el offset del campo

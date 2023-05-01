@@ -143,7 +143,6 @@ public class Module extends Node {
         for (DefModule mod : modules.values()) {
             mod.getModule().moveGlobal();
             for (Definition def : mod.getModule().getDefinitions()) {
-                def.addModuleToIden(mod.getIden());
                 newDefinitions.add(def);
                 this.globalScope.add(def);
             }

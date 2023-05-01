@@ -103,8 +103,9 @@ public class OperUn extends Expr {
             throw new TypeError(String.format("No se puede aplicar el operador '%s' a una expresión de tipo '%s'",
                     this.op, this.expr.type()));
         }
-        if(this.op == Operators.REF && !(this.expr instanceof Designator)){
-            throw new TypeError(String.format("No se puede aplicar el operador '%s' a una expresión que no sea un designator", this.op));
+        if (this.op == Operators.REF && !(this.expr instanceof Designator)) {
+            throw new TypeError(String
+                    .format("No se puede aplicar el operador '%s' a una expresión que no sea un designator", this.op));
         }
         this.type = computeType();
     }
@@ -139,35 +140,36 @@ public class OperUn extends Expr {
     @Override
     public void compileAsExpr(ProgramOutput out) {
         switch (this.op) {
-            case NOT:
+            case NOT -> {
                 // Se da con expresion `not x`,
                 out.i32_const(1);
                 expr.compileAsExpr(out);
                 out.i32_xor();
-                break;
-            case NEG:
+            }
+            case NEG -> {
                 // Se da con expresion `-x`,
                 expr.compileAsExpr(out);
                 out.i32_const(0);
                 out.i32_sub();
-                break;
-            case POS:
+            }
+            case POS -> {
                 // Se da con expresion `+x`,
                 expr.compileAsExpr(out);
-                break;
-            case REF:
+            }
+            case REF -> {
                 // Se da con expresion `ptr x`,
-                //Cargamos la direccion de x y la dejamos en el tope de la pila
+                // Cargamos la direccion de x y la dejamos en el tope de la pila
                 ((Designator) expr).compileAsDesig(out);
-                break;
-            case LEN:
+            }
+            case LEN -> {
                 // El tamaño de un array se guarda dereferenciando el array, en su primera
-                // posición
-                expr.compileAsExpr(out);    // Deja en el tope de la pila la dirección del array
-                out.i32_load();             //Cargamos la primera posicion del array(la que contiene su tamaño)
-                break;
-            default:
+                // posición #a
+                out.i32_const(
+                        ((ArrayType) expr.type()).getLength());
+            }
+            default -> {
                 throw new IllegalArgumentException("Invalid operator '" + op + "'");
+            }
         }
     }
 

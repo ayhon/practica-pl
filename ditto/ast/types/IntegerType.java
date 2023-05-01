@@ -33,6 +33,6 @@ public class IntegerType extends Type {
 
     @Override
     public int size() {
-        return 1; /// Cada int ocupa un espacio en memoria de 4 bytes
+        return 4; /// Cada int ocupa un espacio en memoria de 4 bytes
     }
 }

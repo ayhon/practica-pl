@@ -2,15 +2,19 @@ package ditto.ast;
 
 import ditto.ast.definitions.DefFunc;
 import ditto.ast.definitions.DefVar;
-import ditto.ast.types.VoidType;
+import ditto.errors.SemanticError;
 
 public class ProgramOutput {
     /// Clase que va encadenando las instrucciones de salida
     private final StringBuilder sb = new StringBuilder();
     private final int memory_size;
     private int indent_level = 0;
+    private boolean has_start = false;
 
     public final static String LOCAL_START = "localsStart";
+    public final static String RESERVE_STACK = "reserveStack";
+    public final static String FREE_STACK = "freeStack";
+
     private final String FUNC_SIG = "_sig_func";
     private final int INDENT_WIDTH = 2;
 
@@ -47,6 +51,7 @@ public class ProgramOutput {
         // pasamos los argumentos y valores de retorno por memoria
         f.append("(import \"runtime\" \"print\" (func $print (type $_sig_i32)))");
         f.append("(import \"runtime\" \"scan\" (func $scan (type $_sig_ri32)))");
+        loadBuiltins(f);
         f.append(sb.toString());
         f.append("(export \"memory\" (memory 0))"); // For debugging purposes
         f.append(")");
@@ -54,11 +59,7 @@ public class ProgramOutput {
         return sb.toString();
     }
 
-    public void comment(String comment) {
-        append(";; %s", comment);
-    }
-
-    public void reserveStack() {
+    public void loadBuiltins(StringBuilder sb) {
         /**
          * Funcion que reserva espacio en la pila
          * Pasa por parametro de WASM el tamaño que se quiere reservar
@@ -71,31 +72,81 @@ public class ProgramOutput {
          * NP: Puntero que apunta a la cota inferior de zona de heap (porque crece hacia
          * abajo)
          */
-        append("""
-                (func $reserveStack (param $size i32) (result i32)
-                    get_global $MP          ;; Para devolver al final
+        sb.append(
+                """
+                        (func $reserveStack (param $size i32) (result i32)
+                            get_global $MP          ;; Para devolver al final
 
-                        get_global $SP
-                    set_global $MP          ;; Ahora MP vale SP (Cota superior de la zona de memoria reservada en Stack anterior = Inicio de la zona de memoria reservada en Stack actual)
+                                get_global $SP
+                            set_global $MP          ;; Ahora MP vale SP (Cota superior de la zona de memoria reservada en Stack anterior = Inicio de la zona de memoria reservada en Stack actual)
 
-                            get_global $SP
-                            get_local $size
-                        i32.add
-                    set_global $SP          ;; Nuevo SP = SP anterior + size que reservamos ahora
+                                    get_global $SP
+                                    get_local $size
+                                i32.add
+                            set_global $SP          ;; Nuevo SP = SP anterior + size que reservamos ahora
 
-                        get_global $SP
-                        get_global $NP      ;; Obtener el valor de NP
-                    i32.gt_u                ;; Si resulta que SP > NP, entonces hay overflow
+                                get_global $SP
+                                get_global $NP      ;; Obtener el valor de NP
+                            i32.gt_u                ;; Si resulta que SP > NP, entonces hay overflow
 
+                            if
+                                i32.const 3
+                                call $exception     ;; Lanzar excepcion con codigo 3
+                            end
+                        )
+                        """);
+        /**
+         * Funcion que libera espacio en la pila
+         * Hay que tener en la cima el valor del MP antiguo (el que queremos restaurar)
+         * MP' SP'
+         * MP SP | |
+         * ↓ ↓ ↓ ↓
+         * |SP| | | | | | | | | |SP|MP| | | | | | |
+         */
+        sb.append("""
+                (func $freeStack (type $_sig_void) ;;
+                                get_global $MP
+                            i32.load            ;; a la casila MEM[MP] (contiene MP antiguo)
+                        i32.load offset=4       ;; a la casilla MEM[MP_ANTIGUO + 4] (contiene SP antiguo)
+                    set_global $SP              ;; SP = SP antiguo
+
+                            get_global $MP
+                        i32.load
+                    set_global $MP
+                )
+                """);
+        /**
+         * Función que reserva memoria en el heap. Recibe por parámetro el tamaño que se
+         * quiere reservar. Devuelve la dirección de memoria donde se ha reservado el
+         * espacio.
+         */
+        sb.append("""
+                (func $reserveHeapSpace (param $size i32) (result i32)
+                    get_local $size
+                    get_global $NP
+                    i32.sub
+                    set_global $NP  ;; NP = NP - size
+                    get_global $SP
+                    get_global $NP  ;; Comprobamos que no haya overflow
+                    i32.gt_u
                     if
-                        i32.const 3
-                        call $exception     ;; Lanzar excepcion con codigo 3
+                    i32.const 3
+                    call $exception
                     end
                 )
                 """);
     }
 
-    public void postReserveStack() {
+    public void comment(String comment) {
+        append(";; %s", comment);
+    }
+
+    public void reserveStack() {
+        call(RESERVE_STACK);
+        postReserveStack();
+    }
+
+    private void postReserveStack() {
         /**
          * MEM[MP] = MP antiguo
          * MEM[MP+4]= SP actual
@@ -122,57 +173,17 @@ public class ProgramOutput {
     }
 
     public void freeStack() {
-        /**
-         * Funcion que libera espacio en la pila
-         * Hay que tener en la cima el valor del MP antiguo (el que queremos restaurar)
-         * MP' SP'
-         * MP SP | |
-         * ↓ ↓ ↓ ↓
-         * |SP| | | | | | | | | |SP|MP| | | | | | |
-         */
-
-        append("""
-                (func $freeStack (type $_sig_void) ;;
-                                get_global $MP
-                            i32.load            ;; a la casila MEM[MP] (contiene MP antiguo)
-                        i32.load offset=4       ;; a la casilla MEM[MP_ANTIGUO + 4] (contiene SP antiguo)
-                    set_global $SP              ;; SP = SP antiguo
-
-                            get_global $MP
-                        i32.load
-                    set_global $MP
-                )
-                """); /**
-                       * MEM[MEM[$MP] + 4] = SP antiguo
-                       * MEM[$MP] = MP antiguo
-                       */
+        call("freeStack");
     }
 
     public void reserveHeapSpace() {
-        /*
-         * Función que reserva memoria en el heap. Recibe por parámetro el tamaño que se
-         * quiere reservar. Devuelve la dirección de memoria donde se ha reservado el
-         * espacio.
-         */
-        append("""
-                (func $reserveHeapSpace (param $size i32) (result i32)
-                    get_local $size
-                    get_global $NP
-                    i32.sub
-                    set_global $NP  ;; NP = NP - size
-                    get_global $SP
-                    get_global $NP  ;; Comprobamos que no haya overflow
-                    i32.gt_u
-                    if
-                    i32.const 3
-                    call $exception
-                    end
-                )
-                """);
+        call("reserveHeapSpace");
     }
 
-    public void inStart(Runnable runnable){
-        append("(func $inStart (type $_sig_void)");
+    public void inStart(Runnable runnable) {
+        if (has_start)
+            throw new SemanticError("Can't have more than one start of the program");
+        append("(func $start (type $_sig_void)");
         runnable.run();
         call("main"); // TODO: Encontrar el main actual
         append(")");
@@ -196,7 +207,7 @@ public class ProgramOutput {
     public void duplicate() {
         tee_local("temp");
         get_local("temp");
-	}
+    }
 
     /* i32 MEMORY OPERATIONS */
     public void i32_load() {
@@ -232,7 +243,6 @@ public class ProgramOutput {
         append("i32.sub");
     }
 
-
     public void i32_mul() {
         append("i32.mul");
     }
@@ -244,7 +254,6 @@ public class ProgramOutput {
     public void i32_rem_s() {
         append("i32.rem_s");
     }
-
 
     public void i32_eq() {
         append("i32.eq");
@@ -287,14 +296,18 @@ public class ProgramOutput {
     }
 
     /* MEMORY LOCALS */
-    public void mem_location(DefVar var){
-        if(var.isGlobal()){
+    public void mem_location(DefVar var) {
+        if (var.isGlobal()) {
             i32_const(var.getOffset());
         } else {
-            get_local(ProgramOutput.LOCAL_START); 
-            i32_const(var.getOffset());
-            i32_add();
+            mem_local(var.getOffset());
         }
+    }
+
+    public void mem_local(int offset) {
+        get_local(ProgramOutput.LOCAL_START);
+        i32_const(offset);
+        i32_add();
     }
 
     /* LOCALS */
@@ -382,6 +395,9 @@ public class ProgramOutput {
         append("end");
     }
 
+    public void blocks(int n, Runnable runnable) {
+    }
+
     public void loop(Runnable runnable) {
         append("loop");
         indent();
@@ -419,7 +435,7 @@ public class ProgramOutput {
         append("end");
     }
 
-    public void if_(Runnable then){
+    public void if_(Runnable then) {
         append("if");
         indent();
         then.run();
@@ -436,7 +452,7 @@ public class ProgramOutput {
         dedent();
     }
 
-    //Solo usar estos dos metodos en el match
+    // Solo usar estos dos metodos en el match
     public void block() {
         append("block");
         indent();

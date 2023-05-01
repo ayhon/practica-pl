@@ -34,6 +34,10 @@ public class FuncType extends Type {
         return returnType;
     }
 
+    public int getNumberArgs(){
+        return argumentTypes.size();
+    }
+
     @Override
     public String toString() {
         return String.format("Func(%s) -> %s", argumentTypes, returnType);

@@ -62,7 +62,12 @@ public class Call extends Expr {
         if (!(this.func.type() instanceof FuncType)) {
             throw new TypeError(String.format("'%s' is not a function", this.func));
         }
-        this.type = ((FuncType) this.func.type()).getReturnType();
+        FuncType funcType = (FuncType) this.func.type();
+        int expected_args = funcType.getNumberArgs();
+        if (expected_args != args.size())
+            throw new TypeError(String.format("'%s' expects %d arguments, but %d were given", this.func, expected_args,
+                    args.size()));
+        this.type = funcType.getReturnType();
         loadFunctionDefinition();
     }
 
@@ -89,12 +94,22 @@ public class Call extends Expr {
     @Override
     public void compileAsExpr(ProgramOutput out) {
         /// Reservar la memoria para los argumentos + variables locales + MP + SP
-        int stackSize = 4 * (this.funcDef.getSize() + 2);
+        int stackSize = this.funcDef.getSize() + (2 * 4);
         out.i32_const(stackSize);
         out.reserveStack();
 
-        /// Guardar MP y SP y actualizar $localsStart
-        out.postReserveStack();
+        /// Copiar los argumentos a LOCALS_START ...
+        for (int i = 0; i < this.args.size(); ++i) {
+            var expr = this.args.get(i);
+            var param = this.funcDef.getParams().get(i);
+            /// Guardar este resultado en LOCALS_START + 4 * i
+            /// Calcular primero la direccion
+            out.mem_local(param.getOffset());
+            /// Calcular el valor
+            expr.compileAsExpr(out);
+            /// Guardar el resultado en la direccion
+            out.i32_store();
+        }
 
         /// Llamar a la funcion desde WASM
         out.call(this.funcDef.getIden());

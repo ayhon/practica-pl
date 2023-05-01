@@ -2,8 +2,6 @@ package ditto.ast.statements;
 
 import java.util.List;
 
-import javax.swing.text.html.HTMLDocument.HTMLReader.BlockAction;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -80,12 +78,6 @@ public class Match extends Statement {
             delta.enterBlock();
             super.computeOffset(delta);
             delta.exitBlock();
-        }
-
-        @Override
-        public void compile(ProgramOutput out) {
-            // TODO Auto-generated method stub
-            throw new UnsupportedOperationException("Unimplemented method 'compile'");
         }
 
         @Override

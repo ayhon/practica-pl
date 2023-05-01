@@ -60,12 +60,13 @@ public class ArrayAccess extends Designator {
 
     @Override
     public void compileAsDesig(ProgramOutput out) {
-        /*
-        Nuestros arrays tienen el siguiente formato binario
-           
-           |size|  elem_1  |  elem_2  |  elem_3  | ... |  elem_n  |
-        
-        */
-    }
+        ArrayType type = (ArrayType) array.type();
+        int elemSize = type.getElementType().size();    /// ya tiene en cuenta 4 *
 
+        out.i32_const(elemSize);       
+        index.compileAsExpr(out);
+        out.i32_mul();             // index * elemSize
+        array.compileAsDesig(out); // base_array
+        out.i32_add();             // base_array + index * elemSize
+    }
 }

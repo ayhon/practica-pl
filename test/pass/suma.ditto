@@ -1,0 +1,6 @@
+func main()
+    int a := scan();
+    int b := scan();
+    int c := a + b;
+    print(c);
+end

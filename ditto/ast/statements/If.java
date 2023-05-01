@@ -94,32 +94,22 @@ public class If extends Statement {
             s.computeOffset(delta);
         }
         delta.exitBlock();
-
-        /**
-         * nextOffset offsetSize
-         * 0 0
-         * int a; delta=0 1 1
-         * if cond then (1) 1 1
-         * int b; delta=1 2 2
-         * if cond2 then (2) 2 2
-         * int c; delta=2 3 3
-         * end 2 3
-         * int d; delta=2 3 3
-         * end
-         */
     }
 
     @Override
     public void compileAsInstruction(ProgramOutput out) {
         cond.compileAsExpr(out);
-        out._if();
-        for (Statement s : then) {
-            s.compileAsInstruction(out);
-        }
-        out._else();
-        for (Statement s : els) {
-            s.compileAsInstruction(out);
-        }
-        out._end();
+        out.if_else(
+            () -> {
+                for (Statement s : then) {
+                    s.compileAsInstruction(out);
+                }
+            },
+            () -> {
+                for (Statement s : els) {
+                    s.compileAsInstruction(out);
+                }
+            }
+        );
     }
 }

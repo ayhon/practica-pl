@@ -60,8 +60,12 @@ public class ArrayAccess extends Designator {
 
     @Override
     public void compileAsDesig(ProgramOutput out) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'compileAsDesig'");
+        /*
+        Nuestros arrays tienen el siguiente formato binario
+           
+           |size|  elem_1  |  elem_2  |  elem_3  | ... |  elem_n  |
+        
+        */
     }
 
 }

@@ -31,9 +31,9 @@ public class Context {
 
     public void add(Definition var) {
         Scope actualScope = scopes.get(scopes.size() - 1);
-        if(actualScope.contains(var.getIden()))
+        if (actualScope.contains(var.getIden()))
             throw new BindingError("Definition " + var.getIden() + " already defined in this scope: " + actualScope);
-            
+
         scopes.get(scopes.size() - 1).add(var);
     }
 
@@ -52,4 +52,19 @@ public class Context {
             return get(iden.getName());
         }
     }
+
+    public String getWASMString(Identifier iden) {
+        return this.module.getName() + "_" + iden.WASMString();
+    }
+
+    public boolean isGlobal(String name) {
+        if(iden.hasModule()) {
+            /// Una variable global del otro modulo es global
+            /// No se pueden exportar variables locales
+            return true;
+        }
+        /// Sino, tiene que ser nuestro variable global
+        return this.scopes.get(0).contains(name);
+    }
 }
+

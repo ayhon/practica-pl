@@ -8,11 +8,25 @@
 </head>
 <body>
     <!--  Selects a wasm file from current directory  -->
-    <input type="file" id="wasm-file" accept=".wasm">
-    <button id="load-wasm">Load WASM</button>
+    <h1 id="curr-file">  </h1>
+    <div class="main">
+        <label for="wasm-file" class="button">
+            Select WASM file
+        </label>
+        <input type="file" id="wasm-file" accept=".wasm">
+        <button class="button" id="load-wasm" disabled>Execute</button>
+    </div>
+    <div id="memory"></div>
+    <p id="author">Created by <a href="https://github.com/ayhon">ayhon</a> and <a href="https://chat.openai.com/">ChatGPT</a></p>
     <script>
+        const currFile = document.getElementById('curr-file');
         const loadWasm = document.getElementById('load-wasm');
         const wasmFile = document.getElementById('wasm-file');
+        loadWasm.disabled = true;
+        wasmFile.addEventListener('change', () => {
+            currFile.innerHTML = wasmFile.files[0].name;
+            loadWasm.disabled = false;
+        });
         loadWasm.addEventListener('click', () => {
             var importObjects = {
                 runtime: {
@@ -30,25 +44,118 @@
                         throw new Error(errStr);
                     },
                     print: function (n) {
-                        console.log(n);
+                        alert(n);
                     },
                     scan: function () {
-                        let num_str = window.prompt("Enter a number");
+                        let num_str = window.prompt("Enter a number", "0");
                         let val = parseInt(num_str);
                         return val;
                     }
                 }
             };
-
             const reader = new FileReader();
-            console.debug(wasmFile.files)
             reader.readAsArrayBuffer(wasmFile.files[0]);
-            console.debug(reader.result)
             reader.addEventListener('load', async () => {
                 const wasmModule = await WebAssembly.compile(reader.result);
                 const instance = await WebAssembly.instantiate(wasmModule, importObjects);
+                // Show the contents of the WASM memory in the DOM
+                // Only the first 500 bytes
+                const memory = new Uint8Array(instance.exports.memory.buffer, 0, 500);
+                const memoryEl = document.getElementById('memory');
+                // Add each byte of memory to a div with clas "memory-cell" and append to memoryEl
+                var i = 0;
+                // Clear the children from memoryEl
+                memoryEl.innerHTML = '';
+                memory.forEach((byte) => {
+                    const cell = document.createElement('div');
+                    cell.classList.add('memory-cell');
+                    // When you hover over cell, it shows the value of `i`
+                    cell.title = 4*i;
+                    cell.innerText = byte;
+                    memoryEl.appendChild(cell);
+                    i++;
+                });
             });          
         });
     </script>
+    <style>
+        .custom-file-upload {
+            border: 1px solid #444;
+            display: inline-block;
+            padding: 6px 12px;
+            cursor: pointer;
+        }
+        .main {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: center;
+        }
+        input[type="file"] {
+            display: none;
+        }
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #222;
+            color: #fff;
+        }
+        .button {
+            padding: 10px 20px;
+            border-radius: 5px;
+            background-color: #fff;
+            border: none;
+            color: #000;
+            font-weight: bolder;
+            font-family: 'Courier New', Courier, monospace;
+            cursor: pointer;
+            margin: 10px;
+        }
+        /* Positoin #author in the bottom right corner */
+        #author {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            margin: 10px;
+            color: #555;
+        }
+        a {
+            color: #89762d;
+            /* Remove underline */
+            text-decoration: none;
+        }
+        #memory {
+            display: flex;
+            flex-direction: row;
+            flex-wrap: wrap;
+            width: 100%;
+            max-width: 1000px;
+            color: #757575;
+        }
+        #memory div {
+            width: 20px;
+            height: 20px;
+            border: 1px solid #757575;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        #memory div:hover {
+            border: 1px solid #fcd63d;
+        }
+        #load-wasm {
+            background-color: #fcd63d;
+        }
+        #load-wasm:disabled {
+            background-color: #666;
+        }
+        #curr-file {
+            font-family: 'Courier New', Courier, monospace;
+        }
+    </style>
 </body>
 </html>

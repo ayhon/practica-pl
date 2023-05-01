@@ -39,15 +39,14 @@ public class Module extends Node {
                 new DefFunc(
                         "scan",
                         Arrays.asList(new DefFunc.Param(IntegerType.getInstance(), "dest", true)),
-                        new ArrayList<>()));
+                        IntegerType.getInstance()));
 
         /// print recibe un entero y devuelve un entero
         this.globalScope.add(
                 new DefFunc(
                         "print",
                         Arrays.asList(new DefFunc.Param(IntegerType.getInstance(), "src", false)),
-                        IntegerType.getInstance(),
-                        new ArrayList<>()));
+                        VoidType.getInstance()));
     }
 
     public Definition getDefinition(Identifier iden) {
@@ -175,7 +174,7 @@ public class Module extends Node {
          */
         this.computeOffset();
 
-        String mainFunction = String.format("%s_main", this.name);
+        String mainFunction = String.format("%s__main", this.name);
         Boolean hasMainFunction = false;
         for (Definition def : definitions) {
             if (def instanceof DefFunc) {
@@ -187,6 +186,9 @@ public class Module extends Node {
                 }
             }
         }
+
+        if (!hasMainFunction)
+            throw new RuntimeException("No main function found");
 
         out.inStart(mainFunction, () -> {
             for (Definition def : this.definitions) {

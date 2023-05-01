@@ -91,7 +91,6 @@ public class Call extends Expr {
             throw new TypeError(String.format("'%s' points to '%s' which is not a function", this.func, def));
         }
 
-        System.out.println("DefFunc: " + def);
         funcDef = (DefFunc) def;
     }
 
@@ -102,6 +101,20 @@ public class Call extends Expr {
 
     @Override
     public void compileAsExpr(ProgramOutput out) {
+        /// Si son funciones scan y print, tratarlos diferente porque no hacen falta
+        /// reserverStack ni freeStack
+
+        if (this.funcDef.isExternal()) {
+            for (int i = 0; i < this.args.size(); ++i) {
+                var expr = this.args.get(i);
+                expr.compileAsExpr(out);
+            }
+
+            /// Llamar a la funcion desde WASM
+            out.call(this.funcDef.getIden());
+            return;
+        }
+
         /// Reservar la memoria para los argumentos + variables locales + MP + SP
         int stackSize = this.funcDef.getSize() + (2 * 4);
         out.i32_const(stackSize);
@@ -110,12 +123,15 @@ public class Call extends Expr {
         /// Copiar los argumentos a LOCALS_START ...
         for (int i = 0; i < this.args.size(); ++i) {
             var expr = this.args.get(i);
+
             var param = this.funcDef.getParams().get(i);
             /// Guardar este resultado en LOCALS_START + 4 * i
             /// Calcular primero la direccion
             out.mem_local(param.getOffset());
+
             /// Calcular el valor
             expr.compileAsExpr(out);
+
             /// Guardar el resultado en la direccion
             out.i32_store();
         }

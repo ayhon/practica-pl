@@ -1,5 +1,5 @@
 const { readFileSync } = require("fs");
-const { exec } = require("child_process");
+const execSync = require('child_process').execSync;
 const fs = require("fs");
 const path = require("path");
 
@@ -67,7 +67,7 @@ async function start(wasmFile) {
     await instance.exports.init();
 }
 
-exec(`./wat2wasm ${watFilePath} -o ${wasmFile}`, async (error, stdout, stderr) => {
+execSync(`./wat2wasm ${watFilePath} -o ${wasmFile}`, async (error, stdout, stderr) => {
     if (error) {
         console.error(`error wat2wasm: ${error.message}`);
         process.exit(1);
@@ -77,11 +77,13 @@ exec(`./wat2wasm ${watFilePath} -o ${wasmFile}`, async (error, stdout, stderr) =
         console.error(`stderr wat2wasm: ${stderr}`);
         process.exit(1);
     }
+});
 
+const main = async () => {
     /// Leer los ficheros de entrada y salida
     if (!fs.existsSync(inputFile)) {
         console.error(`Input file ${inputFile} does not exist`);
-        process.exit(1);
+        process.exit(0);
     }
 
     if (!fs.existsSync(outputFile)) {
@@ -99,4 +101,6 @@ exec(`./wat2wasm ${watFilePath} -o ${wasmFile}`, async (error, stdout, stderr) =
 
     await start(watFilePath.replace(".wat", ".wasm"));
     process.exit(0);
-});
+};
+
+main();

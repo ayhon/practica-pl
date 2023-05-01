@@ -1,6 +1,7 @@
 package ditto.ast;
 
 import ditto.ast.definitions.DefFunc;
+import ditto.ast.definitions.DefVar;
 import ditto.ast.types.VoidType;
 
 public class ProgramOutput {
@@ -179,9 +180,16 @@ public class ProgramOutput {
     }
 
     /* ==== WASM OPERATIONS ==== */
+
+    /* STACK JUGGLING */
     public void drop() {
         append("drop");
     }
+
+    public void duplicate() {
+        tee_local("temp");
+        get_local("temp");
+	}
 
     /* i32 MEMORY OPERATIONS */
     public void i32_load() {
@@ -269,6 +277,17 @@ public class ProgramOutput {
 
     public void i32_xor() {
         append("i32.xor");
+    }
+
+    /* MEMORY LOCALS */
+    public void mem_location(DefVar var){
+        if(var.isGlobal()){
+            i32_const(var.getOffset());
+        } else {
+            get_local(ProgramOutput.LOCAL_START); 
+            i32_const(var.getOffset());
+            i32_add();
+        }
     }
 
     /* LOCALS */

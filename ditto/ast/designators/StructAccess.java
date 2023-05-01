@@ -80,6 +80,6 @@ public class StructAccess extends Designator {
         // 3) Sumamos ambos valores
         struct.compileAsDesig(out);
         out.i32_const(((StructType) struct.type()).getOffset(name)); // i32.const delta(*id)
-        out.i32_add(); // i32.add
+        out.i32_add();                                               // i32.add
     }
 }

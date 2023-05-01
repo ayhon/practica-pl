@@ -103,6 +103,9 @@ public class OperUn extends Expr {
             throw new TypeError(String.format("No se puede aplicar el operador '%s' a una expresión de tipo '%s'",
                     this.op, this.expr.type()));
         }
+        if(this.op == Operators.REF && !(this.expr instanceof Designator)){
+            throw new TypeError(String.format("No se puede aplicar el operador '%s' a una expresión que no sea un designator", this.op));
+        }
         this.type = computeType();
     }
 

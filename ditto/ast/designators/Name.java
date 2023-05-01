@@ -60,13 +60,7 @@ public class Name extends Designator {
     public void compileAsDesig(ProgramOutput out) {
         if (definition instanceof DefVar) {
             DefVar defVar = (DefVar) definition;
-            if (defVar.isGlobal()) {
-                out.i32_const(defVar.getOffset());
-            } else {
-                out.get_local(ProgramOutput.LOCAL_START);
-                out.i32_const(defVar.getOffset());
-                out.i32_add();
-            }
+            out.mem_location(defVar);
         } else
             throw new SemanticError("Can't compile a definition to " + definition + " from a name");
     }

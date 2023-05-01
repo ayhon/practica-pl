@@ -81,40 +81,59 @@ public class For extends Statement {
         lastDelta.exitBlock();
     }
 
-    private void loadIndex(ProgramOutput out, int start){
-        // Iniciar índice //
-        // Cargar índice
-        out.get_local(ProgramOutput.LOCAL_START); 
-        out.i32_const(index.getOffset());
-        out.i32_add();
-    
-        out.i32_const(start);
-        out.i32_store();
-    }
-
     @Override
     public void compileAsInstruction(ProgramOutput out) {
         int start = from.evalIntAtCompileTime();
         int stop  = to.evalIntAtCompileTime();
         int step  = by.evalIntAtCompileTime();
 
-        loadIndex(out, start);
+        initializeIndex(out, start);
         out.block_loop(() -> {
-            //Comprobar condicion
-            
-
+            checkCondition(out, stop, step);
             for (Statement s : body) {
                 s.compileAsInstruction(out);
             }
-
-            // Incrementar índice
-
-            // Comprobar condición
+            increaseIndex(out, step);
+            out.br(0);
         });
+    }
 
-        //Signo positivo pero no vale less than
+    private void initializeIndex(ProgramOutput out, int start){
+        // Iniciar índice //
+        // Cargar posición índice
+        out.mem_location(index);
+        // Cargar valor inicial
+        out.i32_const(start);
+        // Guardar valor inicial en índice
+        out.i32_store();
+    }
 
-        // for i from 10 to 1 by 1
-        // 
+    private void increaseIndex(ProgramOutput out, int step) {
+        // Incrementar índice //
+        // Cargar índice
+        out.mem_location(index);
+        out.duplicate(); // Una posición para guardar y otra para cargar
+        // Cargar valor actual del índice
+        out.i32_load();
+        // Incrementar valor actual
+        out.i32_const(step);
+        out.i32_add();
+        // Guardar valor actual en índice
+        out.i32_store();
+    }   
+
+    private void checkCondition(ProgramOutput out, int stop, int step) {
+        //Caragar direccion indice
+        out.mem_location(index);
+        // Cargar valor actual del índice
+        out.i32_load();
+        // Cargar valor final
+        out.i32_const(stop);
+        if(step > 0){
+            out.i32_le_s();
+        }else{
+            out.i32_ge_s();
+        }
+        out.br_if(1);
     }
 }

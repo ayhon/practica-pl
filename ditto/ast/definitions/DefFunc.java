@@ -5,7 +5,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import ditto.ast.Delta;
-import ditto.ast.Identifier;
 import ditto.ast.CompilationProgress;
 import ditto.ast.Context;
 import ditto.ast.Node;

@@ -11,6 +11,7 @@ import ditto.ast.Node;
 import ditto.ast.ProgramOutput;
 import ditto.ast.expressions.Expr;
 import ditto.ast.types.Type;
+import ditto.errors.SemanticError;
 import ditto.errors.TypeError;
 
 public class DefVar extends Definition {
@@ -115,7 +116,12 @@ public class DefVar extends Definition {
 
     @Override
     public void compileAsInstruction(ProgramOutput out) {
-        
+        //Es como una asignación de valores por defecto
+        out.mem_location(this);
+        expr.compileAsExpr(out);
+        // TODO: Esto no es correcto si la expresión 
+        // tiene más de un tipo
+        out.i32_store();
     }
 
     public int getOffset() {

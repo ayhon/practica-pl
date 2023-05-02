@@ -151,8 +151,8 @@ public class OperUn extends Expr {
             }
             case NEG -> {
                 // Se da con expresion `-x`,
-                expr.compileAsExpr(out);
                 out.i32_const(0);
+                expr.compileAsExpr(out);
                 out.i32_sub();
             }
             case POS -> {

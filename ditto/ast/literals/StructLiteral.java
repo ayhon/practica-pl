@@ -104,7 +104,6 @@ public class StructLiteral extends Literal {
                         entry.getKey(), this.iden, field.type()));
             }
         }
-        System.out.println(this.definition.type());
         this.type = this.definition.type();
     }
 }

@@ -51,11 +51,14 @@ public abstract class Node {
     public void computeTypeSize() {
         this.progress = CompilationProgress.CALCULATING_TYPE_SIZE;
         for (Node child : getAstChildren()) {
-            if (child.getProgress().lessThan(CompilationProgress.CALCULATING_TYPE_SIZE)
-                    || child.getProgress().equals(CompilationProgress.TYPE_SIZE))
+            if (child.getProgress().lessThan(CompilationProgress.CALCULATING_TYPE_SIZE))
                 child.computeTypeSize();
-            else
-                throw new BindingError("Intentamos entrar en un bucle infinito para calcular el tamaño de un tipo.");
+            else if(child.getProgress().equals(CompilationProgress.CALCULATING_TYPE_SIZE))
+                throw new BindingError(String.format(
+                    "Intentamos entrar en un bucle infinito para calcular el tamaño de un tipo. Estabamos en %s[%s] y queriamos entrar en %s[%s]",
+                    this,this.getProgress(),
+                    child, child.getProgress()
+                ));
         }
         this.progress = CompilationProgress.TYPE_SIZE;
     }

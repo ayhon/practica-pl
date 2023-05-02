@@ -97,29 +97,28 @@ public class ProgramOutput {
          * NP: Puntero que apunta a la cota inferior de zona de heap (porque crece hacia
          * abajo)
          */
-        sb.add(
-                """
-                                (func $reserveStack (param $size i32) (result i32)
-                                    get_global $MP          ;; Para devolver al final
+        sb.add("""
+                (func $reserveStack (param $size i32) (result i32)
+                    get_global $MP          ;; Para devolver al final
 
-                                        get_global $SP
-                                    set_global $MP          ;; Ahora MP vale SP (Cota superior de la zona de memoria reservada en Stack anterior = Inicio de la zona de memoria reservada en Stack actual)
+                        get_global $SP
+                    set_global $MP          ;; Ahora MP vale SP (Cota superior de la zona de memoria reservada en Stack anterior = Inicio de la zona de memoria reservada en Stack actual)
 
-                                            get_global $SP
-                                            get_local $size
-                                        i32.add
-                                    set_global $SP          ;; Nuevo SP = SP anterior + size que reservamos ahora
+                            get_global $SP
+                            get_local $size
+                        i32.add
+                    set_global $SP          ;; Nuevo SP = SP anterior + size que reservamos ahora
 
-                                        get_global $SP
-                                        get_global $NP      ;; Obtener el valor de NP
-                                    i32.gt_u                ;; Si resulta que SP > NP, entonces hay overflow
+                        get_global $SP
+                        get_global $NP      ;; Obtener el valor de NP
+                    i32.gt_u                ;; Si resulta que SP > NP, entonces hay overflow
 
-                                    if
-                                        i32.const 3
-                                        call $exception     ;; Lanzar excepcion con codigo 3
-                                    end
-                                )
-                        """);
+                    if
+                        i32.const 3
+                        call $exception     ;; Lanzar excepcion con codigo 3
+                    end
+                )
+                """);
         /**
          * Funcion que libera espacio en la pila
          * Hay que tener en la cima el valor del MP antiguo (el que queremos restaurar)

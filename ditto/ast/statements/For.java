@@ -89,13 +89,11 @@ public class For extends Statement {
     @Override
     public void compileAsInstruction(ProgramOutput out) {
         out.comment("INSTRUCTION: " + this.decompile());
-        int start = from.evalIntAtCompileTime();
-        int stop  = to.evalIntAtCompileTime();
         int step  = by.evalIntAtCompileTime();
 
-        initializeIndex(out, start);
+        initializeIndex(out);
         out.block_loop(() -> {
-            checkCondition(out, stop, step);
+            checkCondition(out, step);
             for (Statement s : body) {
                 s.compileAsInstruction(out);
             }
@@ -104,12 +102,12 @@ public class For extends Statement {
         });
     }
 
-    private void initializeIndex(ProgramOutput out, int start){
+    private void initializeIndex(ProgramOutput out){
         // Iniciar índice //
         // Cargar posición índice
         out.mem_location(index);
         // Cargar valor inicial
-        out.i32_const(start);
+        from.compileAsExpr(out);
         // Guardar valor inicial en índice
         out.i32_store();
     }
@@ -128,13 +126,14 @@ public class For extends Statement {
         out.i32_store();
     }   
 
-    private void checkCondition(ProgramOutput out, int stop, int step) {
+    private void checkCondition(ProgramOutput out, int step) {
         //Caragar direccion indice
         out.mem_location(index);
         // Cargar valor actual del índice
         out.i32_load();
         // Cargar valor final
-        out.i32_const(stop);
+        to.compileAsExpr(out);
+        // out.i32_const(stop);
         if(step > 0){
             out.i32_le_s();
         }else{

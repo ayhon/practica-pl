@@ -64,6 +64,7 @@ public class ProgramOutput {
         buf.add("""
                 (import "runtime" "exceptionHandler" (func $exception (type $_sig_i32)))""");
         buf.add(String.format("(memory %d)", memory_size));
+        buf.add("(start $start)");
         buf.add("(type $_sig_i32i32i32 (func (param i32 i32 i32) ))");
         buf.add("(type $_sig_i32 (func (param i32)))");
         buf.add("(type $_sig_ri32 (func (result i32)))");

@@ -67,8 +67,19 @@ public class Call extends Expr {
         if (expected_args != args.size())
             throw new TypeError(String.format("'%s' expects %d arguments, but %d were given", this.func, expected_args,
                     args.size()));
+
         this.type = funcType.getReturnType();
         loadFunctionDefinition();
+
+        /// Hay que comprobar que aquellos parametros por referencia son designators
+        /// Sino no tienen direccion de memoria
+        for (int i = 0; i < args.size(); ++i) {
+            var param = funcDef.getParams().get(i);
+            if (param.isRef() && !(args.get(i) instanceof Designator)) {
+                throw new TypeError(String.format("'%s' is a reference parameter, but '%s' is not a designator",
+                        param.getIden(), args.get(i).decompile()));
+            }
+        }
     }
 
     private void loadFunctionDefinition() {
@@ -96,7 +107,8 @@ public class Call extends Expr {
 
     @Override
     public String decompile() {
-        return String.format("%s(%s)", func.decompile(), String.join(", ", args.stream().map(Expr::decompile).toArray(String[]::new)));
+        return String.format("%s(%s)", func.decompile(),
+                String.join(", ", args.stream().map(Expr::decompile).toArray(String[]::new)));
     }
 
     @Override
@@ -118,27 +130,25 @@ public class Call extends Expr {
         var params = this.funcDef.getParams();
 
         out.comment("Copying arguments to stack");
-        //Vamos eliminando las direcciones de parámetros con su expresion correspondiente        
-        for(int i = 0; i < this.args.size(); ++i){
+        // Vamos eliminando las direcciones de parámetros con su expresion
+        // correspondiente
+        for (int i = 0; i < this.args.size(); ++i) {
             var param = params.get(i);
             var expr = this.args.get(i);
+
             /// Calcular primero las direcciones de los parámetros
             out.get_global("SP");
             out.i32_const(4 + 4 + param.getOffset());
             out.i32_add();
 
-            /*
+            if (param.isRef()) {
+                out.comment("Copying reference of " + param.getIden() + " to stack");
+                var designator = (Designator) expr;
+                designator.compileAsDesig(out);
+            } else {
+                expr.compileAsExpr(out);
+            }
 
-             * func foo(ref int a)
-             *   a := 5;
-             * end
-
-             * func foo(ptr int a)
-             *   a@ := 5;
-             * end
-
-             */
-            expr.compileAsExpr(out);
             out.i32_store(); // Con la posición calculada en el bucle anterior
         }
 

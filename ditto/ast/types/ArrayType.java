@@ -12,7 +12,7 @@ import ditto.ast.literals.ArrayLiteral;
 public class ArrayType extends Type {
     private final Type elementType;
     private int length;
-    private final Literal defaultValue;
+    private Literal defaultValue;
 
     public ArrayType(Type elementType, Natural size) {
         this(elementType, (int) size.getValue());
@@ -21,7 +21,6 @@ public class ArrayType extends Type {
     public ArrayType(Type elementType, int length) {
         this.elementType = elementType;
         this.length = length;
-        this.defaultValue = new ArrayLiteral(this);
     }
 
     public Literal getDefault() { // Empty array
@@ -73,5 +72,6 @@ public class ArrayType extends Type {
     @Override
     public void computeTypeSize() {
         super.computeTypeSize();
+        this.defaultValue = new ArrayLiteral(this);
     }
 }

@@ -2,22 +2,18 @@ package ditto.ast.definitions;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.Map.Entry;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import ditto.ast.Identifier;
 import ditto.ast.Context;
 import ditto.ast.Delta;
 import ditto.ast.Node;
 import ditto.ast.ProgramOutput;
 import ditto.ast.definitions.DefFunc.Param;
 import ditto.ast.types.StructType;
-import ditto.ast.types.Type;
 
 public class DefStruct extends Definition {
     private final Map<String, DefVar> attributes;
@@ -28,12 +24,7 @@ public class DefStruct extends Definition {
         this.attributes = definitions.stream().filter(def -> def instanceof DefVar).map(def -> (DefVar) def)
                 .collect(Collectors.toMap(DefVar::getIden, Function.identity()));
 
-        Map<String, Type> fieldTypes = new HashMap<>();
-        for (DefVar attribute : this.attributes.values()) {
-            fieldTypes.put(attribute.getIden(), attribute.getType());
-        }
-
-        this.type = new StructType(new Identifier(name), fieldTypes);
+        this.type = new StructType(this);
 
         this.methods = definitions.stream().filter(def -> def instanceof DefFunc)
                 .map(def -> this.toMethod((DefFunc) def))
@@ -68,12 +59,12 @@ public class DefStruct extends Definition {
         return this.methods.get(iden);
     }
 
-    public Set<Entry<String, DefVar>> getAttributes() {
-        return this.attributes.entrySet();
+    public Map<String, DefVar> getAttributes() {
+        return Collections.unmodifiableMap(this.attributes);
     }
 
-    public Set<Entry<String, DefFunc>> getMethods() {
-        return this.methods.entrySet();
+    public Map<String, DefFunc> getMethods() {
+        return Collections.unmodifiableMap(this.methods);
     }
 
     public Definition getAttributeOrMethod(String iden) {

@@ -2,6 +2,7 @@ package ditto.ast.types;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -9,6 +10,7 @@ import ditto.ast.Node;
 import ditto.ast.Identifier;
 import ditto.ast.Context;
 import ditto.ast.definitions.DefStruct;
+import ditto.ast.definitions.DefVar;
 import ditto.ast.definitions.Definition;
 import ditto.ast.literals.Literal;
 import ditto.ast.literals.StructLiteral;
@@ -31,6 +33,16 @@ public class StructType extends Type {
     public StructType(Identifier iden, Map<String, Type> fieldTypes) {
         this.iden = iden;
         this.fieldTypes = fieldTypes;
+    }
+
+    public StructType(DefStruct def) {
+        this.iden = new Identifier(def.getIden());
+        this.definition = def;
+
+        this.fieldTypes = new HashMap<>();
+        for (DefVar attribute : def.getAttributes().values()) {
+            fieldTypes.put(attribute.getIden(), attribute.getType());
+        }
     }
 
     public Definition getFieldDefinition(String name) {
@@ -104,13 +116,13 @@ public class StructType extends Type {
 
     @Override
     public void bind(Context ctx) {
-        Definition def = ctx.get(this.iden);
-        if (def == null)
-            throw new BindingError("Couldn't find def " + iden);
-        definition = (DefStruct) def;
-        fieldTypes = definition.getType().getFieldTypes();
-
-        this.defaultValue = new StructLiteral(this); // Compute default value
+        if (this.definition == null) {
+            Definition def = ctx.get(this.iden);
+            if (def == null)
+                throw new BindingError("Couldn't find def " + iden);
+            definition = (DefStruct) def;
+            fieldTypes = definition.getType().getFieldTypes();
+        }
         super.bind(ctx);
     }
 
@@ -120,6 +132,6 @@ public class StructType extends Type {
         for (Type type : fieldTypes.values()) {
             this.size += type.size(); // Add size of all attributes
         }
+        this.defaultValue = new StructLiteral(this); // Compute default value
     }
-
 }

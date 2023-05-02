@@ -75,10 +75,10 @@ case $1 in
                 for test_file in test/pass/*.ditto; do
                     ditto_test $task $test_file $print_ast
                     if [ $? -ne 0 ]; then
-                        echo "❌ failed $test_file - $task"
+                        echo "❌ failed [$task] $test_file"
                         failure="yes"
                     else
-                        echo "✅ passed $test_file - $task"
+                        echo "✅ passed [$task] $test_file"
                     fi
                 done
 
@@ -116,7 +116,7 @@ case $1 in
                         fi
 
                         # Pasar al siguiente fichero cuando se ha ejecutado la tarea $task
-                        if [ $task == $task ]; then
+                        if [ $task_i == $task ]; then
                             break
                         fi
                     done

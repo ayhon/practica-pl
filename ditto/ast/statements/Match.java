@@ -12,7 +12,6 @@ import ditto.ast.ProgramOutput;
 import ditto.ast.expressions.Expr;
 
 import ditto.ast.types.Type;
-import ditto.ast.types.VoidType;
 import ditto.errors.TypeError;
 
 public class Match extends Statement {
@@ -108,11 +107,6 @@ public class Match extends Statement {
         children.add(expr);
         children.addAll(cases);
         return children;
-    }
-
-    @Override
-    public Type type() {
-        return VoidType.getInstance();
     }
 
     @Override

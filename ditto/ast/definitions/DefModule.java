@@ -24,6 +24,7 @@ public class DefModule extends Node {
 
     public DefModule(String name) {
         this.name = name;
+        this.type = VoidType.getInstance();
     }
 
     @Override
@@ -72,15 +73,10 @@ public class DefModule extends Node {
 
     @Override
     public void bind(Context ctx) {
-        if (module == null){
+        if (module == null) {
             loadModule(ctx.getModule().getClassFolder());
         }
         module.bind();
-    }
-
-    @Override
-    public Type type() {
-        return VoidType.getInstance();
     }
 
     @Override

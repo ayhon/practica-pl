@@ -6,7 +6,6 @@ import java.util.List;
 import ditto.ast.Node;
 import ditto.ast.ProgramOutput;
 import ditto.ast.types.PointerType;
-import ditto.ast.types.Type;
 
 //Singleton
 public class Null extends Literal {
@@ -18,11 +17,6 @@ public class Null extends Literal {
 
     public static Null getInstance() {
         return instance;
-    }
-
-    @Override
-    public Type type() {
-        return type;
     }
 
     @Override

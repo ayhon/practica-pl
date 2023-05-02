@@ -39,6 +39,11 @@ public class ArrayLiteral extends Literal {
         this.elements.add(fill);
     }
 
+    public ArrayLiteral(ArrayType type) {
+        this(type.getElementType().getDefault(), new Natural(type.getLength()));
+        this.type = type;
+    }
+
     @Override
     public String getAstString() {
         return "arr";
@@ -89,13 +94,11 @@ public class ArrayLiteral extends Literal {
 
     @Override
     public String decompile() {
-        return "[" + elements.stream().map(Expr::decompile).reduce("", (a, b) -> a + ", " + b) + "]";
+        return "[" + String.join(",", elements.stream().map(Expr::decompile).toList()) + "]";
     }
 
     @Override
     public void compileAsExpr(ProgramOutput out) {
-        // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'compileAsExpr'");
-        // addr
     }
 }

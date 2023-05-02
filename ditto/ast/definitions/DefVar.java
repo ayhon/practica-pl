@@ -47,7 +47,7 @@ public class DefVar extends Definition {
         List<Node> children = new ArrayList<Node>();
         children.add(this.type);
         if (this.expr != null)
-            children.add(expr);
+            children.add(this.expr);
         return children;
     }
 
@@ -75,19 +75,14 @@ public class DefVar extends Definition {
     @Override
     public void typecheck() {
         super.typecheck();
-        if (expr != null && !expr.type().equals(type))
+        if (this.expr != null && !this.expr.type().equals(type))
             throw new TypeError(
-                    String.format("Can't assign %s to variable %s of type %s", expr.type(), this.getIden(), type));
+                    String.format("Can't assign %s to variable <%s> of type %s", expr.type(), this.getIden(), type));
         else if (expr != null)
-            type = expr.type();
+            this.type = expr.type();
         // Así adivinamos la longitud del array, para)
         // casos como este:
         // array int a = [10; 1];
-    }
-
-    @Override
-    public Type type() {
-        return getType();
     }
 
     @Override
@@ -97,7 +92,7 @@ public class DefVar extends Definition {
         // ya sabemos si los tipos son representables o no
         if (expr == null) {
             this.expr = getType().getDefault();
-            type = expr.type();
+            this.type = expr.type();
         }
     }
 
@@ -119,7 +114,7 @@ public class DefVar extends Definition {
     }
 
     @Override
-    public String decompile(){
+    public String decompile() {
         return getIden() + "[delta=" + getOffset() + "] := " + expr.decompile();
     }
 

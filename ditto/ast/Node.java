@@ -42,7 +42,7 @@ public abstract class Node {
         }
     }
 
-    public Type type() {
+    public final Type type() {
         if (this.type == null)
             throw new TypeError(String.format("Can't get type before typechecking of %s", this.getAstString()));
         return this.type;

@@ -6,7 +6,6 @@ import java.util.List;
 import ditto.ast.Node;
 import ditto.ast.ProgramOutput;
 import ditto.ast.types.BoolType;
-import ditto.ast.types.Type;
 
 // Singleton
 public class True extends Literal {
@@ -18,11 +17,6 @@ public class True extends Literal {
 
     public static True getInstance() {
         return instance;
-    }
-
-    @Override
-    public Type type() {
-        return this.type;
     }
 
     @Override

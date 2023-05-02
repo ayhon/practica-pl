@@ -10,7 +10,6 @@ import java.util.stream.Collectors;
 
 import ditto.ast.definitions.*;
 import ditto.ast.types.IntegerType;
-import ditto.ast.types.Type;
 import ditto.ast.types.VoidType;
 import ditto.errors.BindingError;
 
@@ -30,6 +29,7 @@ public class Module extends Node {
         astChildren.addAll(this.modules.values());
         astChildren.addAll(this.definitions);
         loadBuiltins();
+        this.type = VoidType.getInstance();
     }
 
     private void loadBuiltins() {
@@ -99,11 +99,6 @@ public class Module extends Node {
         List<Object> args = new ArrayList<>();
         args.addAll(astChildren);
         return args;
-    }
-
-    @Override
-    public Type type() {
-        return VoidType.getInstance();
     }
 
     public void bind() {

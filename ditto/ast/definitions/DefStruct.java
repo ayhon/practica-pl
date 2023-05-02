@@ -113,11 +113,6 @@ public class DefStruct extends Definition {
     }
 
     @Override
-    public Type type() {
-        return getType();
-    }
-
-    @Override
     public void compileAsInstruction(ProgramOutput out) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'compileAsInstruction'");

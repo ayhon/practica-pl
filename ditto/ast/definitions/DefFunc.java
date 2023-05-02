@@ -23,8 +23,6 @@ public class DefFunc extends Definition {
     private int size;
     private Boolean external = false;
 
-    private FuncType type;
-
     public List<Param> getParams() {
         return params;
     }
@@ -127,7 +125,7 @@ public class DefFunc extends Definition {
     @Override
     public void typecheck() {
         super.typecheck();
-        Type expected = type.getReturnType();
+        Type expected = ((FuncType) type).getReturnType();
         boolean hasReturn = false;
         for (Statement stmt : body) {
             if (stmt instanceof Return) {
@@ -141,11 +139,6 @@ public class DefFunc extends Definition {
         if (hasReturn && expected.equals(VoidType.getInstance())) {
             throw new TypeError("Function " + getIden() + " must return " + expected);
         }
-    }
-
-    @Override
-    public Type type() {
-        return getType();
     }
 
     @Override

@@ -9,17 +9,18 @@ import ditto.ast.literals.ArrayLiteral;
 import ditto.ast.literals.Literal;
 import ditto.ast.literals.StructLiteral;
 import ditto.ast.types.PointerType;
-import ditto.ast.types.Type;
 
 public class New extends Expr {
     public Literal value;
 
     public New(StructLiteral val) {
         this.value = val;
+        this.type = new PointerType(value.type());
     }
 
     public New(ArrayLiteral val) {
         this.value = val;
+        this.type = new PointerType(value.type());
     }
 
     @Override
@@ -35,11 +36,6 @@ public class New extends Expr {
     @Override
     public List<Object> getAstArguments() {
         return Arrays.asList(value);
-    }
-
-    @Override
-    public Type type() {
-        return new PointerType(value.type());
     }
 
     @Override

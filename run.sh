@@ -45,6 +45,14 @@ case $1 in
                 ;;
         esac
         ;;
+    compile)
+        file="$2"
+		print_ast="$3" # If "ast", prints the AST
+        $0 build all && \
+        filename=`basename $file .ditto`
+        filedir=`dirname $file`
+        ditto_test code $file $3 && ./wat2wasm "$filedir/compiled/$filename.wat" -o "WASM/$filename.wasm"
+        ;;
     test)
         task="$2"
         test_file="$3"

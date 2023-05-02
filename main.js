@@ -64,7 +64,7 @@ async function start(wasmFile) {
     const code = readFileSync(wasmFile);
     wasmModule = await WebAssembly.compile(code);
     instance = await WebAssembly.instantiate(wasmModule, importObjects);
-    await instance.exports.init();
+    /// await instance.exports.init();
 }
 
 execSync(`./wat2wasm ${watFilePath} -o ${wasmFile}`, async (error, stdout, stderr) => {

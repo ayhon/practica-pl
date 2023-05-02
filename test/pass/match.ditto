@@ -1,6 +1,5 @@
 func main() -> int
-    int x;
-    scan(x);
+    int x := scan();
     match x is
         case 1 do
             int a;

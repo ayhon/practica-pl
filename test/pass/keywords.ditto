@@ -17,14 +17,14 @@ func play() -> array 5 int
     end
     int guess;
     int secret_number := Random::integer(0,100);
-    scan(guess);
+    guess := scan();
     while guess != secret_number do
         if guess < secret_number then
             print(1);
         else
             print(-1);
         end
-        scan(guess);
+        guess := scan();
     end
     print(0);
     1 + 1;

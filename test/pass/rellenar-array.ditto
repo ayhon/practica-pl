@@ -3,7 +3,7 @@ func main() -> int
 
     for i from 0 to 9 do
         // Leer número de entrada estándar y guardarlo en numeros[i]
-        scan(numeros[i]);
+        numeros[i] := scan();
     end
 
     return 0;

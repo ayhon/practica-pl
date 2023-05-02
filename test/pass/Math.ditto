@@ -4,8 +4,10 @@ func fib(int n) -> int
     else
         return fib(n - 1) + fib(n - 2);
     end
-end
 
+    /// Sino WASM se raya
+    return -1;
+end
 func exp(int base, int exponent) -> int
     if exponent == 0 then
         return 1;

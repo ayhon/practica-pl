@@ -2,8 +2,7 @@
 import Math;
 
 func main() -> int
-    int n;
-    scan(n);
+    int n := scan();
     // Invocamos método del módulo
     n := Math::exp(n, 5);
 

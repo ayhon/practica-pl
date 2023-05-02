@@ -12,7 +12,6 @@ import ditto.ast.Context;
 import ditto.ast.Module;
 import ditto.ast.Node;
 import ditto.ast.ProgramOutput;
-import ditto.ast.types.Type;
 import ditto.ast.types.VoidType;
 import ditto.errors.ModuleImportError;
 import ditto.lexer.Lexer;

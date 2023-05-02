@@ -10,6 +10,7 @@ public class Test {
     public static void main(String[] args) throws FileNotFoundException, IOException {
         Reader input = new InputStreamReader(new FileInputStream(args[0]));
         Lexer lexer = new Lexer(input);
+        System.out.println(lexer.yytext());
         // do {
         //     System.out.println(unidad);
         // } while (unidad.sym() != TokenKind.EOF);

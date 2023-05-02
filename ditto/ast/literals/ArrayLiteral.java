@@ -99,6 +99,10 @@ public class ArrayLiteral extends Literal {
 
     @Override
     public void compileAsExpr(ProgramOutput out) {
+        // Pone todos los elementos en la pila, orden inverso
+        for(Expr elem : elements) {
+            elem.compileAsExpr(out);
+        }
         throw new UnsupportedOperationException("Unimplemented method 'compileAsExpr'");
     }
 }

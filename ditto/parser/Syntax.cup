@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.HashMap;
 
-import ditto.ast.Node;
 import ditto.ast.Module;
 import ditto.ast.Identifier;
 import ditto.ast.definitions.*;

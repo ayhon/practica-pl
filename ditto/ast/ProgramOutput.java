@@ -5,6 +5,7 @@ import java.util.StringJoiner;
 import ditto.ast.definitions.DefFunc;
 import ditto.ast.definitions.DefVar;
 import ditto.ast.definitions.DefFunc.Param;
+import ditto.ast.expressions.Expr;
 import ditto.errors.SemanticError;
 
 public class ProgramOutput {
@@ -382,6 +383,38 @@ public class ProgramOutput {
         get_local(ProgramOutput.LOCAL_START);
         i32_const(offset);
         i32_add();
+    }
+
+    /**
+     * Esperamos que en la pila tengamos el objeto a copiar
+     * con todos sus elementos en orden inverso (el primero en la pila es el último en el objeto)
+     * seguido de la dirección de memoria a la que copiar en la cima de la pila
+     */
+    public void mem_copy(Runnable getPlace, Expr expr) {
+        int exprSize = expr.type().size();
+        if(exprSize == 4){
+            getPlace.run();
+            expr.compileAsExpr(this);
+            i32_store();
+        } else {
+            expr.compileAsExpr(this);
+            getPlace.run();
+            // | --- | ... | elemN-1| elemN | dir | →  temp=Ø
+            set_local("temp"); // | --- | ... | elem | →            temp=dir
+            i32_const(0);         // | --- | ... | elem | 0 | →        temp=dir
+            get_local("temp"); // | --- | ... | elem | 0 | dir | →  temp=dir
+            i32_store();            // | dir | ... | elem | →
+            for (int offset = exprSize-4; offset >= 0; offset -= 4) {
+                set_local("temp"); // | dir | ... | →                   temp=elem
+                i32_const(0);         // | dir | ... | 0 | →               temp=elem
+                i32_load();             // | dir | ... | dir | →             temp=elem
+                i32_const(offset);      // | dir | ... | dir | offset | →    temp=elem
+                i32_add();              // | dir | ... | dir+offset | →      temp=elem
+                get_local("temp"); // | dir | ... | dir+offset | elem → temp=elem 
+                i32_store();            // | dir | ... | →                   temp=elem, MEM[dir+offset]=elem
+            }
+            // MEM: dir → elem[0], ..., dir + offset→ elem[offset/4]
+        }
     }
 
     /* LOCALS */

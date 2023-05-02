@@ -1,5 +1,6 @@
 package ditto.ast.types;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -61,7 +62,11 @@ public class ArrayType extends Type {
 
     @Override
     public List<Node> getAstChildren() {
-        return Arrays.asList(elementType, defaultValue);
+        List<Node> children = new ArrayList<>();
+        children.add(elementType);
+        if (defaultValue != null)
+            children.add(defaultValue);
+        return children;
     }
 
     @Override

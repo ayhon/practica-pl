@@ -76,7 +76,7 @@ case $1 in
                     ditto_test $task $test_file $print_ast
                     if [ $? -ne 0 ]; then
                         echo "❌ failed $test_file - $task"
-                        failue="yes"
+                        failure="yes"
                     else
                         echo "✅ passed $test_file - $task"
                     fi
@@ -100,7 +100,7 @@ case $1 in
                             if [ $RESULT -eq 0 ]; then
                                 # echo "$test_output"
                                 echo "      ❌ passed [$task_i] $test_file  y NO deberia"
-                                failue="yes"
+                                failure="yes"
                             else 
                                 echo "      ✅ failed [$task_i] $test_file  y deberia"
                             fi
@@ -109,7 +109,7 @@ case $1 in
                             if [ $RESULT -ne 0 ]; then
                                 # echo "$test_output"
                                 echo "      ❌ failed [$task_i] $test_file  y NO deberia"
-                                failue="yes"
+                                failure="yes"
                             else
                                 echo "      ✅ passed [$task_i] $test_file  y deberia"
                             fi

@@ -309,7 +309,7 @@ public class ProgramOutput {
     }
 
     public void i32_div_s() {
-        append("i32.i32_div_s");
+        append("i32.div_s");
     }
 
     public void i32_rem_s() {

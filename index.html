@@ -16,17 +16,58 @@
         <input type="file" id="wasm-file" accept=".wasm">
         <button class="button" id="load-wasm" disabled>Execute</button>
     </div>
+    <div id="memory-controls">
+        <p>Show first <span id="elements-show"></span> bytes</p>
+        <input type="range" min="2" max="800" value="200" id="memory-slider">
+    </div>
     <div id="memory"></div>
     <p id="author">Created by <a href="https://github.com/ayhon">ayhon</a> and <a href="https://chat.openai.com/">ChatGPT</a></p>
     <script>
         const currFile = document.getElementById('curr-file');
         const loadWasm = document.getElementById('load-wasm');
         const wasmFile = document.getElementById('wasm-file');
+        const memoryControls = document.getElementById('memory-controls');
+        const elementsShow = document.getElementById('elements-show');
+        let elemsToShow = 200;
+        elementsShow.innerText = elemsToShow;
+        const slider = document.getElementById('memory-slider');
+        slider.value = elemsToShow;
+        slider.addEventListener('input', () => {
+            elemsToShow = slider.value;
+            elementsShow.innerText = elemsToShow;
+            updateMemory();
+        });
         loadWasm.disabled = true;
         wasmFile.addEventListener('change', () => {
-            currFile.innerHTML = wasmFile.files[0].name;
+            currFile.innerText = wasmFile.files[0].name;
             loadWasm.disabled = false;
+            // Show again the memory controlsdiv
+            memoryControls.style.display = 'flex';
         });
+        let instance = undefined;
+        function updateMemory() {
+            if(instance == undefined) return;
+            // Show the contents of the WASM memory in the DOM
+            // Only the first 500 bytes, group by 4 bytes
+            const memory = new Uint8Array(instance.exports.memory.buffer, 0, 4*elemsToShow);
+            const memoryEl = document.getElementById('memory');
+            // Clear the children from memoryEl
+            memoryEl.innerHTML = '';
+            // Add each byte of memory to a div with clas "memory-cell" and append to memoryEl
+            var i = 0;
+            for (let i = 0; i < 4*elemsToShow; i+=4) {
+                const cell = document.createElement('div');
+                cell.classList.add('memory-cell');
+                cell.title = "addr: " + i;
+                let byte = memory[i+3];
+                for (let j = 2; j >= 0; j--) {
+                    byte = byte << 8;
+                    byte = byte | memory[i+j];
+                }
+                cell.innerText = byte;
+                memoryEl.appendChild(cell);
+            }
+        }
         loadWasm.addEventListener('click', () => {
             var importObjects = {
                 runtime: {
@@ -53,28 +94,13 @@
                     }
                 }
             };
+            
             const reader = new FileReader();
             reader.readAsArrayBuffer(wasmFile.files[0]);
             reader.addEventListener('load', async () => {
                 const wasmModule = await WebAssembly.compile(reader.result);
-                const instance = await WebAssembly.instantiate(wasmModule, importObjects);
-                // Show the contents of the WASM memory in the DOM
-                // Only the first 500 bytes
-                const memory = new Uint8Array(instance.exports.memory.buffer, 0, 500);
-                const memoryEl = document.getElementById('memory');
-                // Add each byte of memory to a div with clas "memory-cell" and append to memoryEl
-                var i = 0;
-                // Clear the children from memoryEl
-                memoryEl.innerHTML = '';
-                memory.forEach((byte) => {
-                    const cell = document.createElement('div');
-                    cell.classList.add('memory-cell');
-                    // When you hover over cell, it shows the value of `i`
-                    cell.title = 4*i;
-                    cell.innerText = byte;
-                    memoryEl.appendChild(cell);
-                    i++;
-                });
+                instance = await WebAssembly.instantiate(wasmModule, importObjects);
+                updateMemory();
             });          
         });
     </script>
@@ -137,15 +163,23 @@
             color: #757575;
         }
         #memory div {
-            width: 20px;
+            /* width: 20px; */
             height: 20px;
             border: 1px solid #757575;
             display: flex;
             align-items: center;
             justify-content: center;
+            padding: 1px 3px;
+            margin-bottom: 2px;
         }
         #memory div:hover {
             border: 1px solid #fcd63d;
+        }
+        #memory-controls {
+            display: none;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
         }
         #load-wasm {
             background-color: #fcd63d;

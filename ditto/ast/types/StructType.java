@@ -1,7 +1,7 @@
 package ditto.ast.types;
 
+import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -13,7 +13,6 @@ import ditto.ast.definitions.Definition;
 import ditto.ast.literals.Literal;
 import ditto.ast.literals.StructLiteral;
 import ditto.errors.BindingError;
-import ditto.ast.expressions.Expr;
 
 public class StructType extends Type {
     private final Identifier iden;
@@ -34,7 +33,6 @@ public class StructType extends Type {
         this.fieldTypes = fieldTypes;
     }
 
-
     public Definition getFieldDefinition(String name) {
         return definition.getAttributeOrMethod(name);
     }
@@ -46,15 +44,6 @@ public class StructType extends Type {
         if (definition == null)
             throw new BindingError("Can't construct default value before binding.");
 
-        if (defaultValue != null)
-            return defaultValue;
-
-        Map<String, Expr> fieldValues = new HashMap<>();
-        for (String fieldName : fieldTypes.keySet()) {
-            fieldValues.put(fieldName, fieldTypes.get(fieldName).getDefault());
-        }
-
-        defaultValue = new StructLiteral(iden, fieldValues);
         return defaultValue;
     }
 
@@ -94,7 +83,11 @@ public class StructType extends Type {
 
     @Override
     public List<Node> getAstChildren() {
-        return fieldTypes.values().stream().map(t -> (Node) t).toList();
+        List<Node> children = new ArrayList<>();
+        children.addAll(fieldTypes.values().stream().map(t -> (Node) t).toList());
+        if (defaultValue != null)
+            children.add(defaultValue);
+        return children;
     }
 
     @Override
@@ -116,6 +109,8 @@ public class StructType extends Type {
             throw new BindingError("Couldn't find def " + iden);
         definition = (DefStruct) def;
         fieldTypes = definition.getType().getFieldTypes();
+
+        this.defaultValue = new StructLiteral(this); // Compute default value
         super.bind(ctx);
     }
 

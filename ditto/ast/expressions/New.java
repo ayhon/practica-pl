@@ -15,17 +15,21 @@ public class New extends Expr {
 
     public New(StructLiteral val) {
         this.value = val;
-        this.type = new PointerType(value.type());
     }
 
     public New(ArrayLiteral val) {
         this.value = val;
-        this.type = new PointerType(value.type());
     }
 
     @Override
     public String getAstString() {
         return "new";
+    }
+
+    @Override
+    public void typecheck() {
+        super.typecheck();
+        this.type = new PointerType(value.type());
     }
 
     @Override

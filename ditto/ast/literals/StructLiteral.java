@@ -2,6 +2,7 @@ package ditto.ast.literals;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -12,6 +13,7 @@ import ditto.ast.ProgramOutput;
 import ditto.ast.definitions.DefStruct;
 import ditto.ast.definitions.DefVar;
 import ditto.ast.expressions.Expr;
+import ditto.ast.types.StructType;
 import ditto.errors.BindingError;
 import ditto.errors.TypeError;
 
@@ -23,6 +25,15 @@ public class StructLiteral extends Literal {
     public StructLiteral(Identifier iden, Map<String, Expr> fieldValues) {
         this.iden = iden;
         this.fieldValues = fieldValues;
+    }
+
+    public StructLiteral(StructType type) {
+        this.iden = type.getIden();
+        this.fieldValues = new HashMap<>();
+        for (String fieldName : type.getFieldTypes().keySet()) {
+            fieldValues.put(fieldName, type.getFieldTypes().get(fieldName).getDefault());
+        }
+        this.type = type;
     }
 
     public Identifier getIden() {
@@ -43,7 +54,7 @@ public class StructLiteral extends Literal {
     public Object getValue() {
         return fieldValues;
     }
-    
+
     @Override
     public List<Node> getAstChildren() {
         List<Node> children = new ArrayList<Node>();
@@ -54,9 +65,9 @@ public class StructLiteral extends Literal {
     @Override
     public String decompile() {
         return iden.toString() + " { " + fieldValues.entrySet()
-            .stream()
-            .map(entry -> entry.getKey() + ": " + entry.getValue().decompile())
-            .reduce("", (a, b) -> b + ", " + a)
+                .stream()
+                .map(entry -> entry.getKey() + ": " + entry.getValue().decompile())
+                .reduce("", (a, b) -> b + ", " + a)
                 + " }";
     }
 
@@ -93,6 +104,7 @@ public class StructLiteral extends Literal {
                         entry.getKey(), this.iden, field.type()));
             }
         }
+        System.out.println(this.definition.type());
         this.type = this.definition.type();
     }
 }

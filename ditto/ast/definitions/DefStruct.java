@@ -22,7 +22,6 @@ import ditto.ast.types.Type;
 public class DefStruct extends Definition {
     private final Map<String, DefVar> attributes;
     private final Map<String, DefFunc> methods;
-    private StructType type;
 
     public DefStruct(String name, List<Definition> definitions) {
         super(name);
@@ -62,7 +61,7 @@ public class DefStruct extends Definition {
     }
 
     public StructType getType() {
-        return this.type;
+        return (StructType) this.type;
     }
 
     public DefFunc getMethod(String iden) {

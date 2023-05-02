@@ -59,6 +59,10 @@ public class StructType extends Type {
         return defaultValue;
     }
 
+    public DefStruct getDefinition() {
+        return definition;
+    }
+
     public Identifier getIden() {
         return iden;
     }

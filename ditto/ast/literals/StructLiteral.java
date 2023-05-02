@@ -34,6 +34,10 @@ public class StructLiteral extends Literal {
             fieldValues.put(fieldName, type.getFieldTypes().get(fieldName).getDefault());
         }
         this.type = type;
+
+        /// Porque este constructor se llama en fase de computeTypeSize, entonces ya
+        /// sabemos la definicion y no hay que hacer bind
+        this.definition = type.getDefinition();
     }
 
     public Identifier getIden() {

@@ -134,22 +134,9 @@ public class Match extends Statement {
     public void compileAsInstruction(ProgramOutput out) {
         out.comment("INSTRUCTION: " + this.decompile());
         expr.compileAsExpr(out);
-
-        // Comienzo de los bloques
         int n = cases.size();
-        for (int i = 0; i < n; i++) {
-            out.block();
-        }
-
-        // Tabla de branching
-        out.br_table(n);
-
-        // Cuerpo de los bloques
-        for (int i = 0; i < n; i++) {
-            out.end();
-            cases.get(i).compileAsInstruction(out);
-            out.br(n - i);
-        }
-        out.end();
+        out.br_table(n, level -> {
+            this.cases.get(level).compileAsInstruction(out);
+        });
     }
 }

@@ -243,19 +243,25 @@ public class ProgramOutput {
         if (has_start)
             throw new SemanticError("Can't have more than one start of the program");
         append("(func $start (type $%s)", FUNC_SIG);
-        indent();
-        runnable.run();
-        call(mainFunction);
-        dedent();
+        indented(() -> {
+            runnable.run();
+            call(mainFunction);
+        });
         append(")");
+    }
+
+    private void indent() {
+        indent_level += INDENT_WIDTH;
     }
 
     private void dedent() {
         indent_level = Math.max(0, indent_level - INDENT_WIDTH);
     }
 
-    private void indent() {
-        indent_level += INDENT_WIDTH;
+    private void indented(Runnable r){
+        indent();
+        r.run();
+        dedent();
     }
 
     /* ==== WASM OPERATIONS ==== */
@@ -447,21 +453,19 @@ public class ProgramOutput {
 
     public void func(DefFunc fun, Runnable runnable) {
         append("(func $%s", fun.getIden());
-        indent();
-
-        append(fun.getResult().asWasmResult());
-        append(String.format("(local $%s i32)", ProgramOutput.LOCAL_START));
-        append("(local $temp i32)");
-
-        int stackSize = fun.getSize() + 4 + 4;
-        i32_const(stackSize);
-        reserveStack();
-
-        runnable.run(); // La idea es que haga algo con el ProgramOutput dentro del runnable
-
-        freeStack();
-
-        dedent();
+        indented(() -> {
+            append(fun.getResult().asWasmResult());
+            append(String.format("(local $%s i32)", ProgramOutput.LOCAL_START));
+            append("(local $temp i32)");
+    
+            int stackSize = fun.getSize() + 4 + 4;
+            i32_const(stackSize);
+            reserveStack();
+    
+            runnable.run(); // La idea es que haga algo con el ProgramOutput dentro del runnable
+    
+            freeStack();
+        });
         append(")");
     }
 
@@ -473,9 +477,7 @@ public class ProgramOutput {
     /* CONTROL FLOW */
     public void block(Runnable runnable) {
         append("block");
-        indent();
-        runnable.run();
-        dedent();
+        indented(runnable);
         append("end");
     }
 
@@ -484,9 +486,7 @@ public class ProgramOutput {
 
     public void loop(Runnable runnable) {
         append("loop");
-        indent();
-        runnable.run();
-        dedent();
+        indented(runnable);
         append("end");
     }
 
@@ -511,41 +511,40 @@ public class ProgramOutput {
 
     public void if_else(Runnable then, Runnable els) {
         append("if");
-        indent();
-        then.run();
-        dedent();
+        indented(then);
         append("else");
-        indent();
-        els.run();
-        dedent();
+        indented(els);
         append("end");
     }
 
     public void if_(Runnable then) {
         append("if");
-        indent();
-        then.run();
-        dedent();
+        indented(then);
         append("end");
     }
 
     public void br_table(int size) {
-        append("br_table");
-        indent();
+        StringJoiner sj = new StringJoiner(" ");
+        sj.add("br_table");
         for (int i = 0; i < size; i++) {
-            append("%d", i);
+            sj.add(String.format("%d", i));
         }
-        dedent();
+        indented(() -> append(sj.toString()));
     }
-
-    // Solo usar estos dos metodos en el match
-    public void block() {
-        append("block");
-        indent();
+    public interface IntRunnable {
+        void run(int i);
     }
-
-    public void end() {
-        dedent();
-        append("end");
+    public void br_table(int size, IntRunnable r) {
+        for(int i = 0; i < size; i++){
+            append("block");
+            indent();
+        }
+        // Tabla de branching
+        block(() -> br_table(size));
+        for(int i = 0; i < size; i++){
+            r.run(i);
+            dedent();
+            append("end");
+        }
     }
 }

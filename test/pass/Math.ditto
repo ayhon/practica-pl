@@ -8,10 +8,72 @@ func fib(int n) -> int
     /// Sino WASM se raya
     return -1;
 end
+
 func exp(int base, int exponent) -> int
     if exponent == 0 then
         return 1;
-    else
-        return base * exp(base, exponent - 1);
+    end
+    return base * exp(base, exponent - 1);
+end
+
+func pow(int base, int exponent, int modulo) -> int
+    if exponent == 0 then
+        return 1;
+    end
+    int res := pow(base, exponent/2, modulo);
+    if exponent % 2 == 1 then
+        return res * res * base;
+    end
+    return res * res;
+end
+
+func gcd(int a, int b) -> int
+    if b == 0 then
+        return a;
+    end 
+    return gcd(b, a % b);
+end
+
+func euclid(int a, int b, ref int u, ref int v) -> int
+    // returns gcd of a and b, and sets u and v so 
+    // u*a + v*b == gcd(a,b)
+    if b == 0 then
+        u := 1;
+        v := 0;
+        return a;
+    end 
+    int u_;
+    int v_;
+    int res := euclid(b,a%b,u_,v_);
+    // u_*b + a%b * v_ == gcd
+    // a = a/b*b + a%b → a%b = a - a/b*b
+    // u_*b + (a - a/b*b)*v_ = gcd
+    // u_*b - a/b*b*v_ + a*v_ = gcd
+    // a*v_ + (u_ - a/b*v_)*b =gcd
+    u := v_;
+    v := u_ - (a/b)*v_;
+    return res;
+end
+
+func modinv(int a, int mod) -> int
+    int u;
+    int v;
+    int g := euclid(a, mod, u, v);
+    if g != 1 then
+        return -1;
+    end
+    return u;
+end
+
+func main()
+    // Testing
+    int a := scan();
+    int b := scan();
+    print(gcd(a,b));
+    a := scan();
+    int prime := scan();
+    int inv_a := modinv(a, prime);
+    if inv_a != -1 then
+        print(inv_a);
     end
 end

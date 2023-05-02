@@ -46,7 +46,7 @@ public class Return extends Statement {
     }
 
     @Override
-    public String decompile(){
+    public String decompile() {
         return String.format("return %s;", expr != null ? expr.decompile() : "");
     }
 
@@ -54,6 +54,9 @@ public class Return extends Statement {
     public void compileAsInstruction(ProgramOutput out) {
         out.comment("INSTRUCTION: " + this.decompile());
         expr.compileAsExpr(out);
-        // Dejarlo en la cima de la pila para que el llamador lo saque
+
+        /// Hacer un return explicito, porque sino, en casos como return dentro de un
+        /// if, se raya WebAssembly y piensa que estas dejando valor dentro del bloque if
+        out.doReturn();
     }
 }

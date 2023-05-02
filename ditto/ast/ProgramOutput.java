@@ -457,6 +457,11 @@ public class ProgramOutput {
         append(")");
     }
 
+    public void doReturn () {
+        append("return");
+        freeStack();
+    }
+
     /* CONTROL FLOW */
     public void block(Runnable runnable) {
         append("block");

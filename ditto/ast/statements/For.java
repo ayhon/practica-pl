@@ -87,6 +87,11 @@ public class For extends Statement {
     }
 
     @Override
+    public String decompile() {
+        return "for " + index.decompile() + " from " + from.decompile() + " to " + to.decompile() + " by " + by.decompile() + " do ... end";
+    }
+
+    @Override
     public void compileAsInstruction(ProgramOutput out) {
         out.comment("INSTRUCTION: " + this.decompile());
         int step  = by.evalIntAtCompileTime();
@@ -133,11 +138,11 @@ public class For extends Statement {
         out.i32_load();
         // Cargar valor final
         to.compileAsExpr(out);
-        // out.i32_const(stop);
-        if(step > 0){
-            out.i32_le_s();
+        // Condición para salir del bucle
+        if(step < 0){
+            out.i32_lt_s(); // index < to
         }else{
-            out.i32_ge_s();
+            out.i32_gt_s(); // index > to
         }
         out.br_if(1);
     }

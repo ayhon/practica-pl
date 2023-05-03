@@ -7,6 +7,7 @@ import ditto.ast.Identifier;
 import ditto.ast.Context;
 import ditto.ast.Node;
 import ditto.ast.ProgramOutput;
+import ditto.ast.definitions.DefFunc;
 import ditto.ast.definitions.DefVar;
 import ditto.ast.definitions.Definition;
 import ditto.errors.BindingError;
@@ -69,6 +70,8 @@ public class Name extends Designator {
         if (definition instanceof DefVar) {
             DefVar defVar = (DefVar) definition;
             out.mem_location(defVar);
+            if(defVar instanceof DefFunc.Param)
+                out.i32_load();
         } else
             throw new SemanticError("Can't compile a definition to " + definition + " from a name");
     }

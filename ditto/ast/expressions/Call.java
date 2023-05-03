@@ -11,6 +11,7 @@ import ditto.ast.definitions.Definition;
 import ditto.ast.designators.Designator;
 import ditto.ast.designators.Name;
 import ditto.ast.designators.StructAccess;
+import ditto.ast.expressions.OperUn.Operators;
 import ditto.ast.types.FuncType;
 import ditto.errors.TypeError;
 
@@ -155,13 +156,11 @@ public class Call extends Expr {
 
             if (param.isRef()) {
                 out.comment("Copying reference of " + param.getIden() + " to stack");
-                var designator = (Designator) expr;
-                designator.compileAsDesig(out);
+                out.mem_copy(new OperUn(Operators.REF, expr));
             } else {
                 expr.compileAsExpr(out);
+                out.mem_copy(expr);
             }
-
-            out.i32_store(); // Con la posición calculada en el bucle anterior
         }
 
         out.comment("PERFORMING FUNCTION CALL");

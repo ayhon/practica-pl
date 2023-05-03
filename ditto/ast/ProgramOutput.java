@@ -368,13 +368,6 @@ public class ProgramOutput {
             i32_const(8 + var.getOffset());
         } else {
             mem_local(var.getOffset());
-
-            if (var instanceof Param && ((Param) var).isRef()) {
-                /// Entonces su valor es una direccion de memoria
-                comment(String.format("Cargando el valor de la direccion de memoria del parametro por referencia: %s",
-                        var.getIden()));
-                i32_load();
-            }
         }
     }
 

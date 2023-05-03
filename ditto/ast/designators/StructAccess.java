@@ -54,12 +54,6 @@ public class StructAccess extends Designator {
         super.typecheck();
         Type struct_type = struct.type();
 
-        if (struct_type instanceof ArrayType && name.equals("size")) {
-            /// Es de tipo ArrayType y se quiere acceder a su campo size
-            this.type = IntegerType.getInstance();
-            return;
-        }
-
         if (!(struct_type instanceof StructType)) {
             throw new TypeError(
                     String.format("Cannot access a field of a non-struct type '%s', %s", struct_type, struct));

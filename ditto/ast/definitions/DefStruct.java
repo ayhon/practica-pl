@@ -104,8 +104,10 @@ public class DefStruct extends Definition {
 
     @Override
     public void compileAsInstruction(ProgramOutput out) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'compileAsInstruction'");
+        // Compila sus métodos, pues estos no son más que funciones
+        for(DefFunc method : this.methods.values()) {
+            method.compileAsInstruction(out);
+        }
     }
 
     @Override

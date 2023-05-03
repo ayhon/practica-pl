@@ -36,7 +36,8 @@ public class ArrayLiteral extends Literal {
         this.numberOfElem = numberOfElem;
 
         this.elements = new ArrayList<>();
-        this.elements.add(fill);
+        for(int i = 0; i < numberOfElem.evalIntAtCompileTime(); i++)
+            this.elements.add(fill);
     }
 
     public ArrayLiteral(ArrayType type) {

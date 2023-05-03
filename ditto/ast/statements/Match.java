@@ -81,12 +81,16 @@ public class Match extends Statement {
 
         @Override
         public String decompile(){
-            return String.format("case %s:  body", expr.decompile());
+            if (expr == null)
+                return "otherwise: body";
+            else
+                return String.format("case %s:  body", expr.decompile());
         }
         
         @Override
         public void compileAsInstruction(ProgramOutput out) {
-            this.expr.compileAsInstruction(out);
+            if(expr != null)
+                this.expr.compileAsInstruction(out);
         }
 
     }

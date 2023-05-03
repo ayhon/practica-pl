@@ -1,0 +1,6 @@
+func new_array() -> array 2 int
+    return [2;2];
+end
+
+func main()
+end

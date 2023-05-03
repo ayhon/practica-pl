@@ -103,6 +103,5 @@ public class ArrayLiteral extends Literal {
         for(Expr elem : elements) {
             elem.compileAsExpr(out);
         }
-        throw new UnsupportedOperationException("Unimplemented method 'compileAsExpr'");
     }
 }

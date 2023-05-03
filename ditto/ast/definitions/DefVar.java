@@ -106,7 +106,8 @@ public class DefVar extends Definition {
     public void compileAsInstruction(ProgramOutput out) {
         // Es como una asignación de valores por defecto
         out.comment("INSTRUCCION: " + decompile());
-        out.mem_copy(() -> out.mem_location(this), expr);
+        out.mem_location(this);
+        out.mem_copy(expr);
     }
 
     @Override

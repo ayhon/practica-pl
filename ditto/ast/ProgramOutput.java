@@ -390,20 +390,19 @@ public class ProgramOutput {
      * con todos sus elementos en orden inverso (el primero en la pila es el último en el objeto)
      * seguido de la dirección de memoria a la que copiar en la cima de la pila
      */
-    public void mem_copy(Runnable getPlace, Expr expr) {
+    public void mem_copy(Expr expr) {
         int exprSize = expr.type().size();
         if(exprSize == 4){
-            getPlace.run();
             expr.compileAsExpr(this);
             i32_store();
         } else {
+            // | --- | ... | dir                        temp=Ø
+            set_local("temp"); // | --- | ... | →               temp=dir
+            i32_const(0);         // | --- | ... | 0 | →        temp=dir
+            get_local("temp"); // | --- | ... | 0 | dir | →  temp=dir
+            i32_store();            // | dir | ... | →
             expr.compileAsExpr(this);
-            getPlace.run();
-            // | --- | ... | elemN-1| elemN | dir | →  temp=Ø
-            set_local("temp"); // | --- | ... | elem | →            temp=dir
-            i32_const(0);         // | --- | ... | elem | 0 | →        temp=dir
-            get_local("temp"); // | --- | ... | elem | 0 | dir | →  temp=dir
-            i32_store();            // | dir | ... | elem | →
+            // | --- | ... | elemN-1| elemN | →  temp=Ø
             for (int offset = exprSize-4; offset >= 0; offset -= 4) {
                 set_local("temp"); // | dir | ... | →                   temp=elem
                 i32_const(0);         // | dir | ... | 0 | →               temp=elem

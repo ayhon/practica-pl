@@ -128,12 +128,24 @@ public class Call extends Expr {
         }
 
         var params = this.funcDef.getParams();
+        int oneIfMethod = 0;
+        if(func instanceof StructAccess) {
+            // Estamos llamando aun méotodo.
+            // Tenemos la dirección del método en la pila
+            oneIfMethod = 1;
+            out.set_local("temp");
+            out.get_global("SP");
+            out.i32_const(4 + 4 + params.get(0).getOffset()/*Esta llamada debería dar 0*/);
+            out.i32_add();
+            out.get_local("temp");
+            out.i32_store();
+        }
 
         out.comment("Copying arguments to stack");
         // Vamos eliminando las direcciones de parámetros con su expresion
         // correspondiente
         for (int i = 0; i < this.args.size(); ++i) {
-            var param = params.get(i);
+            var param = params.get(i + oneIfMethod);
             var expr = this.args.get(i);
 
             /// Calcular primero las direcciones de los parámetros

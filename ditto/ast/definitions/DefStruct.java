@@ -14,6 +14,7 @@ import ditto.ast.Node;
 import ditto.ast.ProgramOutput;
 import ditto.ast.definitions.DefFunc.Param;
 import ditto.ast.types.StructType;
+import ditto.errors.SemanticError;
 
 public class DefStruct extends Definition {
     private final Map<String, DefVar> attributes;
@@ -48,6 +49,8 @@ public class DefStruct extends Definition {
 
     public int getOffset(String name) {
         // Devolvemos el offset(delta) del campo
+        if(!this.attributes.containsKey(name))
+            throw new SemanticError("No existe el atributo " + name + " en el struct " + this.getIden());
         return this.attributes.get(name).getOffset();
     }
 

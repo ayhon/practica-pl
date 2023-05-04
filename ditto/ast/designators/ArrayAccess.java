@@ -68,10 +68,16 @@ public class ArrayAccess extends Designator {
         ArrayType type = (ArrayType) array.type();
         int elemSize = type.getElementType().size();    /// ya tiene en cuenta 4 *
 
-        out.i32_const(elemSize);       
+        out.comment("BEGIN: " + this.decompile());
+        out.comment("GET INDEX");
         index.compileAsExpr(out);
+        out.comment("GET ELEMSIZE");
+        out.i32_const(elemSize);       
+        out.comment("GET OFFSET IN STACK");
         out.i32_mul();             // index * elemSize
+        out.comment("GET BASE ARRAY");
         array.compileAsDesig(out); // base_array
         out.i32_add();             // base_array + index * elemSize
+        out.comment("END: " + this.decompile());
     }
 }

@@ -62,7 +62,9 @@ public class Name extends Designator {
 
     @Override
     public String decompile() {
-        return String.format("%s", iden);
+        if(definition instanceof DefVar && !((DefVar)definition).isGlobal())
+            return String.format("%s{delta=%d}", iden, ((DefVar)definition).getDelta());
+        else return iden.toString();
     }
 
     @Override
@@ -74,5 +76,14 @@ public class Name extends Designator {
                 out.i32_load();
         } else
             throw new SemanticError("Can't compile a definition to " + definition + " from a name");
+    }
+
+    @Override
+    public void compileAsExpr(ProgramOutput out) {
+        if(type().size() == 4){
+            super.compileAsExpr(out);
+        } else {
+            out.mem_read((DefVar)this.definition);
+        }
     }
 }

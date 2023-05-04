@@ -33,7 +33,7 @@ public class DefVar extends Definition {
         String output = "var";
 
         if (this.getProgress().atLeast(CompilationProgress.FUNC_SIZE_AND_DELTAS))
-            output += String.format(" [delta = %d]", this.getDelta());
+            output += String.format(" {delta=%d}", this.getDelta());
 
         return output;
     }

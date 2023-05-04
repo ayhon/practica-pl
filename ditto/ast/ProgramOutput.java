@@ -365,10 +365,14 @@ public class ProgramOutput {
 
     /* MEMORY LOCALS */
     public void mem_location(DefVar var) {
+        mem_location(var, 0);
+    }
+
+    public void mem_location(DefVar var, int offset){
         if (var.isGlobal()) {
-            i32_const(8 + var.getOffset());
+            i32_const(8 + var.getOffset() + offset);
         } else {
-            mem_local(var.getOffset());
+            mem_local(var.getOffset() + offset);
         }
     }
 
@@ -389,6 +393,7 @@ public class ProgramOutput {
             expr.compileAsExpr(this);
             i32_store();
         } else {
+            comment(String.format("Copiando %s tamaño %s",expr.decompile(), exprSize));
             // | --- | ... | dir                        temp=Ø
             set_local("temp"); // | --- | ... | →               temp=dir
             i32_const(0);         // | --- | ... | 0 | →        temp=dir
@@ -406,6 +411,15 @@ public class ProgramOutput {
                 i32_store();            // | dir | ... | →                   temp=elem, MEM[dir+offset]=elem
             }
             // MEM: dir → elem[0], ..., dir + offset→ elem[offset/4]
+        }
+    }
+
+    public void mem_read(DefVar var){
+        mem_location(var);
+        if (var.type().size() > 4){    // Exclusive since a Param is a pointer, of size 4
+            for(int offset = 4; offset < var.type().size(); offset += 4){
+                mem_location(var, offset);
+            }
         }
     }
 

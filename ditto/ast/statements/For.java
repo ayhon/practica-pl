@@ -88,7 +88,7 @@ public class For extends Statement {
 
     @Override
     public String decompile() {
-        return "for " + index.decompile() + " from " + from.decompile() + " to " + to.decompile() + " by " + by.decompile() + " do ... end";
+        return String.format("for %s from %s to %s by %s do ... end", index.decompile(), from.decompile(), to.decompile(), by.decompile());
     }
 
     @Override

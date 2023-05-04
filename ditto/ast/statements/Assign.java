@@ -60,7 +60,7 @@ public class Assign extends Statement {
     @Override
     public void compileAsInstruction(ProgramOutput out) {
         out.comment("INSTRUCTION: " + this.decompile());
-        place.compileAsExpr(out);
+        place.compileAsDesig(out);
         out.mem_copy(expr);
     }
 }

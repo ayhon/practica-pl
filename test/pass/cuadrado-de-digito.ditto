@@ -1,20 +1,32 @@
 func main() 
-    array 10 int memo := [
-        0,  // 0²
-        1,  // 1²
-        4,  // 2²
-        9,  // 3²
-        16, // 4²
-        25, // 5²
-        36, // 6²
-        49, // 7²
-        64, // 8²
-        81 // 9²
-    ];
+    // array 10 int memo := [
+    //     0,  // 0²
+    //     1,  // 1²
+    //     4,  // 2²
+    //     9,  // 3²
+    //     16, // 4²
+    //     25, // 5²
+    //     36, // 6²
+    //     49, // 7²
+    //     64, // 8²
+    //     81  // 9²
+    // ];
+    array 10 int memo := [0; 10];
+    memo[0] :=  0; // 0²
+    memo[1] :=  1; // 1²
+    memo[2] :=  4; // 2²
+    memo[3] :=  9; // 3²
+    memo[4] := 16; // 4²
+    memo[5] := 25; // 5²
+    memo[6] := 36; // 6²
+    memo[7] := 49; // 7²
+    memo[8] := 64; // 8²
+    memo[9] := 81; // 9²
+    array 10 int memo2 := memo;
     int query := scan();
     if query < 0 or 9 < query then
         print(-1);
     else
-        print(memo[query]);
+        print(memo2[query]);
     end
 end

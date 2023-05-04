@@ -261,7 +261,7 @@ public class ProgramOutput {
         indent_level = Math.max(0, indent_level - INDENT_WIDTH);
     }
 
-    private void indented(Runnable r){
+    private void indented(Runnable r) {
         indent();
         r.run();
         dedent();
@@ -370,11 +370,11 @@ public class ProgramOutput {
         mem_location(var, 0);
     }
 
-    public void mem_location(DefVar var, int offset){
+    public void mem_location(DefVar var, int offset) {
         mem_location(var.getOffset(), offset, var.isGlobal());
     }
-    
-    public void mem_location(int baseOffset, int offset, boolean isGlobal){
+
+    public void mem_location(int baseOffset, int offset, boolean isGlobal) {
         if (isGlobal) {
             i32_const(8 + baseOffset + offset);
         } else {
@@ -390,43 +390,47 @@ public class ProgramOutput {
 
     /**
      * Esperamos que en la pila tengamos el objeto a copiar
-     * con todos sus elementos en orden inverso (el primero en la pila es el último en el objeto)
+     * con todos sus elementos en orden inverso (el primero en la pila es el último
+     * en el objeto)
      * seguido de la dirección de memoria a la que copiar en la cima de la pila
      */
     public void mem_copy(Expr expr) {
         int exprSize = expr.type().size();
-        if(exprSize == 4){
+        if (exprSize == 4) {
             expr.compileAsExpr(this);
             i32_store();
         } else {
-            comment(String.format("Copiando %s tamaño %s",expr.decompile(), exprSize));
+            comment(String.format("Copiando %s tamaño %s", expr.decompile(), exprSize));
             // ... | dir
-            set_global("tempDir");  // ... | →               tempDir=dir
+            set_global("tempDir"); // ... | → tempDir=dir
             expr.compileAsExpr(this);
-            // ... | elemN-1| elemN | →  temp=Ø
-            for (int offset = exprSize-4; offset >= 0; offset -= 4) {
-                /// Usamos una variable global tempElem para guardar temporalmente el elemento que estamos copiando
-                /// Porque la instrucción i32.store pide que el cima de pila sea el elemento a copiar y luego la dirección
-                /// Pero lo tenemos al revés, por eso hay que invertir el orden utilizando una variable auxiliar
-                set_global("tempElem");         // ... | →                       tempElem=elem,
-                get_global("tempDir");          // ... | dir | →             
-                i32_const(offset);              // ... | dir | offset →      
-                i32_add();                      // ... | dir+offset | →      
-                get_global("tempElem");         // ... | dir+offset | elem → 
-                i32_store();                    // ... | →                       MEM[dir+offset]=elem
+            // ... | elemN-1| elemN | → temp=Ø
+            for (int offset = exprSize - 4; offset >= 0; offset -= 4) {
+                /// Usamos una variable global tempElem para guardar temporalmente el elemento
+                /// que estamos copiando
+                /// Porque la instrucción i32.store pide que el cima de pila sea el elemento a
+                /// copiar y luego la dirección
+                /// Pero lo tenemos al revés, por eso hay que invertir el orden utilizando una
+                /// variable auxiliar
+                set_global("tempElem"); // ... | → tempElem=elem,
+                get_global("tempDir"); // ... | dir | →
+                i32_const(offset); // ... | dir | offset →
+                i32_add(); // ... | dir+offset | →
+                get_global("tempElem"); // ... | dir+offset | elem →
+                i32_store(); // ... | → MEM[dir+offset]=elem
             }
             // MEM: dir → elem[0], ..., dir + offset→ elem[offset/4]
         }
     }
 
-    public void mem_read(int size){
+    public void mem_read(int size) {
         // Asumimos que recibimos la dirección de memoria en la cima de la pila
         // ... | dir | ->
-        if(size == 4){
+        if (size == 4) {
             i32_load();
         } else {
             set_global("tempDir");
-            for(int offset = 0; offset < size; offset += 4){
+            for (int offset = 0; offset < size; offset += 4) {
                 get_global("tempDir");
                 i32_const(offset);
                 i32_add();
@@ -508,13 +512,13 @@ public class ProgramOutput {
             append(fun.getResult().asWasmResult());
             append(String.format("(local $%s i32)", ProgramOutput.LOCAL_START));
             append("(local $temp i32)");
-    
+
             int stackSize = fun.getSize() + 4 + 4;
             i32_const(stackSize);
             reserveStack();
-    
+
             runnable.run(); // La idea es que haga algo con el ProgramOutput dentro del runnable
-    
+
             freeStack();
         });
         append(")");
@@ -582,17 +586,19 @@ public class ProgramOutput {
         }
         indented(() -> append(sj.toString()));
     }
+
     public interface IntRunnable {
         void run(int i);
     }
+
     public void br_table(int size, IntRunnable r) {
-        for(int i = 0; i < size; i++){
+        for (int i = 0; i < size; i++) {
             append("block");
             indent();
         }
         // Tabla de branching
         block(() -> br_table(size));
-        for(int i = 0; i < size; i++){
+        for (int i = 0; i < size; i++) {
             r.run(i);
             dedent();
             append("end");

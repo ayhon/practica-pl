@@ -1,7 +1,7 @@
 // Supuesto módulo
 import Math;
 
-func main() -> int
+func main()
     int n := scan();
     // Invocamos método del módulo
     n := Math::exp(n, 5);

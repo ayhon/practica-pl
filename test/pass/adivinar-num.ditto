@@ -1,6 +1,6 @@
 import Random;
 
-func main() -> int
+func main()
     int guess := scan();
     int secret_number := Random::integer(0, 100);
     while guess != secret_number do

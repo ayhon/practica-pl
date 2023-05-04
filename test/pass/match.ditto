@@ -1,4 +1,4 @@
-func main() -> int
+func main()
     int x := scan();
     match x is
         case 1 do

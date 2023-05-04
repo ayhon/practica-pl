@@ -27,6 +27,7 @@ console.log(`watFile: ${watFile}`);
 const wasmFile = path.join(folder, `${name}.wasm`);
 const inputFile = path.join(folder, "input", `${name}.txt`);
 const outputFile = path.join(folder, "output", `${name}.txt`);
+const expectedOutputFile = path.join(folder, "expected_output", `${name}.txt`);
 
 let entrada = [];
 let i = 0;
@@ -99,7 +100,33 @@ const main = async () => {
     const input = fs.readFileSync(inputFile, "utf8");
     entrada = input.split("\n");
 
-    await start(watFilePath.replace(".wat", ".wasm"));
+    try {
+        await start(watFilePath.replace(".wat", ".wasm"));
+    }
+    catch (e) {
+        console.log(e);
+        process.exit(1);
+    }
+
+    if (fs.existsSync(expectedOutputFile)) {
+        /// Comparar la salida con el fichero de salida esperado
+        const expectedOutput = fs.readFileSync(expectedOutputFile, "utf8");
+        const output = fs.readFileSync(outputFile, "utf8");
+        console.log("👁 Hay un fichero de salida esperada");
+
+        if (output == expectedOutput) {
+            console.log("✅ Coincide la salida con la esperada");
+        } else {
+            console.log("❌ No coincide la salida con la esperada");
+            /// Show diff
+            console.log("➡ Salida esperada");
+            console.log(expectedOutput);
+            console.log("➡ Salida obtenida");
+            console.log(output);
+            process.exit(1);
+        }
+    }
+
     process.exit(0);
 };
 

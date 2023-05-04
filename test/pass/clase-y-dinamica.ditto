@@ -4,7 +4,7 @@ struct Persona is
     int peso;
 end
 
-func main() -> int 
+func main()
     ptr Persona p := new Persona{edad:13, altura:174, peso:63};
     
     print(p->edad);

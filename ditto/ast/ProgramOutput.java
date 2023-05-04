@@ -333,8 +333,8 @@ public class ProgramOutput {
         append("i32.ne");
     }
 
-    public void i32_eq_z() {
-        append("i32.eq_z");
+    public void i32_eqz() {
+        append("i32.eqz");
     }
 
     public void i32_le_s() {

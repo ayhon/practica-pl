@@ -73,8 +73,25 @@ case $1 in
                 # Mediante un for
                 echo "🧪 Ejecutando los tests que deberian pasar"
                 for test_file in test/pass/*.ditto; do
+                    if [ "$task" == "code" ] && ! grep -q "func main" "$test_file"
+                    then
+                        echo "👌 skipping [$task] $test_file porque no tiene func main"
+                        # No compilar los ficheros que no tienen funcion main
+                        continue
+                    fi
                     ditto_test $task $test_file $print_ast
-                    if [ $? -ne 0 ]; then
+                    RESULT=$?
+
+                    # Compilar y ejecutar el codigo generado si la tarea es code
+                    if [ $RESULT -eq 0 ] && [ "$task" == "code" ]; then
+                        # Tiene mismo nombre, pero extension .wat, en carpeta compiled
+                        dir=$(dirname $test_file)
+                        wat_file=$(basename $test_file .ditto).wat
+                        node main.js $dir/compiled/$wat_file
+                        RESULT=$?
+                    fi
+
+                    if [ $RESULT -ne 0 ]; then
                         echo "❌ failed [$task] $test_file"
                         failure="yes"
                     else
@@ -129,8 +146,8 @@ case $1 in
                 ;;
             *)
                 ditto_test $task $test_file $print_ast
-
-                if [ "$task" == "code" ]; then
+                
+                if [ $? -eq 0 ] && ["$task" == "code" ]; then
                     # Ejecutar el codigo generado
                     # Tiene mismo nombre, pero extension .wat, en carpeta compiled
                     dir=$(dirname $test_file)

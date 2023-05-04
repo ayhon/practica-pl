@@ -7,8 +7,13 @@ public abstract class Designator extends Expr {
     public abstract void compileAsDesig(ProgramOutput out);
 
     @Override
-    public void compileAsExpr(ProgramOutput out) {
+    public final void compileAsExpr(ProgramOutput out) {
         compileAsDesig(out);
-        out.i32_load();
+
+        /// Tengo que copiar los elementos que apunta el puntero al cima de la pila
+        /// Direccion inicial de memoria: compileAsDesig(out)
+        /// Tamaño del tipo: type().size()
+        /// Quiero copiar desde compileAsDesig(out) type().size() posiciones
+        out.mem_read(type().size());
     }
 }

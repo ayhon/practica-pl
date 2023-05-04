@@ -62,9 +62,10 @@ public class Name extends Designator {
 
     @Override
     public String decompile() {
-        if(definition instanceof DefVar && !((DefVar)definition).isGlobal())
-            return String.format("%s{delta=%d}", iden, ((DefVar)definition).getDelta());
-        else return iden.toString();
+        if (definition instanceof DefVar && !((DefVar) definition).isGlobal())
+            return String.format("%s{delta=%d}", iden, ((DefVar) definition).getDelta());
+        else
+            return iden.toString();
     }
 
     @Override
@@ -72,18 +73,16 @@ public class Name extends Designator {
         if (definition instanceof DefVar) {
             DefVar defVar = (DefVar) definition;
             out.mem_location(defVar);
-            if(defVar instanceof DefFunc.Param)
+            if (defVar instanceof DefFunc.Param)
                 out.i32_load();
         } else
             throw new SemanticError("Can't compile a definition to " + definition + " from a name");
     }
 
-    @Override
-    public void compileAsExpr(ProgramOutput out) {
-        if(type().size() == 4){
-            super.compileAsExpr(out);
-        } else {
-            out.mem_read((DefVar)this.definition);
-        }
+    public int getOffset() {
+        if (definition instanceof DefVar)
+            return ((DefVar) definition).getOffset();
+        else
+            throw new SemanticError("Can't get offset from a definition " + definition + " from a name");
     }
 }

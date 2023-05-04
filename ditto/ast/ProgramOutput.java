@@ -74,6 +74,8 @@ public class ProgramOutput {
         buf.add("(global $SP (mut i32) (i32.const 0))         ;; start of stack");
         buf.add("(global $MP (mut i32) (i32.const 0))         ;; mark pointer");
         buf.add("(global $NP (mut i32) (i32.const 131071996)) ;; heap 2000*64*1024-4");
+        buf.add("(global $tempDir  (mut i32) (i32.const 0))        ;; para soportar cargas de tipos de tamaño no trivial");
+        buf.add("(global $tempElem (mut i32) (i32.const 0))        ;; para soportar cargas de tipos de tamaño no trivial");
         // Este es el tipo de todas nuestras funciones, pues nos
         // pasamos los argumentos y valores de retorno por memoria
         loadBuiltins(buf);
@@ -369,10 +371,14 @@ public class ProgramOutput {
     }
 
     public void mem_location(DefVar var, int offset){
-        if (var.isGlobal()) {
-            i32_const(8 + var.getOffset() + offset);
+        mem_location(var.getOffset(), offset, var.isGlobal());
+    }
+    
+    public void mem_location(int baseOffset, int offset, boolean isGlobal){
+        if (isGlobal) {
+            i32_const(8 + baseOffset + offset);
         } else {
-            mem_local(var.getOffset() + offset);
+            mem_local(baseOffset + offset);
         }
     }
 
@@ -394,31 +400,37 @@ public class ProgramOutput {
             i32_store();
         } else {
             comment(String.format("Copiando %s tamaño %s",expr.decompile(), exprSize));
-            // | --- | ... | dir                        temp=Ø
-            set_local("temp"); // | --- | ... | →               temp=dir
-            i32_const(0);         // | --- | ... | 0 | →        temp=dir
-            get_local("temp"); // | --- | ... | 0 | dir | →  temp=dir
-            i32_store();            // | dir | ... | →
+            // ... | dir
+            set_global("tempDir");  // ... | →               tempDir=dir
             expr.compileAsExpr(this);
-            // | --- | ... | elemN-1| elemN | →  temp=Ø
+            // ... | elemN-1| elemN | →  temp=Ø
             for (int offset = exprSize-4; offset >= 0; offset -= 4) {
-                set_local("temp"); // | dir | ... | →                   temp=elem
-                i32_const(0);         // | dir | ... | 0 | →               temp=elem
-                i32_load();             // | dir | ... | dir | →             temp=elem
-                i32_const(offset);      // | dir | ... | dir | offset | →    temp=elem
-                i32_add();              // | dir | ... | dir+offset | →      temp=elem
-                get_local("temp"); // | dir | ... | dir+offset | elem → temp=elem 
-                i32_store();            // | dir | ... | →                   temp=elem, MEM[dir+offset]=elem
+                /// Usamos una variable global tempElem para guardar temporalmente el elemento que estamos copiando
+                /// Porque la instrucción i32.store pide que el cima de pila sea el elemento a copiar y luego la dirección
+                /// Pero lo tenemos al revés, por eso hay que invertir el orden utilizando una variable auxiliar
+                set_global("tempElem");         // ... | →                       tempElem=elem,
+                get_global("tempDir");          // ... | dir | →             
+                i32_const(offset);              // ... | dir | offset →      
+                i32_add();                      // ... | dir+offset | →      
+                get_global("tempElem");         // ... | dir+offset | elem → 
+                i32_store();                    // ... | →                       MEM[dir+offset]=elem
             }
             // MEM: dir → elem[0], ..., dir + offset→ elem[offset/4]
         }
     }
 
-    public void mem_read(DefVar var){
-        mem_location(var);
-        if (var.type().size() > 4){    // Exclusive since a Param is a pointer, of size 4
-            for(int offset = 4; offset < var.type().size(); offset += 4){
-                mem_location(var, offset);
+    public void mem_read(int size){
+        // Asumimos que recibimos la dirección de memoria en la cima de la pila
+        // ... | dir | ->
+        if(size == 4){
+            i32_load();
+        } else {
+            set_global("tempDir");
+            for(int offset = 0; offset < size; offset += 4){
+                get_global("tempDir");
+                i32_const(offset);
+                i32_add();
+                i32_load();
             }
         }
     }

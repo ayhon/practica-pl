@@ -71,7 +71,7 @@ public class While extends Statement {
         out.comment("INSTRUCTION: " + this.decompile());
         out.block_loop(() -> {
             this.cond.compileAsExpr(out);   // Cargamos en la cima de la pila la expresion
-            out.i32_eq_z();                 // if cond == 0 (true)
+            out.i32_eqz();                 // if cond == 0 (true)
             out.br_if(1);
             for (Statement s : statements) {// Compilamos las intrucciones    
                 s.compileAsInstruction(out);

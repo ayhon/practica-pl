@@ -36,3 +36,6 @@ jobs:
 
       - name: Test Offsets
         run: export DO_NOT_COMPILE=1 && ./run.sh test offsets all
+
+      - name: Test code
+        run: export DO_NOT_COMPILE=1 && ./run.sh test code all

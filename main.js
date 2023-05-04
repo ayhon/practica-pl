@@ -100,7 +100,13 @@ const main = async () => {
     const input = fs.readFileSync(inputFile, "utf8");
     entrada = input.split("\n");
 
-    await start(watFilePath.replace(".wat", ".wasm"));
+    try {
+        await start(watFilePath.replace(".wat", ".wasm"));
+    }
+    catch (e) {
+        console.log(e);
+        process.exit(1);
+    }
 
     if (fs.existsSync(expectedOutputFile)) {
         /// Comparar la salida con el fichero de salida esperado

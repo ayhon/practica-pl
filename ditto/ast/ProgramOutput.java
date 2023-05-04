@@ -197,7 +197,12 @@ public class ProgramOutput {
     }
 
     public void comment(String comment) {
-        append(";; %s", comment);
+        /// Para aceptar comentarios con varias lineas, como en caso de decompile de
+        /// match
+        var comments = comment.split("\n");
+        for (var c : comments) {
+            append(";; %s", c);
+        }
     }
 
     public void reserveStack() {

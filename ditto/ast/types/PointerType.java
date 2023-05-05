@@ -13,6 +13,7 @@ public class PointerType extends Type {
     private static final Null DEFAULT_POINTER = Null.getInstance();
 
     public PointerType(Type elementType) {
+        super(true);
         this.elementType = elementType;
     }
 

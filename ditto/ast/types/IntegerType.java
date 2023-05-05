@@ -10,6 +10,7 @@ public class IntegerType extends Type {
     private static final Natural DEFAULT_INT = new Natural(0);
 
     private IntegerType() {
+        super(true);
     }
 
     @Override

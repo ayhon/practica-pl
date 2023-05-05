@@ -1,7 +1,6 @@
 package ditto.ast.types;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import ditto.ast.Node;
@@ -20,6 +19,7 @@ public class ArrayType extends Type {
     }
 
     public ArrayType(Type elementType, int length) {
+        super(false);
         this.elementType = elementType;
         this.length = length;
     }

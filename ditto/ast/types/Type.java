@@ -8,6 +8,13 @@ import ditto.ast.ProgramOutput;
 import ditto.ast.literals.Literal;
 
 public abstract class Type extends Node {
+    /// Si es un tipo básico o no (ocupa más de 4 bytes)
+    public final boolean isBasic;
+
+    public Type(boolean isBasic) {
+        this.isBasic = isBasic;
+    }
+
     /// Lo que ocuparía en memoria. Se usa para calcular delta.
     public abstract int size();
 

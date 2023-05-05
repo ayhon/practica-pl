@@ -8,6 +8,7 @@ public class VoidType extends Type {
     private static VoidType instance = new VoidType();
 
     private VoidType() {
+        super(true);
     }
 
     @Override

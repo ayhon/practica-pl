@@ -9,6 +9,7 @@ public class BoolType extends Type {
     private static final False DEFAULT_BOOL = False.getInstance();
 
     private BoolType() {
+        super(true);
     }
 
     @Override

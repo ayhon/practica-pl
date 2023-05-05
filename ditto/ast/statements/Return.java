@@ -84,5 +84,7 @@ public class Return extends Statement {
 
             out.call("copyn");
         }
+
+        out.doReturn();
     }
 }

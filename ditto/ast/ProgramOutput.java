@@ -467,8 +467,8 @@ public class ProgramOutput {
     }
 
     public void doReturn() {
-        append("return");
         freeStack();
+        append("return");
     }
 
     /* CONTROL FLOW */

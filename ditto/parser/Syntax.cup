@@ -342,7 +342,7 @@ MATCH_STMT                  ::= MATCH EXPR:expr IS CASE_STMTs:cases END
 
 CASE_STMTs                  ::= CASE EXPR:expr DO STMTs:body CASE_STMTs:rest
                                     {:  RESULT = rest; rest.add(new Match.Case(expr, body)); :}
-                                | OTHERWISE DO STMTs:body
+                                | OTHERWISE STMTs:body
                                     {: RESULT = new ArrayList<Match.Case>(); RESULT.add(new Match.Case(body)); :}
                                 | 
                                     {: RESULT = new ArrayList<Match.Case>(); :};

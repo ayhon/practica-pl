@@ -455,7 +455,7 @@ public class ProgramOutput {
             append(String.format("(local $%s i32)", ProgramOutput.LOCAL_START));
             append("(local $temp i32)");
 
-            int stackSize = fun.getSize() + 4 + 4;
+            int stackSize = fun.getSize() + 4 + 4 + fun.getResult().size();
             i32_const(stackSize);
             reserveStack();
 

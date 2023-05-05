@@ -178,8 +178,18 @@ public class Call extends Expr {
                 expr.compileAsExpr(out);
             }
 
+            /// Guardar el resultado en la posición de memoria asignada para caso scan
+            if (this.funcDef.getResult().size() > 0) {
+                out.mem_local(this.position);
+            }
+
             /// Llamar a la funcion desde WASM
             out.call(this.funcDef.getIden());
+
+            if (this.funcDef.getResult().size() > 0) {
+                out.i32_store();
+            }
+
             return;
         }
 

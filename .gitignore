@@ -27,3 +27,5 @@ ditto/parser/Parser.java
 ditto/parser/TokenKind.java
 *.wat
 *.wasm
+
+test/pass/compiled/output/*

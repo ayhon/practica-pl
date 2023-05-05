@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import ditto.ast.CompilationProgress;
+import ditto.ast.Delta;
 import ditto.ast.Node;
 import ditto.ast.ProgramOutput;
 import ditto.ast.definitions.DefFunc;
@@ -18,6 +20,7 @@ public class Call extends Expr {
     private final Designator func;
     private final List<Expr> args;
     private DefFunc funcDef;
+    private int position;
 
     public Call(Designator func) {
         this.func = func;
@@ -31,7 +34,12 @@ public class Call extends Expr {
 
     @Override
     public String getAstString() {
-        return "call";
+        String output = "call";
+
+        if (this.getProgress().atLeast(CompilationProgress.FUNC_SIZE_AND_DELTAS))
+            output += String.format(" [delta = %d]", this.position);
+
+        return output;
     }
 
     @Override
@@ -80,6 +88,13 @@ public class Call extends Expr {
                         param.getIden(), args.get(i).decompile()));
             }
         }
+    }
+
+    @Override
+    public void computeOffset(Delta lastDelta) {
+        super.computeOffset(lastDelta);
+        /// Asigno una posición de memoria para el resultado de la función
+        position = lastDelta.useNextOffset(this.funcDef.getResult().size());
     }
 
     private void loadFunctionDefinition() {

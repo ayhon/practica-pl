@@ -1,0 +1,8 @@
+func suma(int a, int b) -> int
+    return a + b;
+end
+
+func main()
+    int r := suma(3, suma(2, suma(4, 10)));
+    print(r);
+end

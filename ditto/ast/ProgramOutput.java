@@ -545,4 +545,13 @@ public class ProgramOutput {
             append("end");
         }
     }
+
+    public void block() {
+        append("block");
+    }
+
+    public void end() {
+        append("end");
+        dedent();
+    }
 }

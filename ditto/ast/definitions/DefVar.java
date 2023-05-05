@@ -16,6 +16,7 @@ public class DefVar extends Definition {
     private Expr expr;
     private int position;
     private boolean isGlobal;
+    private int deepness;
 
     public DefVar(Type type, String iden, Expr expr) {
         // Argumentos en este orden para representar como se escribe en el lenguaje

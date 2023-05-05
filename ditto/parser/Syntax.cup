@@ -337,16 +337,17 @@ WHILE_STMT                  ::= WHILE EXPR:cond DO STMTs:statements END
                                     {: RESULT = new While(cond, statements); :};
 
 /* Sintaxis del match */
-MATCH_STMT                  ::= MATCH EXPR:expr IS CASE_STMTs:cases OTHERWISE STMTs:otherwise END
-                                    {: RESULT = new Match(expr, cases, otherwise); :}
-                                | MATCH EXPR:expr IS CASE_STMTs:cases END
+MATCH_STMT                  ::= MATCH EXPR:expr IS CASE_STMTs:cases END
                                     {: RESULT = new Match(expr, cases); :};
 
 CASE_STMTs                  ::= CASE EXPR:expr DO STMTs:body CASE_STMTs:rest
-                                    {: rest.add(new Match.Case(expr, body)); RESULT = rest; :}
+                                    {:  RESULT = rest; rest.add(new Match.Case(expr, body)); :}
+                                | OTHERWISE DO STMTs:body
+                                    {: RESULT = new ArrayList<Match.Case>(); RESULT.add(new Match.Case(body)); :}
                                 | 
                                     {: RESULT = new ArrayList<Match.Case>(); :};
 
+/*Return sintaxis*/
 RETURN_STMT                 ::= RETURN EXPR:expr SEMICOLON
                                     {: RESULT = new Return(expr); :}
                                 | RETURN SEMICOLON

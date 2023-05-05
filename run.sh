@@ -147,7 +147,7 @@ case $1 in
             *)
                 ditto_test $task $test_file $print_ast
                 
-                if [ $? -eq 0 ] && ["$task" == "code" ]; then
+                if [ $? -eq 0 ] && [ "$task" == "code" ]; then
                     # Ejecutar el codigo generado
                     # Tiene mismo nombre, pero extension .wat, en carpeta compiled
                     dir=$(dirname $test_file)

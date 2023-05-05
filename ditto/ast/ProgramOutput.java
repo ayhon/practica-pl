@@ -263,7 +263,7 @@ public class ProgramOutput {
         indent_level = Math.max(0, indent_level - INDENT_WIDTH);
     }
 
-    private void indented(Runnable r){
+    private void indented(Runnable r) {
         indent();
         r.run();
         dedent();
@@ -452,16 +452,15 @@ public class ProgramOutput {
     public void func(DefFunc fun, Runnable runnable) {
         append("(func $%s", fun.getIden());
         indented(() -> {
-            append(fun.getResult().asWasmResult());
             append(String.format("(local $%s i32)", ProgramOutput.LOCAL_START));
             append("(local $temp i32)");
-    
+
             int stackSize = fun.getSize() + 4 + 4;
             i32_const(stackSize);
             reserveStack();
-    
+
             runnable.run(); // La idea es que haga algo con el ProgramOutput dentro del runnable
-    
+
             freeStack();
         });
         append(")");
@@ -529,17 +528,19 @@ public class ProgramOutput {
         }
         indented(() -> append(sj.toString()));
     }
+
     public interface IntRunnable {
         void run(int i);
     }
+
     public void br_table(int size, IntRunnable r) {
-        for(int i = 0; i < size; i++){
+        for (int i = 0; i < size; i++) {
             append("block");
             indent();
         }
         // Tabla de branching
         block(() -> br_table(size));
-        for(int i = 0; i < size; i++){
+        for (int i = 0; i < size; i++) {
             r.run(i);
             dedent();
             append("end");

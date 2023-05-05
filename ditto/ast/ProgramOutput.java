@@ -263,7 +263,7 @@ public class ProgramOutput {
         indent_level = Math.max(0, indent_level - INDENT_WIDTH);
     }
 
-    private void indented(Runnable r) {
+    public void indented(Runnable r) {
         indent();
         r.run();
         dedent();

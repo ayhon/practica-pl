@@ -52,11 +52,37 @@ public class Return extends Statement {
 
     @Override
     public void compileAsInstruction(ProgramOutput out) {
+        /// Guardar este resultado en la zona de retorno
+        /// Sabemos que la dirección del inicio es $SP - this.expr.size()
+        /// Puede ser un valor de tipo no basico, entonces uso copyn
         out.comment("INSTRUCTION: " + this.decompile());
-        expr.compileAsExpr(out);
 
-        /// Hacer un return explicito, porque sino, en casos como return dentro de un
-        /// if, se raya WebAssembly y piensa que estas dejando valor dentro del bloque if
-        out.doReturn();
+        if (this.expr.type().isBasic) {
+            out.comment("Guardo el valor de retorno con i32.store, porque es un tipo basico");
+            
+            out.comment("Posicion inicial de la zona de retorno");
+            out.get_global("SP");
+            out.i32_const(this.expr.type().size());
+            out.i32_sub();
+
+            expr.compileAsExpr(out);
+
+            out.i32_store();
+        } else {
+            out.comment("Guardo el valor de retorno con copyn, porque es un tipo no basico");
+
+            out.comment("Posicion inicial del valor de retorno (FROM)");
+            expr.compileAsExpr(out);
+
+            out.comment("Posicion inicial de la zona de retorno (TO)");
+            out.get_global("SP");
+            out.i32_const(this.expr.type().size());
+            out.i32_sub();
+
+            out.comment("Tamaño del valor de retorno (N)");
+            out.i32_const(this.expr.type().size() / 4);
+
+            out.call("copyn");
+        }
     }
 }

@@ -8,6 +8,7 @@ import java.util.Map;
 
 import ditto.ast.Identifier;
 import ditto.ast.Context;
+import ditto.ast.Delta;
 import ditto.ast.Node;
 import ditto.ast.ProgramOutput;
 import ditto.ast.definitions.DefStruct;
@@ -21,6 +22,7 @@ public class StructLiteral extends Literal {
     private final Identifier iden;
     private final Map<String, Expr> fieldValues;
     private DefStruct definition;
+    private int position;
 
     public StructLiteral(Identifier iden, Map<String, Expr> fieldValues) {
         this.iden = iden;
@@ -76,12 +78,6 @@ public class StructLiteral extends Literal {
     }
 
     @Override
-    public void compileAsExpr(ProgramOutput out) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'compileAsExpr'");
-    }
-
-    @Override
     public void bind(Context ctx) {
         var def = ctx.get(iden);
         if (def instanceof DefStruct) {
@@ -109,5 +105,77 @@ public class StructLiteral extends Literal {
             }
         }
         this.type = this.definition.type();
+    }
+
+    @Override
+    public void computeOffset(Delta lastDelta) {
+        super.computeOffset(lastDelta);
+
+        /// Necesito reservar espacio de 1 int para guardar la dirección de inicio del
+        /// StructLiteral en heap
+        /// Porque lo rellenamos primero en el heap, y luego se copia a donde
+        /// tiene que copiar
+        this.position = lastDelta.useNextOffset(4);
+    }
+
+    @Override
+    public void compileAsExpr(ProgramOutput out) {
+        out.comment("Evaluando struct literal: " + this.decompile());
+
+        /// Reservar espacio en heap
+        out.i32_const(this.type().size());
+        out.call(ProgramOutput.RESERVE_HEAP);
+
+        /// Guardar dirección del inicio del array
+        out.mem_local(this.position);
+        out.get_global("NP");
+        out.i32_store();
+
+        out.indented(() -> {
+            /// Evaluar cada elemento (puede contener también tipos no básicos)
+            var attributes = this.definition.getAttributes();
+
+            for (var entry : fieldValues.entrySet()) {
+                var field = attributes.get(entry.getKey());
+                var expr = entry.getValue();
+                out.comment("Guardando campo " + field.getIden() + " del StructLiteral con offset " + field.getDelta());
+                out.comment("Evaluando campo " + field.getIden());
+
+                if (expr.type().isBasic) {
+                    out.comment("Es un tipo básico, copiar con i32_store");
+                    out.mem_local(this.position);
+                    out.i32_load();
+                    out.i32_const(field.getOffset());
+                    out.i32_add();
+
+                    expr.compileAsExpr(out);
+
+                    out.i32_store();
+                } else {
+                    /// Caso recursivo, copiar con ncopy
+                    out.comment("Es un tipo no basico, hay que evaluarlo primero");
+
+                    out.comment("FROM");
+                    out.indented(() -> {
+                        expr.compileAsExpr(out);
+                    });
+
+                    out.comment("TO");
+                    out.mem_local(this.position);
+                    out.i32_load();
+                    out.i32_const(field.getOffset());
+                    out.i32_add();
+
+                    out.comment("SIZE");
+                    out.i32_const(expr.type().size() / 4);
+
+                    out.call(ProgramOutput.COPYN);
+                }
+            }
+        });
+
+        /// Devolver dirección del inicio del array
+        out.mem_local(this.position);
+        out.i32_load();
     }
 }

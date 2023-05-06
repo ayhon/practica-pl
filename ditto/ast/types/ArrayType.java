@@ -1,19 +1,15 @@
 package ditto.ast.types;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import ditto.ast.Node;
-import ditto.ast.literals.Literal;
 import ditto.ast.literals.Natural;
 import ditto.errors.SemanticError;
-import ditto.ast.literals.ArrayLiteral;
 
 public class ArrayType extends Type {
     private final Type elementType;
     private int length;
-    private Literal defaultValue;
 
     public ArrayType(Type elementType, Natural size) {
         this(elementType, (int) size.getValue());
@@ -22,10 +18,6 @@ public class ArrayType extends Type {
     public ArrayType(Type elementType, int length) {
         this.elementType = elementType;
         this.length = length;
-    }
-
-    public Literal getDefault() { // Empty array
-        return defaultValue;
     }
 
     public Type getElementType() {
@@ -64,19 +56,11 @@ public class ArrayType extends Type {
     public List<Node> getAstChildren() {
         List<Node> children = new ArrayList<>();
         children.add(elementType);
-        if (defaultValue != null)
-            children.add(defaultValue);
         return children;
     }
 
     @Override
     public int size() {
         return getLength() * elementType.size();
-    }
-
-    @Override
-    public void computeTypeSize() {
-        super.computeTypeSize();
-        this.defaultValue = new ArrayLiteral(this);
     }
 }

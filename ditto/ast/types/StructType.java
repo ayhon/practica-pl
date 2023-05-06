@@ -12,16 +12,12 @@ import ditto.ast.Context;
 import ditto.ast.definitions.DefStruct;
 import ditto.ast.definitions.DefVar;
 import ditto.ast.definitions.Definition;
-import ditto.ast.literals.Literal;
-import ditto.ast.literals.StructLiteral;
 import ditto.errors.BindingError;
 
 public class StructType extends Type {
     private final Identifier iden;
     private Map<String, Type> fieldTypes;
     private DefStruct definition;
-
-    private Literal defaultValue = null;
     private int size = 0;
 
     public StructType(Identifier iden) {
@@ -47,16 +43,6 @@ public class StructType extends Type {
 
     public Definition getFieldDefinition(String name) {
         return definition.getAttributeOrMethod(name);
-    }
-
-    @Override
-    public Literal getDefault() {
-        /// El valor por defecto de un struct es el valor por defecto de cada uno de sus
-        /// campos
-        if (definition == null)
-            throw new BindingError("Can't construct default value before binding.");
-
-        return defaultValue;
     }
 
     public DefStruct getDefinition() {
@@ -101,8 +87,6 @@ public class StructType extends Type {
     public List<Node> getAstChildren() {
         List<Node> children = new ArrayList<>();
         children.addAll(fieldTypes.values().stream().map(t -> (Node) t).toList());
-        if (defaultValue != null)
-            children.add(defaultValue);
         return children;
     }
 
@@ -136,6 +120,5 @@ public class StructType extends Type {
         for (Type type : fieldTypes.values()) {
             this.size += type.size(); // Add size of all attributes
         }
-        this.defaultValue = new StructLiteral(this); // Compute default value
     }
 }

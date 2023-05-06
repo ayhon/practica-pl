@@ -100,14 +100,14 @@ public class DefVar extends Definition {
         if (this.expr == null) {
             /// Rellena con ceros
             out.comment("No tiene valor por defecto, rellenar con ceros");
-            
-            out.mem_local(this.position);
+
+            out.mem_location(this);
             out.i32_const(this.type.size() / 4);
             out.call(ProgramOutput.FILL_ZERO);
         } else if (expr.type().isBasic) {
             out.comment("Asignado un tipo básico: " + expr.decompile());
 
-            out.mem_local(this.position);
+            out.mem_location(this);
             expr.compileAsExpr(out);
             out.i32_store();
         } else {
@@ -119,7 +119,7 @@ public class DefVar extends Definition {
             });
 
             out.comment("TO");
-            out.mem_local(this.position);
+            out.mem_location(this);
 
             out.comment("SIZE");
             out.i32_const(expr.type().size() / 4);

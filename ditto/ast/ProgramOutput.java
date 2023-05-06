@@ -4,7 +4,6 @@ import java.util.StringJoiner;
 
 import ditto.ast.definitions.DefFunc;
 import ditto.ast.definitions.DefVar;
-import ditto.ast.definitions.DefFunc.Param;
 import ditto.errors.SemanticError;
 
 public class ProgramOutput {
@@ -18,6 +17,7 @@ public class ProgramOutput {
     public final static String RESERVE_STACK = "reserveStack";
     public final static String FREE_STACK = "freeStack";
     public final static String RESERVE_HEAP = "reserveHeap";
+    public final static String COPYN = "copyn";
 
     private final String FUNC_SIG = "_sig_void";
     private final int INDENT_WIDTH = 4;
@@ -148,8 +148,8 @@ public class ProgramOutput {
          */
         sb.add("""
                 (func $reserveHeap (param $size i32)
-                    get_local $size
                     get_global $NP
+                    get_local $size
                     i32.sub
                     set_global $NP  ;; NP = NP - size
                     get_global $SP

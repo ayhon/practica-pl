@@ -1,8 +1,6 @@
 package ditto.ast.types;
 
 import ditto.ast.Node;
-import ditto.ast.literals.Literal;
-import ditto.ast.literals.Null;
 import ditto.ast.CompilationProgress;
 
 import java.util.ArrayList;
@@ -10,16 +8,10 @@ import java.util.List;
 
 public class PointerType extends Type {
     private final Type elementType;
-    private static final Null DEFAULT_POINTER = Null.getInstance();
 
     public PointerType(Type elementType) {
         super(true);
         this.elementType = elementType;
-    }
-
-    @Override
-    public Literal getDefault() {
-        return DEFAULT_POINTER;
     }
 
     public Type getElementType() {

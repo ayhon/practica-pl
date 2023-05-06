@@ -1,20 +1,11 @@
 package ditto.ast.types;
 
-import ditto.ast.literals.False;
-import ditto.ast.literals.Literal;
-
 // Singleton
 public class BoolType extends Type {
     private static BoolType instance = new BoolType();
-    private static final False DEFAULT_BOOL = False.getInstance();
 
     private BoolType() {
         super(true);
-    }
-
-    @Override
-    public Literal getDefault() {
-        return DEFAULT_BOOL;
     }
 
     public static BoolType getInstance() {

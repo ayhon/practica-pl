@@ -17,6 +17,7 @@ public class ProgramOutput {
     public final static String RESERVE_STACK = "reserveStack";
     public final static String FREE_STACK = "freeStack";
     public final static String RESERVE_HEAP = "reserveHeap";
+    public final static String FILL_ZERO = "fillZero";
     public final static String COPYN = "copyn";
 
     private final String FUNC_SIG = "_sig_void";
@@ -191,6 +192,33 @@ public class ProgramOutput {
                         set_local $src
                         br 0
                     end
+                    end
+                )
+                """);
+
+        /// Funcion de WASM para rellenar una zona de memoria con valor 0
+        sb.add("""
+                (func $fillZero
+                    (param $src i32)
+                    (param $n i32)
+                    block
+                        loop
+                            get_local $n
+                            i32.eqz
+                            br_if 1
+                            get_local $n
+                            i32.const 1
+                            i32.sub
+                            set_local $n
+                            get_local $src
+                            i32.const 0
+                            i32.store
+                            get_local $src
+                            i32.const 4
+                            i32.add
+                            set_local $src
+                            br 0
+                        end
                     end
                 )
                 """);
@@ -456,6 +484,7 @@ public class ProgramOutput {
             append("(local $temp i32)");
 
             int stackSize = fun.getSize() + 4 + 4 + fun.getResult().size();
+
             i32_const(stackSize);
             reserveStack();
 
@@ -545,5 +574,14 @@ public class ProgramOutput {
             dedent();
             append("end");
         }
+    }
+
+    public void block() {
+        append("block");
+    }
+
+    public void end() {
+        append("end");
+        dedent();
     }
 }

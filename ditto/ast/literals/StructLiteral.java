@@ -15,7 +15,6 @@ import ditto.ast.ProgramOutput;
 import ditto.ast.definitions.DefStruct;
 import ditto.ast.definitions.DefVar;
 import ditto.ast.expressions.Expr;
-import ditto.ast.types.StructType;
 import ditto.errors.BindingError;
 import ditto.errors.TypeError;
 
@@ -28,19 +27,6 @@ public class StructLiteral extends Literal {
     public StructLiteral(Identifier iden, Map<String, Expr> fieldValues) {
         this.iden = iden;
         this.fieldValues = fieldValues;
-    }
-
-    public StructLiteral(StructType type) {
-        this.iden = type.getIden();
-        this.fieldValues = new HashMap<>();
-        for (String fieldName : type.getFieldTypes().keySet()) {
-            fieldValues.put(fieldName, type.getFieldTypes().get(fieldName).getDefault());
-        }
-        this.type = type;
-
-        /// Porque este constructor se llama en fase de computeTypeSize, entonces ya
-        /// sabemos la definicion y no hay que hacer bind
-        this.definition = type.getDefinition();
     }
 
     public Identifier getIden() {

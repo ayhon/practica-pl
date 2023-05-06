@@ -4,7 +4,6 @@ import java.util.StringJoiner;
 
 import ditto.ast.definitions.DefFunc;
 import ditto.ast.definitions.DefVar;
-import ditto.ast.definitions.DefFunc.Param;
 import ditto.errors.SemanticError;
 
 public class ProgramOutput {
@@ -18,6 +17,7 @@ public class ProgramOutput {
     public final static String RESERVE_STACK = "reserveStack";
     public final static String FREE_STACK = "freeStack";
     public final static String RESERVE_HEAP = "reserveHeap";
+    public final static String FILL_ZERO = "fillZero";
 
     private final String FUNC_SIG = "_sig_void";
     private final int INDENT_WIDTH = 4;
@@ -194,6 +194,33 @@ public class ProgramOutput {
                     end
                 )
                 """);
+
+        /// Funcion de WASM para rellenar una zona de memoria con valor 0
+        sb.add("""
+                (func $fillZero
+                    (param $src i32)
+                    (param $n i32)
+                    block
+                        loop
+                            get_local $n
+                            i32.eqz
+                            br_if 1
+                            get_local $n
+                            i32.const 1
+                            i32.sub
+                            set_local $n
+                            get_local $src
+                            i32.const 0
+                            i32.store
+                            get_local $src
+                            i32.const 4
+                            i32.add
+                            set_local $src
+                            br 0
+                        end
+                    end
+                )
+                """);
     }
 
     public void comment(String comment) {
@@ -263,7 +290,7 @@ public class ProgramOutput {
         indent_level = Math.max(0, indent_level - INDENT_WIDTH);
     }
 
-    private void indented(Runnable r){
+    private void indented(Runnable r) {
         indent();
         r.run();
         dedent();
@@ -455,13 +482,13 @@ public class ProgramOutput {
             append(fun.getResult().asWasmResult());
             append(String.format("(local $%s i32)", ProgramOutput.LOCAL_START));
             append("(local $temp i32)");
-    
+
             int stackSize = fun.getSize() + 4 + 4;
             i32_const(stackSize);
             reserveStack();
-    
+
             runnable.run(); // La idea es que haga algo con el ProgramOutput dentro del runnable
-    
+
             freeStack();
         });
         append(")");
@@ -529,17 +556,19 @@ public class ProgramOutput {
         }
         indented(() -> append(sj.toString()));
     }
+
     public interface IntRunnable {
         void run(int i);
     }
+
     public void br_table(int size, IntRunnable r) {
-        for(int i = 0; i < size; i++){
+        for (int i = 0; i < size; i++) {
             append("block");
             indent();
         }
         // Tabla de branching
         block(() -> br_table(size));
-        for(int i = 0; i < size; i++){
+        for (int i = 0; i < size; i++) {
             r.run(i);
             dedent();
             append("end");

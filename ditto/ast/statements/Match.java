@@ -72,7 +72,9 @@ public class Match extends Statement {
         public void bind(Context ctx) {
             ctx.pushScope();
             super.bind(ctx);
-            this.exprValue = this.expr.evalIntAtCompileTime();
+            if (expr != null) {
+                this.exprValue = this.expr.evalIntAtCompileTime();
+            }
             ctx.popScope();
         }
 

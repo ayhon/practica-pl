@@ -1,10 +1,6 @@
 package ditto.ast.types;
 
 import ditto.ast.Node;
-import ditto.ast.literals.Literal;
-import ditto.errors.SemanticError;
-
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,11 +17,6 @@ public class FuncType extends Type {
         }
     }
 
-    @Override
-    public Literal getDefault() {
-        throw new SemanticError("No se puede obtener el valor por defecto de una funcion");
-    }
-
     public List<Type> getArgumentTypes() {
         return argumentTypes;
     }
@@ -34,7 +25,7 @@ public class FuncType extends Type {
         return returnType;
     }
 
-    public int getNumberArgs(){
+    public int getNumberArgs() {
         return argumentTypes.size();
     }
 

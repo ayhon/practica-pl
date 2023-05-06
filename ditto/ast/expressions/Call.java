@@ -242,7 +242,7 @@ public class Call extends Expr {
         out.i32_const(this.funcDef.getResult().size() / 4);
 
         out.comment("Copiando el resultado");
-        out.call("copyn");
+        out.call(ProgramOutput.COPYN);
 
         out.comment("Fin de la llamada a la función: " + this.decompile());
     }

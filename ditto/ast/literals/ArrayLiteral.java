@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import ditto.ast.CompilationProgress;
+import ditto.ast.Delta;
 import ditto.ast.Node;
 import ditto.ast.ProgramOutput;
 import ditto.ast.expressions.Expr;
@@ -13,6 +15,7 @@ import ditto.ast.types.Type;
 public class ArrayLiteral extends Literal {
     private final List<Expr> elements;
     private final Expr numberOfElem;
+    private int position;
 
     public List<Expr> getElements() {
         return elements;
@@ -46,7 +49,12 @@ public class ArrayLiteral extends Literal {
 
     @Override
     public String getAstString() {
-        return "arr";
+        String output = "arr";
+
+        if (this.getProgress().atLeast(CompilationProgress.FUNC_SIZE_AND_DELTAS))
+            output += String.format(" [delta = %d]", this.position);
+
+        return output;
     }
 
     @Override
@@ -93,12 +101,76 @@ public class ArrayLiteral extends Literal {
     }
 
     @Override
+    public void computeOffset(Delta lastDelta) {
+        super.computeOffset(lastDelta);
+
+        /// Necesito reservar espacio de 1 int para guardar la dirección de inicio del
+        /// Array en heap
+        /// Porque rellenamos el array primero en el heap, y luego se copia a donde
+        /// tiene que copiar
+        this.position = lastDelta.useNextOffset(4);
+    }
+
+    @Override
     public String decompile() {
         return "[" + String.join(",", elements.stream().map(Expr::decompile).toList()) + "]";
     }
 
     @Override
     public void compileAsExpr(ProgramOutput out) {
-        throw new UnsupportedOperationException("Unimplemented method 'compileAsExpr'");
+        out.comment("Evaluando ArrayLiteral: " + this.decompile());
+
+        /// Reservar espacio en heap
+        out.i32_const(this.type().size());
+        out.call(ProgramOutput.RESERVE_HEAP);
+
+        /// Guardar dirección del inicio del array
+        out.mem_local(this.position);
+        out.get_global("NP");
+        out.i32_store();
+
+        out.indented(() -> {
+            /// Evaluar cada elemento (puede contener también tipos no básicos)
+            for (int i = 0; i < elements.size(); ++i) {
+                var element = elements.get(i);
+                out.comment("Guardando elemento " + i + " del array: " + element.decompile());
+
+                if (element.type().isBasic) {
+                    /// Caso base, copiar con i32_store
+                    out.comment("Es un tipo básico, copiar con i32_store");
+                    out.mem_local(this.position);
+                    out.i32_load();
+                    out.i32_const(i * elements.get(i).type().size());
+                    out.i32_add();
+
+                    element.compileAsExpr(out);
+
+                    out.i32_store();
+                } else {
+                    /// Caso recursivo, copiar con ncopy
+                    out.comment("Es un tipo no basico, hay que evaluarlo primero");
+
+                    out.comment("FROM");
+                    out.indented(() -> {
+                        element.compileAsExpr(out);
+                    });
+
+                    out.comment("TO");
+                    out.mem_local(this.position);
+                    out.i32_load();
+                    out.i32_const(i * elements.get(i).type().size());
+                    out.i32_add();
+
+                    out.comment("SIZE");
+                    out.i32_const(element.type().size() / 4);
+
+                    out.call(ProgramOutput.COPYN);
+                }
+            }
+        });
+
+        /// Devolver dirección del inicio del array
+        out.mem_local(this.position);
+        out.i32_load();
     }
 }

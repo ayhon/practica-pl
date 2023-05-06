@@ -53,15 +53,34 @@ public class Assign extends Statement {
     }
 
     @Override
-    public String decompile(){
+    public String decompile() {
         return place.decompile() + " := " + expr.decompile();
     }
 
     @Override
     public void compileAsInstruction(ProgramOutput out) {
         out.comment("INSTRUCTION: " + this.decompile());
-        place.compileAsDesig(out);
-        expr.compileAsExpr(out);
-        out.i32_store();
+
+        if (expr.type().isBasic) {
+            out.comment("Asignado un tipo básico: " + expr.decompile());
+            place.compileAsDesig(out);
+            expr.compileAsExpr(out);
+            out.i32_store();
+        } else {
+            out.comment("Asignando un tipo no básico: " + expr.decompile());
+            
+            out.comment("FROM");
+            out.indented(() -> {
+                expr.compileAsExpr(out);
+            });
+
+            out.comment("TO");
+            place.compileAsDesig(out);
+
+            out.comment("SIZE");
+            out.i32_const(expr.type().size() / 4);
+
+            out.call(ProgramOutput.COPYN);
+        }
     }
 }

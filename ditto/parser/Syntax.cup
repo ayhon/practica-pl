@@ -114,7 +114,7 @@ DEFINITIONs                 ::= DEFINITIONs:defs STRUCT_DEF:defStruct
                                     {: RESULT = defs; defs.add(defStruct); :}
                                 | DEFINITIONs:defs FUN_DEF:defFun 
                                     {: RESULT = defs; defs.add(defFun); :} 
-                                | DEFINITIONs:defs VAR_DEF:defVar 
+                                | DEFINITIONs:defs VAR_DEF_WITHOUT_INIT:defVar 
                                     {: RESULT = defs; defs.add(defVar); :}
                                 | 
                                     {: RESULT = new ArrayList<Definition>(); :};

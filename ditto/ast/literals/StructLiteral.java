@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import ditto.ast.Identifier;
+import ditto.ast.CompilationProgress;
 import ditto.ast.Context;
 import ditto.ast.Delta;
 import ditto.ast.Node;
@@ -48,7 +49,12 @@ public class StructLiteral extends Literal {
 
     @Override
     public String getAstString() {
-        return "struct";
+        String output = "StructLiteral [ " + iden + " ]";
+
+        if (this.getProgress().atLeast(CompilationProgress.FUNC_SIZE_AND_DELTAS))
+            output += String.format(" [delta = %d] ", this.position);
+
+        return output;
     }
 
     @Override
@@ -109,13 +115,13 @@ public class StructLiteral extends Literal {
 
     @Override
     public void computeOffset(Delta lastDelta) {
-        super.computeOffset(lastDelta);
-
         /// Necesito reservar espacio de 1 int para guardar la dirección de inicio del
         /// StructLiteral en heap
         /// Porque lo rellenamos primero en el heap, y luego se copia a donde
         /// tiene que copiar
         this.position = lastDelta.useNextOffset(4);
+
+        super.computeOffset(lastDelta);
     }
 
     @Override
@@ -138,10 +144,11 @@ public class StructLiteral extends Literal {
             for (var entry : fieldValues.entrySet()) {
                 var field = attributes.get(entry.getKey());
                 var expr = entry.getValue();
+
                 out.comment("Guardando campo " + field.getIden() + " del StructLiteral con offset " + field.getDelta());
                 out.comment("Evaluando campo " + field.getIden());
 
-                if (expr.type().isBasic) {
+                if (field.type().isBasic) {
                     out.comment("Es un tipo básico, copiar con i32_store");
                     out.mem_local(this.position);
                     out.i32_load();
@@ -174,7 +181,7 @@ public class StructLiteral extends Literal {
             }
         });
 
-        /// Devolver dirección del inicio del array
+        /// Devolver dirección del inicio del StructLiteral
         out.mem_local(this.position);
         out.i32_load();
     }

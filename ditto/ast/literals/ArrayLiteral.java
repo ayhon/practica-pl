@@ -102,13 +102,13 @@ public class ArrayLiteral extends Literal {
 
     @Override
     public void computeOffset(Delta lastDelta) {
-        super.computeOffset(lastDelta);
-
         /// Necesito reservar espacio de 1 int para guardar la dirección de inicio del
         /// Array en heap
         /// Porque rellenamos el array primero en el heap, y luego se copia a donde
         /// tiene que copiar
         this.position = lastDelta.useNextOffset(4);
+
+        super.computeOffset(lastDelta);
     }
 
     @Override

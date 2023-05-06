@@ -4,7 +4,6 @@ import java.util.StringJoiner;
 
 import ditto.ast.definitions.DefFunc;
 import ditto.ast.definitions.DefVar;
-import ditto.ast.definitions.DefFunc.Param;
 import ditto.errors.SemanticError;
 
 public class ProgramOutput {
@@ -255,11 +254,11 @@ public class ProgramOutput {
         append(")");
     }
 
-    private void indent() {
+    public void indent() {
         indent_level += INDENT_WIDTH;
     }
 
-    private void dedent() {
+    public void dedent() {
         indent_level = Math.max(0, indent_level - INDENT_WIDTH);
     }
 
@@ -524,7 +523,7 @@ public class ProgramOutput {
     public void br_table(int size) {
         StringJoiner sj = new StringJoiner(" ");
         sj.add("br_table");
-        for (int i = 0; i < size; i++) {
+        for (int i = 0; i <= size; i++) {
             sj.add(String.format("%d", i));
         }
         indented(() -> append(sj.toString()));

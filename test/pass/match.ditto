@@ -1,15 +1,13 @@
 func main()
-    int x := scan();
+    int x := 2;
+    int a := 3;
     match x is
-        case 1 do
-            int a;
+        case -1 do
+            x := 4;
             print(1);
         case 2 do
-            int b;
-            print(2);
+            x := -1;
         otherwise
-            int a;
-            print(x);
+            int a := 32;
     end
-    print(0);
 end

@@ -4,7 +4,6 @@ import java.util.List;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 
@@ -72,7 +71,11 @@ public class Match extends Statement {
         public void bind(Context ctx) {
             ctx.pushScope();
             super.bind(ctx);
-            this.exprValue = this.expr.evalIntAtCompileTime();
+            if(!isOtherwise){
+                this.exprValue = this.expr.evalIntAtCompileTime();
+            } else {
+                this.exprValue = Integer.MAX_VALUE;
+            }
             ctx.popScope();
         }
 
@@ -85,13 +88,16 @@ public class Match extends Statement {
 
         @Override
         public String decompile(){
-            return String.format("case %s:  body", expr.decompile());
+            if(!isOtherwise)    {return     String.format("case %s:  body ", exprValue);    }
+            else    {   return String.format("otherwise:  body"); }
         }
         
         @Override
         public void compileAsInstruction(ProgramOutput out) {
-            //TODO: Implementar
-            throw new RuntimeException("Not implemented");
+            out.comment("INSTRUCTION: " + this.decompile());
+            for(Statement s : body){
+                s.compileAsInstruction(out);
+            }
         }
 
     }
@@ -150,15 +156,9 @@ public class Match extends Statement {
             max = cases.get(cases.size()-2).exprValue;
         }
 
-        //Calculamos el valor de la expresion a evaluar
-        exprValue = expr.evalIntAtCompileTime() - min;
 
         //Ajustamos los valores de la expresion del match y de los casos para el minimo
-        for(Case c : cases){
-            if(!c.isOtherwise){
-                c.exprValue -= min;
-            }
-        }
+
     }
 
     @Override 
@@ -174,40 +174,48 @@ public class Match extends Statement {
     public void compileAsInstruction(ProgramOutput out) {
         out.comment("INSTRUCTION: " + this.decompile());
         
-        //Cargamos el valor de la expresion actualizado
-        out.i32_const(exprValue);
-        
+        //Cojemos el maximo valor posible
         int n = this.max;
 
-        for(int i = 0; i < n + 2; ++i){
+        for(int i = min; i < n + 2; ++i){
             out.block();
-            out.comment("n + 2 times block");
         }
 
-        out.br_table(n);
+        out.comment("n + 2 times block");
+        
+        //Cargamos el valor de la expresion actualizado
+        if(min > 0){
+            out.i32_const(exprValue);
+            out.i32_const(min);
+            out.i32_sub();
+        } else{
+            out.i32_const(exprValue);
+            out.i32_const(min);
+            out.i32_add();
+        }
+
+        out.br_table(n - min);
         out.end();
 
-        for(int i = 0; i < n + 2; ++i){
+        for(int i = min; i <= n; ++i){
+            out.indent();
             Case c = cases.get(0);
             if(c.isOtherwise){
                 out.comment("caso otherwise");
+                c.compileAsInstruction(out);
+                cases.remove(0);
             } else {
+                System.out.println(c.exprValue + " " + i);
                 if(c.exprValue == i) {
                     out.comment("caso " + c.exprValue);
-                    c.expr.compileAsExpr(out);
+                    c.compileAsInstruction(out);
+                    cases.remove(0);
                 }
                 out.comment("salta a etiqueta salir");
                 out.br(n - i);
                 out.comment("etiqueta " + i);
-                out.end();
             }
+            out.end();
         }
-
-        /*
-        He dejado esto aqui por respeto a Fer, si lo quiere implementar que lo haga
-
-        out.br_table(n, level -> {
-            this.cases.get(level).compileAsInstruction(out);
-        });*/
     }
 }

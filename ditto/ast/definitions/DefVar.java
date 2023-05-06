@@ -100,12 +100,13 @@ public class DefVar extends Definition {
         if (this.expr == null) {
             /// Rellena con ceros
             out.comment("No tiene valor por defecto, rellenar con ceros");
-
+            
+            out.mem_local(this.position);
             out.i32_const(this.type.size() / 4);
             out.call(ProgramOutput.FILL_ZERO);
         } else if (expr.type().isBasic) {
             out.comment("Asignado un tipo básico: " + expr.decompile());
-            
+
             out.mem_local(this.position);
             expr.compileAsExpr(out);
             out.i32_store();

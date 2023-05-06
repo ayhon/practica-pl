@@ -87,17 +87,6 @@ public class DefVar extends Definition {
     }
 
     @Override
-    public void computeTypeSize() {
-        super.computeTypeSize();
-        // Tras haber calculado los tamaños de los tipos
-        // ya sabemos si los tipos son representables o no
-        if (expr == null) {
-            this.expr = getType().getDefault();
-            this.type = expr.type();
-        }
-    }
-
-    @Override
     public void computeOffset(Delta delta) {
         super.computeOffset(delta);
         position = delta.useNextOffset(type.size());

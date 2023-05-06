@@ -97,15 +97,26 @@ public class DefVar extends Definition {
         // Es como una asignación de valores por defecto
         out.comment("INSTRUCCION: " + decompile());
         out.mem_location(this);
-        expr.compileAsExpr(out);
-        // TODO: Esto no es correcto si la expresión
-        // tiene más de un tipo
-        out.i32_store();
+
+        if (this.expr == null) {
+            /// Rellena con ceros
+            out.comment("No tiene valor por defecto, rellenar con ceros");
+            out.i32_const(this.type.size() / 4);
+            out.call(ProgramOutput.FILL_ZERO);
+        } else {
+            expr.compileAsExpr(out);
+            // TODO: Esto no es correcto si la expresión
+            // tiene más de un tipo
+            out.i32_store();
+        }
     }
 
     @Override
     public String decompile() {
-        return getIden() + "[delta=" + getOffset() + "] := " + expr.decompile();
+        var output = "[delta=" + getOffset() + "]";
+        if (expr != null)
+            output += " := " + expr.decompile();
+        return output;
     }
 
     public int getOffset() {

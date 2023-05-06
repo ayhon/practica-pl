@@ -94,6 +94,7 @@ non terminal DefFunc.Param PARAM;
 
 non terminal List<DefModule> IMPORTs;
 non terminal List<Definition> DEFINITIONs;
+non terminal List<Definition> STRUCT_DEFINITIONs;
 
 /*** GRAMÁTICA DEL PROGRAMA ***/
 
@@ -107,14 +108,21 @@ IMPORTs                     ::= IMPORTs:imports IMPORT IDEN:iden SEMICOLON
                                 |
                                     {: RESULT = new ArrayList<DefModule>(); :};
 
-STRUCT_DEF                  ::= STRUCT IDEN:iden IS DEFINITIONs:ds END
+STRUCT_DEF                  ::= STRUCT IDEN:iden IS STRUCT_DEFINITIONs:ds END
                                     {: RESULT = new DefStruct(iden, ds); :};
-             
+
+STRUCT_DEFINITIONs          ::= STRUCT_DEFINITIONs:defs FUN_DEF:defFun 
+                                    {: RESULT = defs; defs.add(defFun); :} 
+                                | STRUCT_DEFINITIONs:defs VAR_DEF_WITHOUT_INIT:defVar 
+                                    {: RESULT = defs; defs.add(defVar); :}
+                                | 
+                                    {: RESULT = new ArrayList<Definition>(); :};
+
 DEFINITIONs                 ::= DEFINITIONs:defs STRUCT_DEF:defStruct 
                                     {: RESULT = defs; defs.add(defStruct); :}
                                 | DEFINITIONs:defs FUN_DEF:defFun 
                                     {: RESULT = defs; defs.add(defFun); :} 
-                                | DEFINITIONs:defs VAR_DEF_WITHOUT_INIT:defVar 
+                                | DEFINITIONs:defs VAR_DEF:defVar 
                                     {: RESULT = defs; defs.add(defVar); :}
                                 | 
                                     {: RESULT = new ArrayList<Definition>(); :};

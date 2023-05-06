@@ -16,6 +16,7 @@ public class DefVar extends Definition {
     private Expr expr;
     private int position;
     private boolean isGlobal;
+    private int deepness;
 
     public DefVar(Type type, String iden, Expr expr) {
         // Argumentos en este orden para representar como se escribe en el lenguaje
@@ -86,17 +87,6 @@ public class DefVar extends Definition {
     }
 
     @Override
-    public void computeTypeSize() {
-        super.computeTypeSize();
-        // Tras haber calculado los tamaños de los tipos
-        // ya sabemos si los tipos son representables o no
-        if (expr == null) {
-            this.expr = getType().getDefault();
-            this.type = expr.type();
-        }
-    }
-
-    @Override
     public void computeOffset(Delta delta) {
         super.computeOffset(delta);
         position = delta.useNextOffset(type.size());
@@ -107,8 +97,15 @@ public class DefVar extends Definition {
         // Es como una asignación de valores por defecto
         out.comment("INSTRUCCION: " + decompile());
 
-        if (expr.type().isBasic) {
+        if (this.expr == null) {
+            /// Rellena con ceros
+            out.comment("No tiene valor por defecto, rellenar con ceros");
+
+            out.i32_const(this.type.size() / 4);
+            out.call(ProgramOutput.FILL_ZERO);
+        } else if (expr.type().isBasic) {
             out.comment("Asignado un tipo básico: " + expr.decompile());
+            
             out.mem_local(this.position);
             expr.compileAsExpr(out);
             out.i32_store();
@@ -132,7 +129,10 @@ public class DefVar extends Definition {
 
     @Override
     public String decompile() {
-        return getIden() + "[delta=" + getOffset() + "] := " + expr.decompile();
+        var output = "[delta=" + getOffset() + "]";
+        if (expr != null)
+            output += " := " + expr.decompile();
+        return output;
     }
 
     public int getOffset() {

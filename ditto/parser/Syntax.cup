@@ -82,6 +82,7 @@ non terminal List<Match.Case> CASE_STMTs;
 
 /* DEFINICIONES */
 non terminal DefVar VAR_DEF;
+non terminal DefVar VAR_DEF_WITHOUT_INIT;
 non terminal DefFunc FUN_DEF;
 non terminal DefStruct STRUCT_DEF;
 
@@ -304,13 +305,16 @@ STMT                        ::= EXPR:e SEMICOLON
                                     {: RESULT = r; :}
                                 | error;
 
-ASSIGNMENT                  ::= DESIGNATION:iden ASSIGN EXPR: e SEMICOLON 
+ASSIGNMENT                  ::= DESIGNATION:iden ASSIGN EXPR:e SEMICOLON 
                                     {: RESULT = new Assign(iden, e); :};
 
-VAR_DEF                     ::= TYPE:t IDEN:iden SEMICOLON
-                                    {: RESULT = new DefVar(t, iden); :}
-                                | TYPE:t ASSIGNMENT:a
-                                    {: RESULT = new DefVar(t, ((Name)((Assign)a).getPlace()).getIden().getName(), ((Assign)a).getExpr()); :};
+VAR_DEF                     ::= TYPE:t IDEN:iden ASSIGN EXPR:e SEMICOLON 
+                                    {: RESULT = new DefVar(t, iden, e); :}
+                                | VAR_DEF_WITHOUT_INIT:v
+                                    {: RESULT = v; :};
+
+VAR_DEF_WITHOUT_INIT        ::= TYPE:t IDEN:iden SEMICOLON 
+                                    {: RESULT = new DefVar(t, iden); :};                               
 
 TYPE                        ::= QUAL_IDEN:iden 
                                     {: RESULT = new StructType(iden); :} // By default, if it's not a primitive type, it's a struct. TODO: Link to the struct definition
@@ -337,16 +341,17 @@ WHILE_STMT                  ::= WHILE EXPR:cond DO STMTs:statements END
                                     {: RESULT = new While(cond, statements); :};
 
 /* Sintaxis del match */
-MATCH_STMT                  ::= MATCH EXPR:expr IS CASE_STMTs:cases OTHERWISE STMTs:otherwise END
-                                    {: RESULT = new Match(expr, cases, otherwise); :}
-                                | MATCH EXPR:expr IS CASE_STMTs:cases END
+MATCH_STMT                  ::= MATCH EXPR:expr IS CASE_STMTs:cases END
                                     {: RESULT = new Match(expr, cases); :};
 
 CASE_STMTs                  ::= CASE EXPR:expr DO STMTs:body CASE_STMTs:rest
-                                    {: rest.add(new Match.Case(expr, body)); RESULT = rest; :}
+                                    {:  RESULT = rest; rest.add(new Match.Case(expr, body)); :}
+                                | OTHERWISE STMTs:body
+                                    {: RESULT = new ArrayList<Match.Case>(); RESULT.add(new Match.Case(body)); :}
                                 | 
                                     {: RESULT = new ArrayList<Match.Case>(); :};
 
+/*Return sintaxis*/
 RETURN_STMT                 ::= RETURN EXPR:expr SEMICOLON
                                     {: RESULT = new Return(expr); :}
                                 | RETURN SEMICOLON

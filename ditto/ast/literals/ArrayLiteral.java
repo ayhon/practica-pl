@@ -42,11 +42,6 @@ public class ArrayLiteral extends Literal {
         this.elements.add(fill);
     }
 
-    public ArrayLiteral(ArrayType type) {
-        this(type.getElementType().getDefault(), new Natural(type.getLength()));
-        this.type = type;
-    }
-
     @Override
     public String getAstString() {
         String output = "arr";

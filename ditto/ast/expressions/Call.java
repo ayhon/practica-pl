@@ -71,8 +71,15 @@ public class Call extends Expr {
         if (!(this.func.type() instanceof FuncType)) {
             throw new TypeError(String.format("'%s' is not a function", this.func));
         }
+        boolean isStructMethod = this.func instanceof StructAccess;
+
         FuncType funcType = (FuncType) this.func.type();
         int expected_args = funcType.getNumberArgs();
+        if (isStructMethod) {
+            /// No incluir el this
+            expected_args -= 1;
+        }
+
         if (expected_args != args.size())
             throw new TypeError(String.format("'%s' expects %d arguments, but %d were given", this.func, expected_args,
                     args.size()));
@@ -84,6 +91,8 @@ public class Call extends Expr {
         /// Sino no tienen direccion de memoria
         for (int i = 0; i < args.size(); ++i) {
             var param = funcDef.getParams().get(i);
+            if (isStructMethod)
+                param = funcDef.getParams().get(i + 1);
             if (param.isRef() && !(args.get(i) instanceof Designator)) {
                 throw new TypeError(String.format("'%s' is a reference parameter, but '%s' is not a designator",
                         param.getIden(), args.get(i).decompile()));
@@ -197,8 +206,21 @@ public class Call extends Expr {
         var params = this.funcDef.getParams();
 
         out.comment("Copying arguments to stack");
+        boolean isStructMethod = this.func instanceof StructAccess;
+
+        if (isStructMethod) {
+            /// Copiar el this a la pila
+            out.get_global("SP");
+            out.i32_const(4 + 4);
+            out.i32_add();
+            this.func.compileAsDesig(out);
+            out.i32_store();
+        }
+
         for (int i = 0; i < this.args.size(); ++i) {
             var param = params.get(i);
+            if (isStructMethod)
+                param = params.get(i + 1);
             var expr = this.args.get(i);
 
             /// Calcular primero las direcciones de los parámetros

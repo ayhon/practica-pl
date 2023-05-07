@@ -9,6 +9,7 @@ import java.util.Map;
 import ditto.ast.Node;
 import ditto.ast.Identifier;
 import ditto.ast.Context;
+import ditto.ast.definitions.DefFunc;
 import ditto.ast.definitions.DefStruct;
 import ditto.ast.definitions.DefVar;
 import ditto.ast.definitions.Definition;
@@ -27,21 +28,10 @@ public class StructType extends Type {
         this.iden = iden;
     }
 
-    public StructType(Identifier iden, Map<String, Type> fieldTypes) {
-        super(false);
-        this.iden = iden;
-        this.fieldTypes = fieldTypes;
-    }
-
     public StructType(DefStruct def) {
         super(false);
         this.iden = new Identifier(def.getIden());
         this.definition = def;
-
-        this.fieldTypes = new HashMap<>();
-        for (DefVar attribute : def.getAttributes().values()) {
-            fieldTypes.put(attribute.getIden(), attribute.getType());
-        }
     }
 
     public Definition getFieldDefinition(String name) {
@@ -112,8 +102,16 @@ public class StructType extends Type {
             if (def == null)
                 throw new BindingError("Couldn't find def " + iden);
             definition = (DefStruct) def;
-            fieldTypes = definition.getType().getFieldTypes();
         }
+
+        this.fieldTypes = new HashMap<>();
+        for (DefVar attribute : this.definition.getAttributes().values()) {
+            fieldTypes.put(attribute.getIden(), attribute.getType());
+        }
+        for (DefFunc method : this.definition.getMethods().values()) {
+            fieldTypes.put(method.getIden(), method.getType());
+        }
+
         super.bind(ctx);
     }
 

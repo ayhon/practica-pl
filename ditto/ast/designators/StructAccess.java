@@ -6,8 +6,7 @@ import java.util.List;
 import ditto.ast.Node;
 import ditto.ast.ProgramOutput;
 import ditto.ast.definitions.Definition;
-import ditto.ast.types.ArrayType;
-import ditto.ast.types.IntegerType;
+import ditto.ast.types.FuncType;
 import ditto.ast.types.StructType;
 import ditto.ast.types.Type;
 import ditto.errors.TypeError;
@@ -78,7 +77,11 @@ public class StructAccess extends Designator {
         // 2) Cargamos el offset del campo
         // 3) Sumamos ambos valores
         struct.compileAsDesig(out);
-        out.i32_const(((StructType) struct.type()).getOffset(name)); // i32.const delta(*id)
-        out.i32_add();                                               // i32.add
+        if (this.type() instanceof FuncType) {
+            /// Si es un metodo, devolver el puntero a la estructura en la pila
+        } else {
+            out.i32_const(((StructType) struct.type()).getOffset(name)); // i32.const delta(*id)
+            out.i32_add(); // i32.add
+        }
     }
 }

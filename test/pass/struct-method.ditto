@@ -1,0 +1,33 @@
+struct Persona is
+    int edad;
+    int altura := 2;
+    int peso;
+
+    array 3 int arr := [1, 2, 3];
+
+    func BMI() -> int
+        return this->peso / (this->altura * this->altura);
+    end
+
+    func setEdad(int edad)
+        this->edad := edad;
+    end
+
+    func sumArr() -> int
+        int sum := 0;
+        for i from 0 to 2 do
+            sum := sum + this->arr[i];
+        end
+        return sum;
+    end
+end
+
+func main()
+    Persona p := Persona{edad: 1, peso: 20};
+    print(p.edad);
+    p.setEdad(20);
+    print(p.edad);
+
+    print(p.BMI());
+    print(p.sumArr());
+end

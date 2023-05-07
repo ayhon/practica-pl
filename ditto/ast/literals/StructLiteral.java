@@ -120,7 +120,7 @@ public class StructLiteral extends Literal {
 
                 if (expr == null) {
                     /// Rellenar con 0
-                    out.i32_const(this.type.size() / 4);
+                    out.i32_const(def.type().size() / 4);
                     out.call(ProgramOutput.FILL_ZERO);
                 } else if (def.type().isBasic) {
                     out.comment("Es un tipo básico, copiar con i32_store");

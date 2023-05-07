@@ -71,14 +71,14 @@ public class Call extends Expr {
         if (!(this.func.type() instanceof FuncType)) {
             throw new TypeError(String.format("'%s' is not a function", this.func));
         }
+
         boolean isStructMethod = this.func instanceof StructAccess;
+        if (isStructMethod) {
+            this.args.add(0, ((StructAccess) this.func).getStruct());
+        }
 
         FuncType funcType = (FuncType) this.func.type();
         int expected_args = funcType.getNumberArgs();
-        if (isStructMethod) {
-            /// No incluir el this
-            expected_args -= 1;
-        }
 
         if (expected_args != args.size())
             throw new TypeError(String.format("'%s' expects %d arguments, but %d were given", this.func, expected_args,
@@ -91,8 +91,6 @@ public class Call extends Expr {
         /// Sino no tienen direccion de memoria
         for (int i = 0; i < args.size(); ++i) {
             var param = funcDef.getParams().get(i);
-            if (isStructMethod)
-                param = funcDef.getParams().get(i + 1);
             if (param.isRef() && !(args.get(i) instanceof Designator)) {
                 throw new TypeError(String.format("'%s' is a reference parameter, but '%s' is not a designator",
                         param.getIden(), args.get(i).decompile()));
@@ -208,27 +206,19 @@ public class Call extends Expr {
         out.comment("Copying arguments to stack");
         boolean isStructMethod = this.func instanceof StructAccess;
 
-        if (isStructMethod) {
-            /// Copiar el this a la pila
-            out.get_global("SP");
-            out.i32_const(4 + 4);
-            out.i32_add();
-            this.func.compileAsDesig(out);
-            out.i32_store();
-        }
-
         for (int i = 0; i < this.args.size(); ++i) {
             var param = params.get(i);
-            if (isStructMethod)
-                param = params.get(i + 1);
             var expr = this.args.get(i);
+
+            out.comment("Copying argument " + param.getIden() + " to stack");
 
             /// Calcular primero las direcciones de los parámetros
             out.get_global("SP");
             out.i32_const(4 + 4 + param.getOffset());
             out.i32_add();
 
-            if (param.isRef()) {
+            if (param.isRef() || (isStructMethod && i == 0)) {
+                /// En el caso de metodo struct, copiar la direccion del struct tal cual
                 out.comment("Copying reference of " + param.getIden() + " to stack");
                 var designator = (Designator) expr;
                 designator.compileAsDesig(out);

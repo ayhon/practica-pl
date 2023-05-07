@@ -66,6 +66,10 @@ public class DefVar extends Definition {
         return type;
     }
 
+    public Expr getExpr() {
+        return expr;
+    }
+
     @Override
     public void bind(Context ctx) {
         super.bind(ctx);

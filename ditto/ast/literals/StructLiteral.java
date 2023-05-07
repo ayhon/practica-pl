@@ -2,7 +2,6 @@ package ditto.ast.literals;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -104,20 +103,26 @@ public class StructLiteral extends Literal {
 
         out.indented(() -> {
             /// Evaluar cada elemento (puede contener también tipos no básicos)
+            /// Itero por attributes de definicion, para sacar valores por defecto
             var attributes = this.definition.getAttributes();
 
-            for (var entry : fieldValues.entrySet()) {
-                var field = attributes.get(entry.getKey());
-                var expr = entry.getValue();
+            for (var attr : attributes.entrySet()) {
+                var field = attr.getKey();
+                var def = attr.getValue();
+                var expr = fieldValues.getOrDefault(field, def.getExpr());
 
-                out.comment("Guardando campo " + field.getIden() + " del StructLiteral con offset " + field.getDelta());
-                out.comment("Evaluando campo " + field.getIden());
+                out.comment("Guardando campo " + field + " del StructLiteral con offset " + def.getDelta());
+                out.comment("Evaluando campo " + field);
 
                 out.duplicate();
-                out.i32_const(field.getOffset());
+                out.i32_const(def.getOffset());
                 out.i32_add();
 
-                if (field.type().isBasic) {
+                if (expr == null) {
+                    /// Rellenar con 0
+                    out.i32_const(this.type.size() / 4);
+                    out.call(ProgramOutput.FILL_ZERO);
+                } else if (def.type().isBasic) {
                     out.comment("Es un tipo básico, copiar con i32_store");
                     expr.compileAsExpr(out);
                     out.i32_store();

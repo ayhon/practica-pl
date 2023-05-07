@@ -82,7 +82,6 @@ non terminal List<Match.Case> CASE_STMTs;
 
 /* DEFINICIONES */
 non terminal DefVar VAR_DEF;
-non terminal DefVar VAR_DEF_WITHOUT_INIT;
 non terminal DefFunc FUN_DEF;
 non terminal DefStruct STRUCT_DEF;
 
@@ -113,7 +112,7 @@ STRUCT_DEF                  ::= STRUCT IDEN:iden IS STRUCT_DEFINITIONs:ds END
 
 STRUCT_DEFINITIONs          ::= STRUCT_DEFINITIONs:defs FUN_DEF:defFun 
                                     {: RESULT = defs; defs.add(defFun); :} 
-                                | STRUCT_DEFINITIONs:defs VAR_DEF_WITHOUT_INIT:defVar 
+                                | STRUCT_DEFINITIONs:defs VAR_DEF:defVar 
                                     {: RESULT = defs; defs.add(defVar); :}
                                 | 
                                     {: RESULT = new ArrayList<Definition>(); :};
@@ -318,10 +317,7 @@ ASSIGNMENT                  ::= DESIGNATION:iden ASSIGN EXPR:e SEMICOLON
 
 VAR_DEF                     ::= TYPE:t IDEN:iden ASSIGN EXPR:e SEMICOLON 
                                     {: RESULT = new DefVar(t, iden, e); :}
-                                | VAR_DEF_WITHOUT_INIT:v
-                                    {: RESULT = v; :};
-
-VAR_DEF_WITHOUT_INIT        ::= TYPE:t IDEN:iden SEMICOLON 
+                                | TYPE:t IDEN:iden SEMICOLON 
                                     {: RESULT = new DefVar(t, iden); :};                               
 
 TYPE                        ::= QUAL_IDEN:iden 

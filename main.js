@@ -22,7 +22,6 @@ let watFilePath = process.argv[2];
 const watFile = path.join(__dirname, watFilePath);
 const name = path.basename(watFile, ".wat");
 const folder = path.dirname(watFile);
-console.log(`watFile: ${watFile}`);
 
 const wasmFile = path.join(folder, `${name}.wasm`);
 const inputFile = path.join(folder, "input", `${name}.txt`);
@@ -31,6 +30,8 @@ const expectedOutputFile = path.join(folder, "expected_output", `${name}.txt`);
 
 let entrada = [];
 let i = 0;
+
+const disableConsolePrint = process.argv.includes("--disable-console-print");
 
 const importObjects = {
     runtime: {
@@ -48,7 +49,9 @@ const importObjects = {
             throw new Error(errStr);
         },
         print: function (n) {
-            console.log(n);
+            if (!disableConsolePrint) {
+                console.log(n);
+            }
             if (outputFile) {
                 fs.appendFileSync(outputFile, n + "\n");
             }
@@ -85,10 +88,7 @@ execSync(`./wat2wasm ${watFilePath} -o ${wasmFile}`, async (error, stdout, stder
 
 const main = async () => {
     /// Leer los ficheros de entrada y salida
-    if (!fs.existsSync(inputFile)) {
-        console.log(`Input file ${inputFile} does not exist`);
-    }
-    else {
+    if (fs.existsSync(inputFile)) {
         /// Cargar en memoria el fichero de entrada
         /// Partirlo por lineas
         const input = fs.readFileSync(inputFile, "utf8");
@@ -115,7 +115,6 @@ const main = async () => {
         /// Comparar la salida con el fichero de salida esperado
         const expectedOutput = fs.readFileSync(expectedOutputFile, "utf8");
         const output = fs.readFileSync(outputFile, "utf8");
-        console.log("👁 Hay un fichero de salida esperada");
 
         if (output == expectedOutput) {
             console.log("✅ Coincide la salida con la esperada");

@@ -9,6 +9,7 @@ public abstract class Designator extends Expr {
     @Override
     public void compileAsExpr(ProgramOutput out) {
         compileAsDesig(out);
-        out.i32_load();
+        if (this.type.isBasic)
+            out.i32_load();
     }
 }

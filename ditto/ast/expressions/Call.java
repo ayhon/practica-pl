@@ -147,7 +147,8 @@ public class Call extends Expr {
 
         /// Y luego cargar el resultado en la pila
         out.mem_local(this.position);
-        out.i32_load();
+        if (this.type().isBasic)
+            out.i32_load();
     }
 
     /*
@@ -222,11 +223,25 @@ public class Call extends Expr {
                 out.comment("Copying reference of " + param.getIden() + " to stack");
                 var designator = (Designator) expr;
                 designator.compileAsDesig(out);
+                out.i32_store();
             } else {
-                expr.compileAsExpr(out);
-            }
+                if (param.type().isBasic) {
+                    expr.compileAsExpr(out);
+                    out.i32_store();
+                } else {
+                    /// Copia no basica
+                    out.comment("FROM");
+                    expr.compileAsExpr(out);
 
-            out.i32_store(); // Con la posición calculada en el bucle anterior
+                    out.comment("TO");
+                    out.call(ProgramOutput.SWAP);
+
+                    out.comment("SIZE");
+                    out.i32_const(param.type().size() / 4);
+
+                    out.call(ProgramOutput.COPYN);
+                }
+            }
         }
 
         out.comment("PERFORMING FUNCTION CALL");
@@ -246,9 +261,7 @@ public class Call extends Expr {
         out.i32_add();
 
         out.comment("Calculando la posicion destino del resultado");
-        out.get_local(ProgramOutput.LOCAL_START);
-        out.i32_const(this.position);
-        out.i32_add();
+        out.mem_local(this.position);
 
         out.comment("El tamaño del resultado (i32)");
         out.i32_const(this.funcDef.getResult().size() / 4);

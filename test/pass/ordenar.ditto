@@ -1,0 +1,34 @@
+/// Realiza una ordenacion por insercion de un array de 10 elementos
+
+func sort(array 10 int arr) -> array 10 int
+    int aux;
+    int j;
+    for i from 1 to 9 do
+        aux := arr[i];
+        j := i - 1;
+        while j >= 0 and arr[j] > aux do
+            arr[j + 1] := arr[j];
+            j := j - 1;
+        end
+        arr[j + 1] := aux;
+    end
+
+    return arr;
+end
+
+func main() -> int
+    array 10 int numeros := [0; 10];
+
+    for i from 0 to 9 do
+        // Leer número de entrada estándar y guardarlo en numeros[i]
+        numeros[i] := scan();
+    end
+
+    numeros := sort(numeros);
+
+    for i from 0 to 9 do
+        print(numeros[i]);
+    end
+    
+    return 0;
+end

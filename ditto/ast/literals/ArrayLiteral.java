@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import ditto.ast.CompilationProgress;
-import ditto.ast.Delta;
 import ditto.ast.Node;
 import ditto.ast.ProgramOutput;
 import ditto.ast.expressions.Expr;
@@ -15,7 +13,6 @@ import ditto.ast.types.Type;
 public class ArrayLiteral extends Literal {
     private final List<Expr> elements;
     private final Expr numberOfElem;
-    private int position;
 
     public List<Expr> getElements() {
         return elements;
@@ -44,12 +41,7 @@ public class ArrayLiteral extends Literal {
 
     @Override
     public String getAstString() {
-        String output = "arr";
-
-        if (this.getProgress().atLeast(CompilationProgress.FUNC_SIZE_AND_DELTAS))
-            output += String.format(" [delta = %d]", this.position);
-
-        return output;
+        return "arr";
     }
 
     @Override
@@ -93,17 +85,6 @@ public class ArrayLiteral extends Literal {
             throw new RuntimeException("ArrayLiteral: Number of elements cannot be determined at compile time");
 
         this.type = new ArrayType(elementType, length);
-    }
-
-    @Override
-    public void computeOffset(Delta lastDelta) {
-        super.computeOffset(lastDelta);
-
-        /// Necesito reservar espacio de 1 int para guardar la dirección de inicio del
-        /// Array en heap
-        /// Porque rellenamos el array primero en el heap, y luego se copia a donde
-        /// tiene que copiar
-        this.position = lastDelta.useNextOffset(4);
     }
 
     @Override

@@ -121,5 +121,9 @@ public class DefStruct extends Definition {
         for (Node val : this.attributes.values()) {
             val.computeOffset(d);
         }
+
+        for (Node methods : this.methods.values()) {
+            methods.computeOffset(d);
+        }
     }
 }

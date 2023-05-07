@@ -19,6 +19,7 @@ public class ProgramOutput {
     public final static String RESERVE_HEAP = "reserveHeap";
     public final static String FILL_ZERO = "fillZero";
     public final static String COPYN = "copyn";
+    public final static String SWAP = "swap";
 
     private final String FUNC_SIG = "_sig_void";
     private final int INDENT_WIDTH = 4;
@@ -220,6 +221,18 @@ public class ProgramOutput {
                             br 0
                         end
                     end
+                )
+                """);
+
+        /// Funcion WASM para intercambiar la posicion de los dos elementos encima de la
+        /// pila
+        sb.add("""
+                (func $swap
+                    (param $a i32)
+                    (param $b i32)
+                    (result i32 i32)
+                    get_local $b
+                    get_local $a
                 )
                 """);
     }

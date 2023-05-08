@@ -13,6 +13,7 @@ import ditto.ast.Delta;
 import ditto.ast.Node;
 import ditto.ast.ProgramOutput;
 import ditto.ast.definitions.DefFunc.Param;
+import ditto.ast.types.PointerType;
 import ditto.ast.types.StructType;
 
 public class DefStruct extends Definition {
@@ -21,10 +22,9 @@ public class DefStruct extends Definition {
 
     public DefStruct(String name, List<Definition> definitions) {
         super(name);
+        this.type = new StructType(this);
         this.attributes = definitions.stream().filter(def -> def instanceof DefVar).map(def -> (DefVar) def)
                 .collect(Collectors.toMap(DefVar::getIden, Function.identity()));
-
-        this.type = new StructType(this);
 
         this.methods = definitions.stream().filter(def -> def instanceof DefFunc)
                 .map(def -> this.toMethod((DefFunc) def))
@@ -37,7 +37,11 @@ public class DefStruct extends Definition {
      */
     private DefFunc toMethod(DefFunc func) {
         List<Param> params = new ArrayList<>();
-        params.add(new DefFunc.Param(this.type, func.getIden(), true));
+        params.add(
+                new DefFunc.Param(
+                        new PointerType(this.type),
+                        "this",
+                        false));
         params.addAll(func.getParams());
         return new DefFunc(func.getIden(), params, func.getResult(), func.getBody());
     }
@@ -105,7 +109,7 @@ public class DefStruct extends Definition {
     @Override
     public void compileAsInstruction(ProgramOutput out) {
         // Compila sus métodos, pues estos no son más que funciones
-        for(DefFunc method : this.methods.values()) {
+        for (DefFunc method : this.methods.values()) {
             method.compileAsInstruction(out);
         }
     }
@@ -116,6 +120,10 @@ public class DefStruct extends Definition {
 
         for (Node val : this.attributes.values()) {
             val.computeOffset(d);
+        }
+
+        for (Node methods : this.methods.values()) {
+            methods.computeOffset(d);
         }
     }
 }

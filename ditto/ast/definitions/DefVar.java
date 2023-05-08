@@ -14,7 +14,7 @@ import ditto.errors.TypeError;
 
 public class DefVar extends Definition {
     private Expr expr;
-    private int position;
+    protected int position;
     private boolean isGlobal;
     private int deepness;
 

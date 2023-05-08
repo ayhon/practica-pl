@@ -71,8 +71,15 @@ public class Call extends Expr {
         if (!(this.func.type() instanceof FuncType)) {
             throw new TypeError(String.format("'%s' is not a function", this.func));
         }
+
+        boolean isStructMethod = this.func instanceof StructAccess;
+        if (isStructMethod) {
+            this.args.add(0, ((StructAccess) this.func).getStruct());
+        }
+
         FuncType funcType = (FuncType) this.func.type();
         int expected_args = funcType.getNumberArgs();
+
         if (expected_args != args.size())
             throw new TypeError(String.format("'%s' expects %d arguments, but %d were given", this.func, expected_args,
                     args.size()));
@@ -140,7 +147,8 @@ public class Call extends Expr {
 
         /// Y luego cargar el resultado en la pila
         out.mem_local(this.position);
-        out.i32_load();
+        if (this.type().isBasic)
+            out.i32_load();
     }
 
     /*
@@ -197,24 +205,43 @@ public class Call extends Expr {
         var params = this.funcDef.getParams();
 
         out.comment("Copying arguments to stack");
+        boolean isStructMethod = this.func instanceof StructAccess;
+
         for (int i = 0; i < this.args.size(); ++i) {
             var param = params.get(i);
             var expr = this.args.get(i);
+
+            out.comment("Copying argument " + param.getIden() + " to stack");
 
             /// Calcular primero las direcciones de los parámetros
             out.get_global("SP");
             out.i32_const(4 + 4 + param.getOffset());
             out.i32_add();
 
-            if (param.isRef()) {
+            if (param.isRef() || (isStructMethod && i == 0)) {
+                /// En el caso de metodo struct, copiar la direccion del struct tal cual
                 out.comment("Copying reference of " + param.getIden() + " to stack");
                 var designator = (Designator) expr;
                 designator.compileAsDesig(out);
+                out.i32_store();
             } else {
-                expr.compileAsExpr(out);
-            }
+                if (param.type().isBasic) {
+                    expr.compileAsExpr(out);
+                    out.i32_store();
+                } else {
+                    /// Copia no basica
+                    out.comment("FROM");
+                    expr.compileAsExpr(out);
 
-            out.i32_store(); // Con la posición calculada en el bucle anterior
+                    out.comment("TO");
+                    out.call(ProgramOutput.SWAP);
+
+                    out.comment("SIZE");
+                    out.i32_const(param.type().size() / 4);
+
+                    out.call(ProgramOutput.COPYN);
+                }
+            }
         }
 
         out.comment("PERFORMING FUNCTION CALL");
@@ -234,9 +261,7 @@ public class Call extends Expr {
         out.i32_add();
 
         out.comment("Calculando la posicion destino del resultado");
-        out.get_local(ProgramOutput.LOCAL_START);
-        out.i32_const(this.position);
-        out.i32_add();
+        out.mem_local(this.position);
 
         out.comment("El tamaño del resultado (i32)");
         out.i32_const(this.funcDef.getResult().size() / 4);

@@ -71,7 +71,7 @@ public class DefFunc extends Definition {
         public boolean isRef() {
             return isRef;
         }
-        
+
         @Override
         public String toString() {
             if (this.isRef)
@@ -79,6 +79,19 @@ public class DefFunc extends Definition {
             else
                 return this.getType() + " " + this.getIden();
         }
+
+        @Override
+        public void computeOffset(Delta delta) {
+            int size;
+
+            if (this.isRef)
+                size = 4;
+            else
+                size = this.getType().size();
+
+            position = delta.useNextOffset(size);
+        }
+
     }
 
     public Type getType() {

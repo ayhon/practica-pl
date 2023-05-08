@@ -71,7 +71,7 @@ public class Match extends Statement {
         public void bind(Context ctx) {
             ctx.pushScope();
             super.bind(ctx);
-            if(!isOtherwise){
+            if (!isOtherwise) {
                 this.exprValue = this.expr.evalIntAtCompileTime();
             } else {
                 this.exprValue = Integer.MAX_VALUE;
@@ -87,15 +87,18 @@ public class Match extends Statement {
         }
 
         @Override
-        public String decompile(){
-            if(!isOtherwise)    {return     String.format("case %s:  body ", exprValue);    }
-            else    {   return String.format("otherwise:  body"); }
+        public String decompile() {
+            if (!isOtherwise) {
+                return String.format("case %s:  body ", exprValue);
+            } else {
+                return String.format("otherwise:  body");
+            }
         }
-        
+
         @Override
         public void compileAsInstruction(ProgramOutput out) {
             out.comment("INSTRUCTION: " + this.decompile());
-            for(Statement s : body){
+            for (Statement s : body) {
                 s.compileAsInstruction(out);
             }
         }
@@ -120,13 +123,12 @@ public class Match extends Statement {
         return children;
     }
 
-
     @Override
     public void typecheck() {
         super.typecheck();
         Type matchingType = IntegerType.getInstance();
 
-        if(expr.type() != matchingType){
+        if (expr.type() != matchingType) {
             throw new TypeError("Type mismatch in match evaluated expression");
         }
 
@@ -136,35 +138,35 @@ public class Match extends Statement {
             }
         }
 
-        //Aprovechamos que todas las expresiones ya están procesadas para calcular el valor mínimo y máximo
+        // Aprovechamos que todas las expresiones ya están procesadas para calcular el
+        // valor mínimo y máximo
         // y ordenar la lista de cases
 
-        //Vamos a ordenar el array en base al valor de las expresiones
-        Collections.sort(cases, new Comparator<Match.Case>(){
+        // Vamos a ordenar el array en base al valor de las expresiones
+        Collections.sort(cases, new Comparator<Match.Case>() {
             public int compare(Match.Case o1, Match.Case o2) {
                 return o1.exprValue - o2.exprValue;
             }
         });
 
-        //Calculamos el minimo y el maximo
-        if(!cases.get(0).isOtherwise){
+        // Calculamos el minimo y el maximo
+        if (!cases.get(0).isOtherwise) {
             min = cases.get(0).exprValue;
         }
-        if(!cases.get(cases.size()-1).isOtherwise){
-            max = cases.get(cases.size()-1).exprValue;
-        } else if(cases.size() > 1 && !cases.get(cases.size()-2).isOtherwise){
-            max = cases.get(cases.size()-2).exprValue;
+        if (!cases.get(cases.size() - 1).isOtherwise) {
+            max = cases.get(cases.size() - 1).exprValue;
+        } else if (cases.size() > 1 && !cases.get(cases.size() - 2).isOtherwise) {
+            max = cases.get(cases.size() - 2).exprValue;
         }
 
-
-        //Ajustamos los valores de la expresion del match y de los casos para el minimo
+        // Ajustamos los valores de la expresion del match y de los casos para el minimo
 
     }
 
-    @Override 
-    public String decompile(){
+    @Override
+    public String decompile() {
         String res = String.format("match %s: \n", expr.decompile());
-        for(Case c : this.cases){
+        for (Case c : this.cases) {
             res += c.decompile();
         }
         return res;
@@ -173,22 +175,22 @@ public class Match extends Statement {
     @Override
     public void compileAsInstruction(ProgramOutput out) {
         out.comment("INSTRUCTION: " + this.decompile());
-        
-        //Cojemos el maximo valor posible
+
+        // Cojemos el maximo valor posible
         int n = this.max;
 
-        for(int i = min; i < n + 2; ++i){
+        for (int i = min; i < n + 2; ++i) {
             out.block();
         }
 
         out.comment("n + 2 times block");
-        
-        //Cargamos el valor de la expresion actualizado
-        if(min > 0){
+
+        // Cargamos el valor de la expresion actualizado
+        if (min > 0) {
             out.i32_const(exprValue);
             out.i32_const(min);
             out.i32_sub();
-        } else{
+        } else {
             out.i32_const(exprValue);
             out.i32_const(min);
             out.i32_add();
@@ -197,16 +199,15 @@ public class Match extends Statement {
         out.br_table(n - min);
         out.end();
 
-        for(int i = min; i <= n; ++i){
+        for (int i = min; i <= n; ++i) {
             out.indent();
             Case c = cases.get(0);
-            if(c.isOtherwise){
+            if (c.isOtherwise) {
                 out.comment("caso otherwise");
                 c.compileAsInstruction(out);
                 cases.remove(0);
             } else {
-                System.out.println(c.exprValue + " " + i);
-                if(c.exprValue == i) {
+                if (c.exprValue == i) {
                     out.comment("caso " + c.exprValue);
                     c.compileAsInstruction(out);
                     cases.remove(0);

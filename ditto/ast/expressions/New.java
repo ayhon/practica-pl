@@ -44,17 +44,8 @@ public class New extends Expr {
 
     @Override
     public void compileAsExpr(ProgramOutput out) {
-        // Llama a la funcion que reserva el espacio necesario
-        // y deja en la cima la dirección de inicio de ese espacio.
-        this.allocHeap(out);
-    }
-
-    // Reserva el tamaño necesario en el heap y devuelve la dirección de inicio
-    // en la cima de la pila
-    private void allocHeap(ProgramOutput out) {
-        Integer size = value.type().size();
-        out.i32_const(size);
-        out.call(ProgramOutput.RESERVE_HEAP);
-        out.get_global("NP"); // Esta es la dirección donde empieza el nuevo array
+        /// Basta con llamar compileAsExpr de ArrayLiteral / StructLiteral, porque
+        /// devuelve ya su dirección en heap
+        this.value.compileAsExpr(out);
     }
 }

@@ -2,7 +2,6 @@ package ditto.ast.expressions;
 
 import ditto.ast.ProgramOutput;
 import ditto.ast.statements.Statement;
-import ditto.ast.types.VoidType;
 
 public abstract class Expr extends Statement {
     /// Todas las expresiones tienen que tener un tipo
@@ -13,11 +12,10 @@ public abstract class Expr extends Statement {
         out.comment("INSTRUCTION: " + this.decompile());
         compileAsExpr(out);
 
-        /// Si no es de tipo void, hacer drop de sus resultados
-        /// TODO: Si el resultado tiene mas de un valor, hacer drop de todos
-        if (!this.type.equals(VoidType.getInstance())) {
-            out.drop();
-        }
+        /// Si la expresión es tipo básico, entonces con un drop ya está
+        /// Y si no es básico, entonces compileAsExpr devuelve la dirección de memoria
+        /// inicial -> También con un drop vale
+        out.drop();
     }
 
     public Integer evalIntAtCompileTime() {

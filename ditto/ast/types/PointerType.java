@@ -10,6 +10,7 @@ public class PointerType extends Type {
     private final Type elementType;
 
     public PointerType(Type elementType) {
+        super(true);
         this.elementType = elementType;
     }
 

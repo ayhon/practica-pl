@@ -16,6 +16,7 @@ public class ArrayType extends Type {
     }
 
     public ArrayType(Type elementType, int length) {
+        super(false);
         this.elementType = elementType;
         this.length = length;
     }

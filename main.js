@@ -54,6 +54,9 @@ const importObjects = {
             }
         },
         scan: function () {
+            if (i >= entrada.length) {
+                throw new Error("No hay mas entradas");
+            }
             let val = entrada[i];
             i += 1;
             return val;
@@ -83,8 +86,13 @@ execSync(`./wat2wasm ${watFilePath} -o ${wasmFile}`, async (error, stdout, stder
 const main = async () => {
     /// Leer los ficheros de entrada y salida
     if (!fs.existsSync(inputFile)) {
-        console.error(`Input file ${inputFile} does not exist`);
-        process.exit(0);
+        console.log(`Input file ${inputFile} does not exist`);
+    }
+    else {
+        /// Cargar en memoria el fichero de entrada
+        /// Partirlo por lineas
+        const input = fs.readFileSync(inputFile, "utf8");
+        entrada = input.split("\n");
     }
 
     if (!fs.existsSync(outputFile)) {
@@ -94,11 +102,6 @@ const main = async () => {
 
     /// Vaciar el fichero de salida
     fs.writeFileSync(outputFile, "");
-
-    /// Cargar en memoria el fichero de entrada
-    /// Partirlo por lineas
-    const input = fs.readFileSync(inputFile, "utf8");
-    entrada = input.split("\n");
 
     try {
         await start(watFilePath.replace(".wat", ".wasm"));

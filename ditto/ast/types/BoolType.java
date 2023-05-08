@@ -5,6 +5,7 @@ public class BoolType extends Type {
     private static BoolType instance = new BoolType();
 
     private BoolType() {
+        super(true);
     }
 
     public static BoolType getInstance() {

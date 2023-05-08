@@ -3,7 +3,10 @@ package ditto.ast.expressions;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
+import ditto.ast.CompilationProgress;
+import ditto.ast.Delta;
 import ditto.ast.Node;
 import ditto.ast.ProgramOutput;
 import ditto.ast.definitions.DefFunc;
@@ -18,6 +21,7 @@ public class Call extends Expr {
     private final Designator func;
     private final List<Expr> args;
     private DefFunc funcDef;
+    private int position;
 
     public Call(Designator func) {
         this.func = func;
@@ -31,7 +35,12 @@ public class Call extends Expr {
 
     @Override
     public String getAstString() {
-        return "call";
+        String output = "call";
+
+        if (this.getProgress().atLeast(CompilationProgress.FUNC_SIZE_AND_DELTAS))
+            output += String.format(" [delta = %d]", this.position);
+
+        return output;
     }
 
     @Override
@@ -82,6 +91,13 @@ public class Call extends Expr {
         }
     }
 
+    @Override
+    public void computeOffset(Delta lastDelta) {
+        super.computeOffset(lastDelta);
+        /// Asigno una posición de memoria para el resultado de la función
+        position = lastDelta.useNextOffset(this.funcDef.getResult().size());
+    }
+
     private void loadFunctionDefinition() {
         // Sacamos el DefFunc de la función a la que estamos llamando
         Definition def = null;
@@ -111,27 +127,76 @@ public class Call extends Expr {
                 String.join(", ", args.stream().map(Expr::decompile).toArray(String[]::new)));
     }
 
+    private boolean generatedExecCode = false;
+
     @Override
     public void compileAsExpr(ProgramOutput out) {
+        /// Generar código para llamar a la función
+        /// Esto no hace falta si estamos en una llamada a una función anidada, porque
+        /// se habria compilado antes
+        if (!generatedExecCode) {
+            this.compileAsInstruction(out);
+        }
+
+        /// Y luego cargar el resultado en la pila
+        out.mem_local(this.position);
+        out.i32_load();
+    }
+
+    /*
+     * Se encarga de generar código para llamar a la función, y guardar el resultado
+     * en la posición de memoria asignada localmente (this.position)
+     */
+    @Override
+    public void compileAsInstruction(ProgramOutput out) {
+        /// Si tuviese funciones anidadas, hay que ejecutar primero esos de uno en uno,
+        /// recursivamente
+        /// Y luego ejecutar la función en sí, copiando el resultado a la posición de
+        /// memoria asignada
+        generatedExecCode = true;
+
+        out.comment("Evaluando la llamada: " + this.decompile());
+
+        var nestedCalls = this.args.stream().filter(arg -> arg instanceof Call).map(arg -> (Call) arg)
+                .collect(Collectors.toList());
+
+        if (nestedCalls.size() > 0) {
+            out.comment("Evaluating nested function calls");
+            out.indented(() -> {
+                for (var call : nestedCalls) {
+                    call.compileAsInstruction(out);
+                }
+            });
+            out.comment("End evaluating nested function calls");
+        }
+
         /// Si son funciones scan y print, tratarlos diferente porque no hacen falta
         /// reserverStack ni freeStack
-
         if (this.funcDef.isExternal()) {
             for (int i = 0; i < this.args.size(); ++i) {
                 var expr = this.args.get(i);
                 expr.compileAsExpr(out);
             }
 
+            /// Guardar el resultado en la posición de memoria asignada para caso scan
+            if (this.funcDef.getResult().size() > 0) {
+                out.mem_local(this.position);
+            }
+
             /// Llamar a la funcion desde WASM
             out.call(this.funcDef.getIden());
+
+            if (this.funcDef.getResult().size() > 0) {
+                out.i32_store();
+            }
+
             return;
         }
 
+        /// Para funciones normales
         var params = this.funcDef.getParams();
 
         out.comment("Copying arguments to stack");
-        // Vamos eliminando las direcciones de parámetros con su expresion
-        // correspondiente
         for (int i = 0; i < this.args.size(); ++i) {
             var param = params.get(i);
             var expr = this.args.get(i);
@@ -154,7 +219,31 @@ public class Call extends Expr {
 
         out.comment("PERFORMING FUNCTION CALL");
         out.call(this.funcDef.getIden());
-
         out.comment("FUNCTION CALL DONE");
+
+        /// Ahora hay que copiar el resultado de la función a la posición de memoria
+        out.comment("Copiando el resultado de la función a la posición de memoria asignada");
+
+        /// Rango del resultado:
+        /// FROM [SP + 8 + FUNC_SIZE, SP + 8 + FUNC_SIZE + RESULT_SIZE]
+        /// DEST [$localStart + this.position, $localStart + this.position +
+        /// RESULT_SIZE]
+        out.comment("Calculando la posicion inicial del resultado");
+        out.get_global("SP");
+        out.i32_const(8 + this.funcDef.getSize());
+        out.i32_add();
+
+        out.comment("Calculando la posicion destino del resultado");
+        out.get_local(ProgramOutput.LOCAL_START);
+        out.i32_const(this.position);
+        out.i32_add();
+
+        out.comment("El tamaño del resultado (i32)");
+        out.i32_const(this.funcDef.getResult().size() / 4);
+
+        out.comment("Copiando el resultado");
+        out.call("copyn");
+
+        out.comment("Fin de la llamada a la función: " + this.decompile());
     }
 }

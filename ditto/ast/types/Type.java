@@ -7,6 +7,13 @@ import ditto.ast.Node;
 import ditto.ast.ProgramOutput;
 
 public abstract class Type extends Node {
+    /// Si es un tipo básico o no (ocupa más de 4 bytes)
+    public final boolean isBasic;
+
+    public Type(boolean isBasic) {
+        this.isBasic = isBasic;
+    }
+
     /// Lo que ocuparía en memoria. Se usa para calcular delta.
     public abstract int size();
 
@@ -24,15 +31,5 @@ public abstract class Type extends Node {
 
     public List<Node> getAstChildren() {
         return new ArrayList<Node>();
-    }
-
-    public String asWasmResult() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("(result ");
-        for (int i = 0; i < size() / 4; i++) {
-            sb.append("i32 ");
-        }
-        sb.append(")");
-        return sb.toString();
     }
 }

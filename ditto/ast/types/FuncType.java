@@ -10,6 +10,7 @@ public class FuncType extends Type {
     private int argSize;
 
     public FuncType(Type returnType, List<Type> argumentTypes) {
+        super(false);
         this.returnType = returnType;
         this.argumentTypes = argumentTypes;
         for (Type t : argumentTypes) {

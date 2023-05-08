@@ -6,6 +6,7 @@ public class IntegerType extends Type {
     private static IntegerType instance = new IntegerType();
 
     private IntegerType() {
+        super(true);
     }
 
     public static IntegerType getInstance() {

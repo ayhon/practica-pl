@@ -23,15 +23,18 @@ public class StructType extends Type {
     public StructType(Identifier iden) {
         /// Este constructor se utiliza para CUP
         /// Para cuando declaramos una variable del tipo struct
+        super(false);
         this.iden = iden;
     }
 
     public StructType(Identifier iden, Map<String, Type> fieldTypes) {
+        super(false);
         this.iden = iden;
         this.fieldTypes = fieldTypes;
     }
 
     public StructType(DefStruct def) {
+        super(false);
         this.iden = new Identifier(def.getIden());
         this.definition = def;
 

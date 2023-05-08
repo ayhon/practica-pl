@@ -70,8 +70,13 @@ public class Name extends Designator {
         if (definition instanceof DefVar) {
             DefVar defVar = (DefVar) definition;
             out.mem_location(defVar);
-            if(defVar instanceof DefFunc.Param)
+            if (defVar instanceof DefFunc.Param && ((DefFunc.Param) defVar).isRef()) {
+                /// Si es un parametro por referencia, su valor es la dirección de memoria real
+                out.comment(
+                        String.format("Cargando el valor de la direccion de memoria del parametro por referencia: %s",
+                                this.getIden()));
                 out.i32_load();
+            }
         } else
             throw new SemanticError("Can't compile a definition to " + definition + " from a name");
     }

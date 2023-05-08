@@ -290,7 +290,7 @@ public class ProgramOutput {
         indent_level = Math.max(0, indent_level - INDENT_WIDTH);
     }
 
-    private void indented(Runnable r) {
+    public void indented(Runnable r) {
         indent();
         r.run();
         dedent();
@@ -479,11 +479,11 @@ public class ProgramOutput {
     public void func(DefFunc fun, Runnable runnable) {
         append("(func $%s", fun.getIden());
         indented(() -> {
-            append(fun.getResult().asWasmResult());
             append(String.format("(local $%s i32)", ProgramOutput.LOCAL_START));
             append("(local $temp i32)");
 
-            int stackSize = fun.getSize() + 4 + 4;
+            int stackSize = fun.getSize() + 4 + 4 + fun.getResult().size();
+
             i32_const(stackSize);
             reserveStack();
 
@@ -495,8 +495,8 @@ public class ProgramOutput {
     }
 
     public void doReturn() {
-        append("return");
         freeStack();
+        append("return");
     }
 
     /* CONTROL FLOW */

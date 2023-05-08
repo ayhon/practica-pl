@@ -1,0 +1,30 @@
+struct Persona is
+    int edad;
+    int altura;
+end
+
+struct Familia is
+    Persona padre;
+    Persona madre;
+    int num_hijos;
+end
+
+func main()
+    /// Ejemplo con struct anidados
+    Familia f := Familia{
+        padre: Persona{
+            edad: 20,
+            altura: 180
+        },
+        madre: Persona{
+            edad: 19,
+            altura: 170
+        },
+        num_hijos: 2
+    };
+    print(f.padre.edad);
+    print(f.padre.altura);
+    print(f.madre.edad);
+    print(f.madre.altura);
+    print(f.num_hijos);
+end

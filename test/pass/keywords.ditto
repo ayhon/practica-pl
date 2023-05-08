@@ -47,15 +47,13 @@ func play() -> array 5 int
     end
 end
 
-struct Name is
-    struct Sub is
-        int a := 10;
-        ptr int version;
-        func hello() -> array 10 int
-            return [0; 10];
-        end
-        // @a := 10; // TODO
+struct Sub is
+    int a;
+    ptr int version;
+    func hello() -> array 10 int
+        return [0; 10];
     end
+    // @a := 10; // TODO
 end
 
 func mat_mul(array 3 array 3 int A, array 3 array 3 int B) -> array 3 array 3 int

@@ -87,7 +87,7 @@ case $1 in
                         # Tiene mismo nombre, pero extension .wat, en carpeta compiled
                         dir=$(dirname $test_file)
                         wat_file=$(basename $test_file .ditto).wat
-                        node main.js $dir/compiled/$wat_file
+                        node main.js $dir/compiled/$wat_file --disable-console-print
                         RESULT=$?
                     fi
 

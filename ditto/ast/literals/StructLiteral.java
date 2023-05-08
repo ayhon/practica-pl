@@ -2,7 +2,6 @@ package ditto.ast.literals;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -32,7 +31,7 @@ public class StructLiteral extends Literal {
 
     @Override
     public String getAstString() {
-        return "struct";
+        return "StructLiteral [ " + iden + " ]";
     }
 
     @Override
@@ -59,12 +58,6 @@ public class StructLiteral extends Literal {
                 .map(entry -> entry.getKey() + ": " + entry.getValue().decompile())
                 .reduce("", (a, b) -> b + ", " + a)
                 + " }";
-    }
-
-    @Override
-    public void compileAsExpr(ProgramOutput out) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'compileAsExpr'");
     }
 
     @Override
@@ -95,5 +88,63 @@ public class StructLiteral extends Literal {
             }
         }
         this.type = this.definition.type();
+    }
+
+    @Override
+    public void compileAsExpr(ProgramOutput out) {
+        out.comment("Evaluando struct literal: " + this.decompile());
+
+        /// Reservar espacio en heap
+        out.i32_const(this.type().size());
+        out.call(ProgramOutput.RESERVE_HEAP);
+
+        /// Dirección del inicio del StructLiteral en heap, para devolverla al final
+        out.get_global("NP");
+
+        out.indented(() -> {
+            /// Evaluar cada elemento (puede contener también tipos no básicos)
+            /// Itero por attributes de definicion, para sacar valores por defecto
+            var attributes = this.definition.getAttributes();
+
+            for (var attr : attributes.entrySet()) {
+                var field = attr.getKey();
+                var def = attr.getValue();
+                var expr = fieldValues.getOrDefault(field, def.getExpr());
+
+                out.comment("Guardando campo " + field + " del StructLiteral con offset " + def.getDelta());
+                out.comment("Evaluando campo " + field);
+
+                out.duplicate();
+                out.i32_const(def.getOffset());
+                out.i32_add();
+
+                if (expr == null) {
+                    /// Rellenar con 0
+                    out.i32_const(def.type().size() / 4);
+                    out.call(ProgramOutput.FILL_ZERO);
+                } else if (def.type().isBasic) {
+                    out.comment("Es un tipo básico, copiar con i32_store");
+                    expr.compileAsExpr(out);
+                    out.i32_store();
+                } else {
+                    /// Caso recursivo, copiar con ncopy
+                    out.comment("Es un tipo no basico, hay que evaluarlo primero");
+
+                    out.comment("FROM");
+                    out.indented(() -> {
+                        expr.compileAsExpr(out);
+                    });
+
+                    out.comment("TO");
+                    out.comment("Intercambio el cima de pila, porque la dirección destino ya estaba calculada antes");
+                    out.call(ProgramOutput.SWAP);
+
+                    out.comment("SIZE");
+                    out.i32_const(expr.type().size() / 4);
+
+                    out.call(ProgramOutput.COPYN);
+                }
+            }
+        });
     }
 }

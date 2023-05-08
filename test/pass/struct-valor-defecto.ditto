@@ -1,0 +1,17 @@
+struct Persona is
+    int edad := 20;
+    int altura := 30;
+    int peso := 40;
+end
+
+func main()
+    Persona p := Persona{peso: 20};
+    print(p.edad);
+    print(p.altura);
+    print(p.peso);
+
+    p := Persona{edad: 100, altura: 200, peso: 80};
+    print(p.edad);
+    print(p.altura);
+    print(p.peso);
+end

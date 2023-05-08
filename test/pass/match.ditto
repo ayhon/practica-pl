@@ -1,13 +1,19 @@
 func main()
     int x := 2;
     int a := 3;
+    int salida := -100;
+
     match x is
         case -1 do
             x := 4;
-            print(1);
+            salida := 1;
         case 2 do
             x := -1;
+            salida := 10;
         otherwise
             int a := 32;
+            salida := 0;
     end
+    
+    print(salida);
 end

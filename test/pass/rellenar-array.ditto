@@ -6,5 +6,9 @@ func main() -> int
         numeros[i] := scan();
     end
 
+    for i from 0 to 9 do
+        print(numeros[i]);
+    end
+
     return 0;
 end

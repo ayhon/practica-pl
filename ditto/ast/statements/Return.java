@@ -82,7 +82,7 @@ public class Return extends Statement {
             out.comment("Tamaño del valor de retorno (N)");
             out.i32_const(this.expr.type().size() / 4);
 
-            out.call("copyn");
+            out.call(ProgramOutput.COPYN);
         }
 
         out.doReturn();

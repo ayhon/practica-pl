@@ -94,21 +94,22 @@ public class ArrayLiteral extends Literal {
 
     @Override
     public void compileAsExpr(ProgramOutput out) {
+        throw new Error("No debes llamar a compileAsExpr de un ArrayLiteral");
+    }
+
+    @Override
+    public void compileAsAssign(ProgramOutput out) {
+        /// WARNING: Tiene que estar encima de la pila la direccion inicial donde
+        /// asignarle este array
         out.comment("Evaluando ArrayLiteral: " + this.decompile());
-
-        /// Reservar espacio en heap
-        out.i32_const(this.type().size());
-        out.call(ProgramOutput.RESERVE_HEAP);
-
-        /// Guardar dirección del inicio del array al final de pila, para devolver
-        /// despues
-        out.get_global("NP");
-
         out.indented(() -> {
             /// Evaluar cada elemento (puede contener también tipos no básicos)
             for (int i = 0; i < elements.size(); ++i) {
                 out.comment("Preparar la dirección destino");
-                out.duplicate();
+                if (i != elements.size() - 1)
+                    /// Duplicar la direccion inicial si no es el ultimo elemento
+                    out.duplicate();
+
                 out.i32_const(i * elements.get(i).type().size());
                 out.i32_add();
 
@@ -118,25 +119,13 @@ public class ArrayLiteral extends Literal {
                 if (element.type().isBasic) {
                     /// Caso base, copiar con i32_store
                     out.comment("Es un tipo básico, copiar con i32_store");
-                    element.compileAsExpr(out);
-                    out.i32_store();
+                    element.compileAsAssign(out);
                 } else {
                     /// Caso recursivo, copiar con ncopy
                     out.comment("Es un tipo no basico, hay que evaluarlo primero");
-
-                    out.comment("FROM");
-                    out.indented(() -> {
-                        element.compileAsExpr(out);
-                    });
-
-                    out.comment("TO");
-                    out.comment("Intercambio el cima de pila, porque la dirección destino ya estaba calculada antes");
-                    out.call(ProgramOutput.SWAP);
-
-                    out.comment("SIZE");
-                    out.i32_const(element.type().size() / 4);
-
-                    out.call(ProgramOutput.COPYN);
+                    /// Usa la direccion de arriba para guardar el resultado, no hay que hacer nada
+                    /// más
+                    element.compileAsAssign(out);
                 }
             }
         });

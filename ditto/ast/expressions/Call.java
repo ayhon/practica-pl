@@ -147,8 +147,37 @@ public class Call extends Expr {
 
         /// Y luego cargar el resultado en la pila
         out.mem_local(this.position);
-        if (this.type().isBasic)
+        if (this.type().isBasic) {
             out.i32_load();
+        } else {
+            throw new RuntimeException("No puedes llamar compileAsExpr de tipo no basico");
+        }
+    }
+
+    @Override
+    public void compileAsAssign(ProgramOutput out) {
+        if (!generatedExecCode) {
+            this.compileAsInstruction(out);
+        }
+
+        if (this.type().isBasic) {
+            out.mem_local(this.position);
+            out.i32_load();
+            out.i32_store();
+        } else {
+            /// Con copyn
+            /// Copia no basica
+            out.comment("FROM");
+            out.mem_local(this.position);
+            
+            out.comment("TO");
+            out.call(ProgramOutput.SWAP);
+
+            out.comment("SIZE");
+            out.i32_const(this.type().size() / 4);
+
+            out.call(ProgramOutput.COPYN);
+        }
     }
 
     /*
@@ -225,22 +254,7 @@ public class Call extends Expr {
                 designator.compileAsDesig(out);
                 out.i32_store();
             } else {
-                if (param.type().isBasic) {
-                    expr.compileAsExpr(out);
-                    out.i32_store();
-                } else {
-                    /// Copia no basica
-                    out.comment("FROM");
-                    expr.compileAsExpr(out);
-
-                    out.comment("TO");
-                    out.call(ProgramOutput.SWAP);
-
-                    out.comment("SIZE");
-                    out.i32_const(param.type().size() / 4);
-
-                    out.call(ProgramOutput.COPYN);
-                }
+                expr.compileAsAssign(out);
             }
         }
 

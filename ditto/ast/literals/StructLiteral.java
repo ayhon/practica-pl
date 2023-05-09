@@ -92,14 +92,14 @@ public class StructLiteral extends Literal {
 
     @Override
     public void compileAsExpr(ProgramOutput out) {
-        out.comment("Evaluando struct literal: " + this.decompile());
+        throw new RuntimeException("No debes llamar a compileAsExpr de un StructLiteral");
+    }
 
-        /// Reservar espacio en heap
-        out.i32_const(this.type().size());
-        out.call(ProgramOutput.RESERVE_HEAP);
-
-        /// Dirección del inicio del StructLiteral en heap, para devolverla al final
-        out.get_global("NP");
+    @Override
+    public void compileAsAssign(ProgramOutput out) {
+        /// WARNING: Aqui se espera que le pase una dirección de memoria de inicio donde
+        /// hacer la asignación del array
+        out.comment("Asignando struct literal: " + this.decompile());
 
         out.indented(() -> {
             /// Evaluar cada elemento (puede contener también tipos no básicos)
@@ -124,27 +124,14 @@ public class StructLiteral extends Literal {
                     out.call(ProgramOutput.FILL_ZERO);
                 } else if (def.type().isBasic) {
                     out.comment("Es un tipo básico, copiar con i32_store");
-                    expr.compileAsExpr(out);
-                    out.i32_store();
+                    expr.compileAsAssign(out);
                 } else {
-                    /// Caso recursivo, copiar con ncopy
-                    out.comment("Es un tipo no basico, hay que evaluarlo primero");
-
-                    out.comment("FROM");
-                    out.indented(() -> {
-                        expr.compileAsExpr(out);
-                    });
-
-                    out.comment("TO");
-                    out.comment("Intercambio el cima de pila, porque la dirección destino ya estaba calculada antes");
-                    out.call(ProgramOutput.SWAP);
-
-                    out.comment("SIZE");
-                    out.i32_const(expr.type().size() / 4);
-
-                    out.call(ProgramOutput.COPYN);
+                    expr.compileAsAssign(out);
                 }
             }
+
+            if (!attributes.isEmpty())
+                out.drop(); /// Quitar direccion inicial
         });
     }
 }

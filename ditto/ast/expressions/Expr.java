@@ -18,6 +18,18 @@ public abstract class Expr extends Statement {
         out.drop();
     }
 
+    public void compileAsAssign(ProgramOutput out) {
+        /// Recibe una direccion encima de la pila, y guarda el resultado directamente
+        /// alli
+        /// Es util para tipos no basicos
+        if (this.type().isBasic) {
+            compileAsExpr(out);
+            out.i32_store();
+        } else {
+            throw new RuntimeException("Los no basicos tiene que sobreescribir este metodo");
+        }
+    }
+
     public Integer evalIntAtCompileTime() {
         return null;
     }

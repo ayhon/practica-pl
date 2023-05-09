@@ -44,8 +44,15 @@ public class New extends Expr {
 
     @Override
     public void compileAsExpr(ProgramOutput out) {
-        /// Basta con llamar compileAsExpr de ArrayLiteral / StructLiteral, porque
-        /// devuelve ya su dirección en heap
-        this.value.compileAsExpr(out);
+        /// Reservar espacio en heap
+        out.i32_const(this.value.type().size());
+        out.call(ProgramOutput.RESERVE_HEAP);
+
+        /// Guardar dirección del inicio del array al final de pila, para devolver
+        /// despues
+        out.get_global("NP");
+        out.duplicate();
+
+        this.value.compileAsAssign(out);
     }
 }

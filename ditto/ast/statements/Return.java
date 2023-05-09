@@ -57,33 +57,18 @@ public class Return extends Statement {
         /// Puede ser un valor de tipo no basico, entonces uso copyn
         out.comment("INSTRUCTION: " + this.decompile());
 
+        out.comment("Posicion inicial de la zona de retorno");
+        out.get_global("SP");
+        out.i32_const(this.expr.type().size());
+        out.i32_sub();
+
         if (this.expr.type().isBasic) {
-            out.comment("Guardo el valor de retorno con i32.store, porque es un tipo basico");
-            
-            out.comment("Posicion inicial de la zona de retorno");
-            out.get_global("SP");
-            out.i32_const(this.expr.type().size());
-            out.i32_sub();
-
-            expr.compileAsExpr(out);
-
-            out.i32_store();
+            out.comment("Guardo el valor de retorno de un tipo basico");
         } else {
-            out.comment("Guardo el valor de retorno con copyn, porque es un tipo no basico");
-
-            out.comment("Posicion inicial del valor de retorno (FROM)");
-            expr.compileAsExpr(out);
-
-            out.comment("Posicion inicial de la zona de retorno (TO)");
-            out.get_global("SP");
-            out.i32_const(this.expr.type().size());
-            out.i32_sub();
-
-            out.comment("Tamaño del valor de retorno (N)");
-            out.i32_const(this.expr.type().size() / 4);
-
-            out.call(ProgramOutput.COPYN);
+            out.comment("Guardo el valor de retorno de un tipo no basico");
         }
+
+        expr.compileAsAssign(out);
 
         out.doReturn();
     }

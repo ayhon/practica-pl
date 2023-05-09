@@ -57,10 +57,11 @@ public class Return extends Statement {
         /// Puede ser un valor de tipo no basico, entonces uso copyn
         out.comment("INSTRUCTION: " + this.decompile());
 
-        out.comment("Posicion inicial de la zona de retorno");
+        out.comment("Cargar la direccion del lugar donde almacenar el resultado de esta llamada de funcion");
         out.get_global("SP");
-        out.i32_const(this.expr.type().size());
+        out.i32_const(4);
         out.i32_sub();
+        out.i32_load();
 
         if (this.expr.type().isBasic) {
             out.comment("Guardo el valor de retorno de un tipo basico");

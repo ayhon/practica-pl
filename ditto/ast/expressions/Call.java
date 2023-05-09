@@ -169,7 +169,7 @@ public class Call extends Expr {
             /// Copia no basica
             out.comment("FROM");
             out.mem_local(this.position);
-            
+
             out.comment("TO");
             out.call(ProgramOutput.SWAP);
 
@@ -258,31 +258,15 @@ public class Call extends Expr {
             }
         }
 
+        out.comment("Poner la direccion de memoria donde guardar el resultado");
+        out.get_global("SP");
+        out.i32_const(this.funcDef.getSize() + 4 + 4);
+        out.i32_add();
+        out.mem_local(this.position);
+        out.i32_store();
+
         out.comment("PERFORMING FUNCTION CALL");
         out.call(this.funcDef.getIden());
         out.comment("FUNCTION CALL DONE");
-
-        /// Ahora hay que copiar el resultado de la función a la posición de memoria
-        out.comment("Copiando el resultado de la función a la posición de memoria asignada");
-
-        /// Rango del resultado:
-        /// FROM [SP + 8 + FUNC_SIZE, SP + 8 + FUNC_SIZE + RESULT_SIZE]
-        /// DEST [$localStart + this.position, $localStart + this.position +
-        /// RESULT_SIZE]
-        out.comment("Calculando la posicion inicial del resultado");
-        out.get_global("SP");
-        out.i32_const(8 + this.funcDef.getSize());
-        out.i32_add();
-
-        out.comment("Calculando la posicion destino del resultado");
-        out.mem_local(this.position);
-
-        out.comment("El tamaño del resultado (i32)");
-        out.i32_const(this.funcDef.getResult().size() / 4);
-
-        out.comment("Copiando el resultado");
-        out.call(ProgramOutput.COPYN);
-
-        out.comment("Fin de la llamada a la función: " + this.decompile());
     }
 }

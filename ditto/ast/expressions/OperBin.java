@@ -5,6 +5,7 @@ import java.util.List;
 
 import ditto.ast.Node;
 import ditto.ast.ProgramOutput;
+import ditto.ast.types.ArrayType;
 import ditto.ast.types.BoolType;
 import ditto.errors.TypeError;
 import ditto.ast.types.IntegerType;
@@ -114,7 +115,12 @@ public class OperBin extends Expr {
                 this.type = IntegerType.getInstance();
             }
             case EQUALS, NOTEQUALS -> {
-                this.type = BoolType.getInstance();
+                if(!left.type().equals(right.type()))
+                    throw new TypeError("Can't compare different types");
+                if(left.type().equals(IntegerType.getInstance()) || left.type().equals(BoolType.getInstance()))
+                    this.type = BoolType.getInstance();
+                else 
+                    throw new TypeError("Can't compare " + left.type());
             }
             case LESS, GREATER, LESS_EQUAL, GREATER_EQUAL -> {
                 if (!left.type().equals(IntegerType.getInstance()))

@@ -113,8 +113,8 @@ const main = async () => {
 
     if (fs.existsSync(expectedOutputFile)) {
         /// Comparar la salida con el fichero de salida esperado
-        const expectedOutput = fs.readFileSync(expectedOutputFile, "utf8");
-        const output = fs.readFileSync(outputFile, "utf8");
+        const expectedOutput = fs.readFileSync(expectedOutputFile, "utf8").trim();
+        const output = fs.readFileSync(outputFile, "utf8").trim();
 
         if (output == expectedOutput) {
             console.log("✅ Coincide la salida con la esperada");

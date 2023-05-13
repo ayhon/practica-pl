@@ -115,8 +115,6 @@ public class OperBin extends Expr {
                 this.type = IntegerType.getInstance();
             }
             case EQUALS, NOTEQUALS -> {
-                if(!left.type().equals(right.type()))
-                    throw new TypeError("Can't compare different types");
                 if(left.type().equals(IntegerType.getInstance()) || left.type().equals(BoolType.getInstance()))
                     this.type = BoolType.getInstance();
                 else 

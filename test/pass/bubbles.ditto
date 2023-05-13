@@ -1,0 +1,38 @@
+import Math;
+
+struct Node is
+    int value;
+    ptr Node left;
+    ptr Node right;
+
+    func bubble_up() -> int
+        if this-> left != null then
+            this->value := this->value + this->left->bubble_up();
+            this->left->value := 0;
+        end
+        if this-> right != null then
+            this->value := this->value + this->right->bubble_up();
+            this->right->value := 0;
+        end
+        return this->value;
+    end
+end
+func createNode(int value) -> Node
+    return Node {
+        value: value
+    };
+end
+
+func main()
+    Node l := createNode(scan());
+    Node r := createNode(scan());
+    Node s := createNode(scan());
+    s.left  := ptr l;
+    s.right := ptr r;
+    s.bubble_up();
+    print(s.value);
+    print(l.value);
+    print(r.value);
+end
+
+

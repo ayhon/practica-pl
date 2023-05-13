@@ -9,6 +9,20 @@ func fib(int n) -> int
     return -1;
 end
 
+func max(int a, int b) -> int
+    if a < b then
+        return b;
+    end
+    return a;
+end
+
+func min(int a, int b) -> int
+    if a > b then
+        return b;
+    end
+    return a;
+end
+
 func exp(int base, int exponent) -> int
     if exponent == 0 then
         return 1;

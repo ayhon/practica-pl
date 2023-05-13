@@ -104,16 +104,23 @@ public class ArrayLiteral extends Literal {
         out.comment("Evaluando ArrayLiteral: " + this.decompile());
         out.indented(() -> {
             /// Evaluar cada elemento (puede contener también tipos no básicos)
-            for (int i = 0; i < elements.size(); ++i) {
+            int length = numberOfElem.evalIntAtCompileTime();
+            var element = this.elements.get(0);
+            for (int i = 0; i < length; ++i) {
                 out.comment("Preparar la dirección destino");
-                if (i != elements.size() - 1)
+                if (i != length - 1){
                     /// Duplicar la direccion inicial si no es el ultimo elemento
                     out.duplicate();
-
-                out.i32_const(i * elements.get(i).type().size());
+                }
+                
+                // Si tenemos menos elementos que lo que indica el tamaño del array, entonces
+                // rellenamos con el primer elemento. De esta manera, obtenemos que 
+                // [0; 10] = [0,0,0,0,0,0,0,0,0,0]
+                if (elements.size() == length) 
+                    element = elements.get(i);
+                
+                out.i32_const(i * element.type().size());
                 out.i32_add();
-
-                var element = elements.get(i);
                 out.comment("Guardando elemento " + i + " del array: " + element.decompile());
 
                 if (element.type().isBasic) {

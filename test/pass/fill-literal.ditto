@@ -1,0 +1,14 @@
+func main() 
+    array 3 int arr1 := [1; 3];
+    array 3 int arr2 := [2; 3];
+    array 3 int arr3 := [3; 3];
+    int res := 0;
+    for i from 0 to #arr1 - 1 do 
+        for j from 0 to #arr2 - 1 do 
+            for k from 0 to #arr3 - 1 do 
+                res := res + arr1[i] + arr2[j] + arr3[k];
+            end 
+        end 
+    end
+    print(res);
+end

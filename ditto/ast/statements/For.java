@@ -13,6 +13,7 @@ import ditto.ast.expressions.Expr;
 import ditto.ast.literals.Natural;
 import ditto.ast.types.IntegerType;
 import ditto.ast.types.Type;
+import ditto.errors.TypeError;
 
 public class For extends Statement {
     public final DefVar index;
@@ -64,13 +65,20 @@ public class For extends Statement {
     @Override
     public void typecheck() {
         super.typecheck();
+
         Type fromType = from.type();
-        if (!fromType.equals(to.type())) {
-            throw new RuntimeException("Type mismatch in for loop");
+        if (!fromType.equals(IntegerType.getInstance())) {
+            throw new TypeError(String.format("Type mismatch in for loop: %s is not an integer", fromType));
         }
 
-        if (!fromType.equals(by.type())) {
-            throw new RuntimeException("Type mismatch in for loop");
+        Type toType = to.type();
+        if (!toType.equals(IntegerType.getInstance())) {
+            throw new TypeError(String.format("Type mismatch in for loop: %s is not an integer", toType));
+        }
+
+        Type byType = by.type();
+        if (!byType.equals(IntegerType.getInstance())) {
+            throw new TypeError(String.format("Type mismatch in for loop: %s is not an integer", byType));
         }
     }
 
@@ -83,18 +91,20 @@ public class For extends Statement {
 
     @Override
     public String toString() {
-        return "For(" + index.decompile() + " = " + from.decompile() + " to " + to.decompile() + " by " + by.decompile() + ")";
+        return "For(" + index.decompile() + " = " + from.decompile() + " to " + to.decompile() + " by " + by.decompile()
+                + ")";
     }
 
     @Override
     public String decompile() {
-        return "for " + index.decompile() + " from " + from.decompile() + " to " + to.decompile() + " by " + by.decompile() + " do ... end";
+        return "for " + index.decompile() + " from " + from.decompile() + " to " + to.decompile() + " by "
+                + by.decompile() + " do ... end";
     }
 
     @Override
     public void compileAsInstruction(ProgramOutput out) {
         out.comment("INSTRUCTION: " + this.decompile());
-        int step  = by.evalIntAtCompileTime();
+        int step = by.evalIntAtCompileTime();
 
         initializeIndex(out);
         out.block_loop(() -> {
@@ -107,7 +117,7 @@ public class For extends Statement {
         });
     }
 
-    private void initializeIndex(ProgramOutput out){
+    private void initializeIndex(ProgramOutput out) {
         // Iniciar índice //
         // Cargar posición índice
         out.mem_location(index);
@@ -129,19 +139,19 @@ public class For extends Statement {
         out.i32_add();
         // Guardar valor actual en índice
         out.i32_store();
-    }   
+    }
 
     private void checkCondition(ProgramOutput out, int step) {
-        //Caragar direccion indice
+        // Caragar direccion indice
         out.mem_location(index);
         // Cargar valor actual del índice
         out.i32_load();
         // Cargar valor final
         to.compileAsExpr(out);
         // Condición para salir del bucle
-        if(step < 0){
+        if (step < 0) {
             out.i32_lt_s(); // index < to
-        }else{
+        } else {
             out.i32_gt_s(); // index > to
         }
         out.br_if(1);

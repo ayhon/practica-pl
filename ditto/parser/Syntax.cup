@@ -310,7 +310,8 @@ STMT                        ::= EXPR:e SEMICOLON
                                     {: RESULT = m; :}
                                 | RETURN_STMT:r 
                                     {: RESULT = r; :}
-                                | error;
+                                | error SEMICOLON
+                                | error END;
 
 ASSIGNMENT                  ::= DESIGNATION:iden ASSIGN EXPR:e SEMICOLON 
                                     {: RESULT = new Assign(iden, e); :};

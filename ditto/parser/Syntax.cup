@@ -28,6 +28,10 @@ parser code {:
    private Module root;
    public Module getRoot() {
      // Podríamos añadir un `this.parse()` aquí, no tiene sentido hacer `getRoot` sino
+     if (errors.hasErrors()) {
+       System.err.println("Errors found, aborting");
+       System.exit(1);
+     }
      return root;
    }
    public Module setRoot(Module root){

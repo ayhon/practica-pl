@@ -1,6 +1,4 @@
 /// Este es un fichero para probar que parsea bien las palabras claves, no tiene sentido en sí mismo
-
-import Std;
 import Random;
 
 func assert(bool b)

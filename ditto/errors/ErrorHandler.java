@@ -4,7 +4,7 @@ import ditto.lexer.Token;
 
 public class ErrorHandler {
     public void lexicalError(int row, int col, String lexeme) {
-        System.out.println("ERROR row " + row + " column " + col + ": Caracter inesperado: " + lexeme);
+        System.err.println("ERROR row " + row + " column " + col + ": Caracter inesperado: " + lexeme);
     }
 
     public void syntaxError(Token token) {
@@ -16,6 +16,6 @@ public class ErrorHandler {
             msg = "ERROR row " + token.row() + " col " + token.col()
                     + ": Unexpected element";
         }
-        throw new SyntaxError(msg);
+        System.err.println(msg);
     }
 }

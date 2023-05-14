@@ -110,6 +110,8 @@ public class DefStruct extends Definition {
     public void compileAsInstruction(ProgramOutput out) {
         // Compila sus métodos, pues estos no son más que funciones
         for (DefFunc method : this.methods.values()) {
+            /// Añadir el nombre del struct delante del nombre de los métodos, para evitar colisiones
+            method.addModuleToIden(this.getIden());
             method.compileAsInstruction(out);
         }
     }

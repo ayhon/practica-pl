@@ -9,6 +9,7 @@ import ditto.ast.types.ArrayType;
 import ditto.ast.types.BoolType;
 import ditto.errors.TypeError;
 import ditto.ast.types.IntegerType;
+import ditto.ast.types.PointerType;
 
 public class OperBin extends Expr {
     public enum Operators {
@@ -115,7 +116,7 @@ public class OperBin extends Expr {
                 this.type = IntegerType.getInstance();
             }
             case EQUALS, NOTEQUALS -> {
-                if(left.type().equals(IntegerType.getInstance()) || left.type().equals(BoolType.getInstance()))
+                if(left.type().isBasic)
                     this.type = BoolType.getInstance();
                 else 
                     throw new TypeError("Can't compare " + left.type());

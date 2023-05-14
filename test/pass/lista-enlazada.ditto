@@ -1,0 +1,79 @@
+struct Node is
+    ptr Node next := null;
+    int val;
+end
+
+/// Devuelve el puntero al último nodo de la lista
+func reverse_nodes(ptr Node curr) -> ptr Node
+    if curr->next != null then
+        ptr Node new_head := reverse_nodes(curr->next);
+        curr->next->next := curr;
+        curr->next := null;
+        return new_head;
+    else
+        return curr;
+    end
+end
+
+struct List is
+    ptr Node head := null;
+    int size;
+
+    func pop() -> int
+        if this->head != null then
+            ptr Node new_head := this->head->next;
+            int head_value := this->head->val;
+            this->head := new_head;
+            this->size := this->size - 1;
+            return head_value;
+        else
+            return 0;
+        end
+    end
+
+    func push(int elem)
+        ptr Node new_head := new Node {};
+        new_head->val := elem;
+        new_head->next := this->head;
+        this->head := new_head;
+        this->size := this->size + 1;
+    end
+
+    func reverse()
+        this->head := reverse_nodes(this->head);
+    end
+
+    func print_list()
+        ptr Node curr := this->head;
+        while curr != null do
+            print(curr->val);
+            curr := curr->next;
+        end
+    end
+end
+
+func main()
+    /// Creamos una lista enlazada de 10 elementos
+    List ls;
+
+    for i from 0 to 9 do
+        ls.push(scan());
+    end
+
+    /// Imprimimos la lista
+    ls.print_list();
+
+    /// Invertimos la lista
+    ls.reverse();
+
+    /// Imprimimos la lista invertida
+    ls.print_list();
+
+    /// Eliminamos 3 elementos de la lista
+    for i from 0 to 2 do
+        ls.pop();
+    end
+
+    /// Imprimimos la lista
+    ls.print_list();
+end

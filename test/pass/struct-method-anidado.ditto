@@ -1,0 +1,101 @@
+struct Persona is
+    int edad;
+    int altura;
+    int peso;
+
+    func BMI() -> int
+        return this->peso / (this->altura * this->altura);
+    end
+
+    func setEdad(int edad)
+        this->edad := edad;
+    end
+
+    func setAltura(int altura)
+        this->altura := altura;
+    end
+
+    func setPeso(int peso)
+        this->peso := peso;
+    end
+
+    func getAltura() -> int
+        return this->altura;
+    end
+end
+
+struct Familia is
+    Persona padre;
+    Persona madre;
+    array 2 Persona hijos;
+    int num_hijos := 0;
+
+    func addHijo(Persona hijo)
+        if (this->num_hijos < 2) then
+            this->hijos[this->num_hijos] := hijo;
+            this->num_hijos := this->num_hijos + 1;
+        end
+    end
+
+    func getHijo(int index) -> Persona
+        return this->hijos[index];
+    end
+
+    func sumAltura() -> int
+        int total := this->padre.getAltura() + this->madre.getAltura();
+        for i from 0 to 1 do
+            total := total + this->hijos[i].getAltura();
+        end
+        return total;
+    end
+end
+
+func main()
+    /// Ejemplo con struct anidados
+    Familia f := Familia{
+        padre: Persona{
+            edad: 20,
+            altura: 180
+        },
+        madre: Persona{
+            edad: 19,
+            altura: 170
+        }
+    };
+    print(f.padre.edad);
+    print(f.padre.altura);
+    print(f.madre.edad);
+    print(f.madre.altura);
+    print(f.num_hijos);
+
+    /// Ahora añadimos un hijo
+    f.addHijo(Persona{
+        edad: 1,
+        altura: 50
+    });
+
+    print(f.num_hijos);
+    Persona hijo0 := f.getHijo(0);
+    print(hijo0.edad);
+    print(hijo0.altura);
+
+    /// Deberia devolver valores por defecto
+    Persona hijo1 := f.getHijo(1);
+    print(hijo1.edad);
+    print(hijo1.altura);
+
+    /// Ahora añadimos otro hijo
+    f.addHijo(Persona{
+        edad: 2,
+        altura: 60
+    });
+
+    print(f.num_hijos);
+    hijo1 := f.getHijo(1);
+    print(hijo1.edad);
+    print(hijo1.altura);
+
+    /// Calcular altura total
+    /// Deberia ser 180 + 170 + 50 + 60 = 460
+    print(f.sumAltura());
+end

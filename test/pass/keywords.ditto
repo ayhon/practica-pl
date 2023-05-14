@@ -1,4 +1,4 @@
-import Std;
+/// Este es un fichero para probar que parsea bien las palabras claves, no tiene sentido en sí mismo
 import Random;
 
 func assert(bool b)

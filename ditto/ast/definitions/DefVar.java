@@ -80,7 +80,7 @@ public class DefVar extends Definition {
     @Override
     public void typecheck() {
         super.typecheck();
-        if (this.expr != null && !this.expr.type().equals(type))
+        if (this.expr != null && !this.type.equals(this.expr.type()))
             throw new TypeError(
                     String.format("Can't assign %s to variable <%s> of type %s", expr.type(), this.getIden(), type));
         else if (expr != null)

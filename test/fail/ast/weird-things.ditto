@@ -1,0 +1,25 @@
+func main()
+    let rec fib n = 
+    if n > 1 then fib (n-1) + fib (n-2)
+    else n in fib scan();
+
+    let rec fib n = 
+    if n > 1 then fib (n-1) + fib (n-2)
+    else n in fib scan();
+
+    let rec fib n = 
+    if n > 1 then fib (n-1) + fib (n-2)
+    else n in fib scan();
+
+    let rec fib n = 
+    if n > 1 then fib (n-1) + fib (n-2)
+    else n in fib scan();
+
+    let rec fib n = 
+    if n > 1 then fib (n-1) + fib (n-2)
+    else n in fib scan();
+
+    let rec fib n = 
+    if n > 1 then fib (n-1) + fib (n-2)
+    else n in fib scan();
+end

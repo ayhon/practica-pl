@@ -1,0 +1,6 @@
+import Math;
+
+func main() 
+    int a := scan();
+    print(Math::fib(a));
+end

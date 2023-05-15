@@ -51,4 +51,13 @@ func main()
             salida := 0;
     end
     print(salida);
+
+    bool b := true;
+    match b is
+        case true do
+            salida := 1;
+        case false do
+            salida := 0;
+    end
+    print(salida);
 end

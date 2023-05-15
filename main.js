@@ -74,7 +74,7 @@ async function start(wasmFile) {
     /// await instance.exports.init();
 }
 
-execSync(`./wat2wasm ${watFilePath} -o ${wasmFile}`, async (error, stdout, stderr) => {
+execSync(`./wat2wasm "${watFilePath}" -o "${wasmFile}"`, async (error, stdout, stderr) => {
     if (error) {
         console.error(`error wat2wasm: ${error.message}`);
         process.exit(1);

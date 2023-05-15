@@ -45,12 +45,12 @@ Uso: $0 [build|compile|test]
 EOF
 }
 
-case $1 in
+case "$1" in
     help)
         usage && exit 0
         ;;
     build)
-        case $2 in
+        case "$2" in
             lexer)
                 jflex ditto/lexer/Tokens.l
                 rm -f ditto/lexer/Lexer.java~
@@ -77,8 +77,8 @@ case $1 in
         file="$2"
 		print_ast="$3" # If "ast", prints the AST
         "$0" build all && \
-        filename=`basename $file .ditto`
-        filedir=`dirname $file`
+        filename=`basename "$file" .ditto`
+        filedir=`dirname "$file"`
         ditto_test code $file "$3" && ./wat2wasm "$filedir/compiled/$filename.wat" -o "WASM/$filename.wasm"
         ;;
     test)
@@ -87,11 +87,11 @@ case $1 in
         print_ast="$4"
 
         # Comprobar el flag de DO_NOT_COMPILE y compilar si no está
-        if [ -z $DO_NOT_COMPILE ]; then
+        if [ -z "$DO_NOT_COMPILE" ]; then
             "$0" build all
         fi && \
 
-        case $test_file in
+        case "$test_file" in
             all)
                 # Y el resto de veces ejecuto los tests sin compilar
                 export DO_NOT_COMPILE=1
@@ -132,7 +132,7 @@ case $1 in
                 # Y cuando llega a la tarea $task deberia de fallar, y terminar
                 # Iterar por fichero fuera, y dentro por tareas
                 echo "🧪 Ejecutando los tests que deberian fallar"
-                for test_file in test/fail/$task/*.ditto; do
+                for test_file in test/fail/"$task"/*.ditto; do
                     [ -f $test_file ] || break # Si no hay ficheros, salir
                     echo "  📁 Ejecutando $test_file"
                     for task_i in "${TASKS[@]}"; do

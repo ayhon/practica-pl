@@ -1,0 +1,13 @@
+func main()
+    array 3 int x;
+    int salida := -100;
+
+    /// Deberia fallar porque x no es un int o booleano
+    match x is
+        case 1 do
+            salida := 1;
+        otherwise
+            salida := 0;
+    end
+    print(salida);
+end

@@ -31,8 +31,7 @@ public class ArrayLiteral extends Literal {
         /// Cuando tenemos un array de tamaño variable y un valor por defecto para cada
         /// elemento
         /// Anotamos el valor por defecto y el tamaño del array
-        /// Pero no vamos a crear un ArrayList aqui en Java, porque el tamaño del array
-        /// no lo sabemos, y se conoce en momento de ejecución
+
         this.numberOfElem = numberOfElem;
 
         this.elements = new ArrayList<>();

@@ -1,0 +1,15 @@
+func main()
+    int x := -1;
+    int salida := -100;
+
+    /// Deberia fallar porque hay 2 casos repetidos
+    match x is
+        case 1 do
+            salida := 1;
+        case 1 do
+            salida := 2;
+        otherwise
+            salida := 0;
+    end
+    print(salida);
+end

@@ -74,16 +74,6 @@ public abstract class Node {
         }
     }
 
-    //Este medotodo se encarga de calcular la profundidad de una declaración de variable
-    //Cada vez que entramos en una función o struct(cada vez que reseteamos el delta),
-    // aumentamos la profundidad en 1. Realizamos varias pasadas, hasta que devuelve falso
-    public boolean computeDeep(int currDeep){
-        boolean changed = false;
-        for(Node child : getAstChildren()){
-            changed |= child.computeDeep(currDeep);
-        }
-        return changed;
-    }
     public abstract void compile(ProgramOutput out);
 
     @Override

@@ -32,6 +32,11 @@ public class False extends Literal {
     public Object getValue() {
         return false;
     }
+    
+    @Override
+    public Integer evalIntAtCompileTime() {
+        return 0;
+    }
 
     @Override
     public void compileAsExpr(ProgramOutput out) {

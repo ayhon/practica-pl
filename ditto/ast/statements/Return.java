@@ -52,9 +52,6 @@ public class Return extends Statement {
 
     @Override
     public void compileAsInstruction(ProgramOutput out) {
-        /// Guardar este resultado en la zona de retorno
-        /// Sabemos que la dirección del inicio es $SP - this.expr.size()
-        /// Puede ser un valor de tipo no basico, entonces uso copyn
         out.comment("INSTRUCTION: " + this.decompile());
 
         out.comment("Cargar la direccion del lugar donde almacenar el resultado de esta llamada de funcion");

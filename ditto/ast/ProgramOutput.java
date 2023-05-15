@@ -568,7 +568,7 @@ public class ProgramOutput {
         for (int i = 0; i <= size; i++) {
             sj.add(String.format("%d", i));
         }
-        indented(() -> append(sj.toString()));
+       append(sj.toString());
     }
 
     public interface IntRunnable {
@@ -594,7 +594,7 @@ public class ProgramOutput {
     }
 
     public void end() {
-        append("end");
         dedent();
+        append("end");
     }
 }

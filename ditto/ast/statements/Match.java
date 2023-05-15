@@ -1,7 +1,7 @@
 package ditto.ast.statements;
 
 import java.util.List;
-
+import java.util.stream.Collectors;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -12,20 +12,27 @@ import ditto.ast.Context;
 import ditto.ast.Node;
 import ditto.ast.ProgramOutput;
 import ditto.ast.expressions.Expr;
+import ditto.ast.types.BoolType;
 import ditto.ast.types.IntegerType;
-import ditto.ast.types.Type;
 import ditto.errors.TypeError;
 
 public class Match extends Statement {
     private Expr expr;
     private List<Case> cases;
-    private int exprValue;
+    private List<Case> nonOtherwiseCases;
+    private Case otherwiseCase;
     private int min = Integer.MIN_VALUE;
     private int max = Integer.MAX_VALUE;
 
     public Match(Expr expr, List<Case> cases) {
         this.expr = expr;
         this.cases = cases;
+
+        this.nonOtherwiseCases = this.cases.stream()
+                .filter(c -> !c.isOtherwise).collect(Collectors.toList());
+
+        /// Por CUP, solo puede haber un otherwise a lo sumo
+        this.otherwiseCase = this.cases.stream().filter(c -> c.isOtherwise).findFirst().orElse(null);
     }
 
     static public class Case extends Statement {
@@ -102,7 +109,6 @@ public class Match extends Statement {
                 s.compileAsInstruction(out);
             }
         }
-
     }
 
     @Override
@@ -126,41 +132,39 @@ public class Match extends Statement {
     @Override
     public void typecheck() {
         super.typecheck();
-        Type matchingType = IntegerType.getInstance();
-
-        if (expr.type() != matchingType) {
-            throw new TypeError("Type mismatch in match evaluated expression");
+        if (!expr.type().equals(BoolType.getInstance()) && !expr.type().equals(IntegerType.getInstance())) {
+            throw new TypeError(String.format("Expression in match must be of type bool or int, got %s",
+                    expr.type()));
         }
 
-        for (Case c : this.cases) {
-            if (!c.isOtherwise && c.expr != null && !matchingType.equals(c.expr.type())) {
+        for (Case c : this.nonOtherwiseCases) {
+            if (!expr.type().equals(c.expr.type())) {
                 throw new TypeError("Type mismatch in case");
             }
         }
 
-        // Aprovechamos que todas las expresiones ya están procesadas para calcular el
-        // valor mínimo y máximo
-        // y ordenar la lista de cases
-
-        // Vamos a ordenar el array en base al valor de las expresiones
-        Collections.sort(cases, new Comparator<Match.Case>() {
+        /// Ordenar los casos que no son otherwise por el valor de su expresion
+        Collections.sort(nonOtherwiseCases, new Comparator<Match.Case>() {
             public int compare(Match.Case o1, Match.Case o2) {
                 return o1.exprValue - o2.exprValue;
             }
         });
 
-        // Calculamos el minimo y el maximo
-        if (!cases.get(0).isOtherwise) {
-            min = cases.get(0).exprValue;
-        }
-        if (!cases.get(cases.size() - 1).isOtherwise) {
-            max = cases.get(cases.size() - 1).exprValue;
-        } else if (cases.size() > 1 && !cases.get(cases.size() - 2).isOtherwise) {
-            max = cases.get(cases.size() - 2).exprValue;
+        /// Comprobar que no hay casos repetidos
+        for (int i = 0; i < nonOtherwiseCases.size() - 1; ++i) {
+            if (nonOtherwiseCases.get(i).exprValue == nonOtherwiseCases.get(i + 1).exprValue) {
+                throw new TypeError(String.format("Repeated case %d in match", nonOtherwiseCases.get(i).exprValue));
+            }
         }
 
-        // Ajustamos los valores de la expresion del match y de los casos para el minimo
-
+        /// Calculamos el minimo y el maximo
+        /// La razon es porque br_table del WASM empieza en 0
+        /// Entonces si tenemos un match con casos entre 5 y 10, tenemos que restar 5
+        // para que empiece en 0
+        if (nonOtherwiseCases.size() > 0) {
+            min = nonOtherwiseCases.get(0).exprValue;
+            max = nonOtherwiseCases.get(nonOtherwiseCases.size() - 1).exprValue;
+        }
     }
 
     @Override
@@ -176,47 +180,51 @@ public class Match extends Statement {
     public void compileAsInstruction(ProgramOutput out) {
         out.comment("INSTRUCTION: " + this.decompile());
 
-        // Cojemos el maximo valor posible
-        int n = this.max;
+        /// Rango de los casos que no son otherwise
+        int rango = 0;
+        if (nonOtherwiseCases.size() > 0) {
+            rango = max - min + 1;
+        }
 
-        for (int i = min; i < n + 2; ++i) {
+        /// El primer block es para poder salir del match
+        /// El ultimo block es para poner br_table y la expresion a evaluar por dentro
+        for (int i = 0; i < rango + 2; ++i) {
             out.block();
+            out.indent();
         }
 
-        out.comment("n + 2 times block");
+        out.comment("Bloque n + 2");
+        out.comment(String.format("Cargar el valor del match %s", this.expr.decompile()));
+        this.expr.compileAsExpr(out);
+        out.comment("Ajustar el valor para que este en el rango");
+        out.i32_const(min);
+        out.i32_sub();
 
-        // Cargamos el valor de la expresion actualizado
-        if (min > 0) {
-            out.i32_const(exprValue);
-            out.i32_const(min);
-            out.i32_sub();
-        } else {
-            out.i32_const(exprValue);
-            out.i32_const(min);
-            out.i32_add();
-        }
-
-        out.br_table(n - min);
+        out.br_table(rango);
+        out.comment("Fin bloque n + 2");
         out.end();
 
-        for (int i = min; i <= n; ++i) {
-            out.indent();
-            Case c = cases.get(0);
-            if (c.isOtherwise) {
-                out.comment("caso otherwise");
+        /// Ahora el caso min -> 0, el caso min + 1 -> 1, etc
+        int j = 0; /// Indice por el que vamos en la lista de nonOtherwiseCases
+        for (int i = 0; i < rango; ++i) {
+            out.comment(String.format("Caso %d de br_table", i));
+
+            Case c = nonOtherwiseCases.get(j);
+            if (c.exprValue == i + min) {
+                out.comment(String.format("Caso %d de match", c.exprValue));
                 c.compileAsInstruction(out);
-                cases.remove(0);
-            } else {
-                if (c.exprValue == i) {
-                    out.comment("caso " + c.exprValue);
-                    c.compileAsInstruction(out);
-                    cases.remove(0);
-                }
-                out.comment("salta a etiqueta salir");
-                out.br(n - i);
-                out.comment("etiqueta " + i);
+                ++j;
             }
+
+            out.br(rango - i);
             out.end();
         }
+
+        if (otherwiseCase != null) {
+            out.comment("Caso otherwise");
+            otherwiseCase.compileAsInstruction(out);
+        }
+
+        out.end();
     }
 }

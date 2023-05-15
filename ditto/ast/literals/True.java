@@ -35,8 +35,13 @@ public class True extends Literal {
     }
 
     @Override
+    public Integer evalIntAtCompileTime() {
+        return 1;
+    }
+
+    @Override
     public void compileAsExpr(ProgramOutput out) {
-        out.i32_const(0);
+        out.i32_const(1);
     }
 
     @Override

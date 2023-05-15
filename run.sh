@@ -29,16 +29,19 @@ Uso: $0 [build|compile|test]
         java: Compila el codigo java del compilador
         all: Genera y compila todo
 
-    compile [path]: Compila el fichero .ditto especificado en path
+    compile [<filepath>]: Compila el fichero .ditto especificado en <filepath>
                     Se pueden encontrar programas de ejemplo en test/pass/*.ditto
 
-    test: ejecuta los tests
+    test [action] [<filepath>|all]: ejecuta los tests de la etapa [action]
         ast: ejecuta los tests de construcción del ast
         bind: ejecuta los tests de vinculación
         typesize: ejecuta los tests de cálculo de tamaño de tipos
         typecheck: ejecuta los tests de tipado
         offsets: ejecuta los tests de cáluculo de desplazamientos
         code: ejecuta los tests de compilación
+
+        all: Ejecuta los tests de "test/pass" y "test/fail/action". Se puede omitir
+        <filepath>: Ejecuta el test para el fichero especificado
 EOF
 }
 

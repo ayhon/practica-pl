@@ -76,10 +76,10 @@ case $1 in
     compile)
         file="$2"
 		print_ast="$3" # If "ast", prints the AST
-        $0 build all && \
+        "$0" build all && \
         filename=`basename $file .ditto`
         filedir=`dirname $file`
-        ditto_test code $file $3 && ./wat2wasm "$filedir/compiled/$filename.wat" -o "WASM/$filename.wasm"
+        ditto_test code $file "$3" && ./wat2wasm "$filedir/compiled/$filename.wat" -o "WASM/$filename.wasm"
         ;;
     test)
         task="$2"
@@ -88,7 +88,7 @@ case $1 in
 
         # Comprobar el flag de DO_NOT_COMPILE y compilar si no está
         if [ -z $DO_NOT_COMPILE ]; then
-            $0 build all
+            "$0" build all
         fi && \
 
         case $test_file in
@@ -107,15 +107,15 @@ case $1 in
                         # No compilar los ficheros que no tienen funcion main
                         continue
                     fi
-                    ditto_test $task $test_file $print_ast
+                    ditto_test "$task" "$test_file" "$print_ast"
                     RESULT=$?
 
                     # Compilar y ejecutar el codigo generado si la tarea es code
                     if [ $RESULT -eq 0 ] && [ "$task" == "code" ]; then
                         # Tiene mismo nombre, pero extension .wat, en carpeta compiled
-                        dir=$(dirname $test_file)
-                        wat_file=$(basename $test_file .ditto).wat
-                        node main.js $dir/compiled/$wat_file --disable-console-print
+                        dir=$(dirname "$test_file")
+                        wat_file=$(basename "$test_file" .ditto).wat
+                        node main.js "$dir/compiled/$wat_file" --disable-console-print
                         RESULT=$?
                     fi
 
@@ -141,7 +141,7 @@ case $1 in
                         RESULT=$?
                         # Deberia fallar la ejecucion si la tarea es $task
                         # Si no falla, lanza un mensaje de error
-                        if [ $task_i == $task ]; then
+                        if [ "$task_i" == "$task" ]; then
                             if [ $RESULT -eq 0 ]; then
                                 # echo "$test_output"
                                 echo "      ❌ passed [$task_i] $test_file  y NO deberia"
@@ -161,7 +161,7 @@ case $1 in
                         fi
 
                         # Pasar al siguiente fichero cuando se ha ejecutado la tarea $task
-                        if [ $task_i == $task ]; then
+                        if [ "$task_i" == "$task" ]; then
                             break
                         fi
                     done
@@ -173,14 +173,14 @@ case $1 in
                 fi
                 ;;
             *)
-                ditto_test $task $test_file $print_ast
+                ditto_test "$task" "$test_file" "$print_ast"
                 
                 if [ $? -eq 0 ] && [ "$task" == "code" ]; then
                     # Ejecutar el codigo generado
                     # Tiene mismo nombre, pero extension .wat, en carpeta compiled
-                    dir=$(dirname $test_file)
-                    wat_file=$(basename $test_file .ditto).wat
-                    node main.js $dir/compiled/$wat_file
+                    dir=$(dirname "$test_file")
+                    wat_file=$(basename "$test_file" .ditto).wat
+                    node main.js "$dir/compiled/$wat_file"
                 fi
                 ;;
         esac

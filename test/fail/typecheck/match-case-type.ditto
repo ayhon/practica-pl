@@ -1,0 +1,9 @@
+func main()
+    int x := scan();
+    match x is 
+        case true do
+            print(-1);
+        otherwise
+            print(-1);
+    end
+end

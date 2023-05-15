@@ -19,8 +19,33 @@ cup(){
 ditto_test(){
     java -cp "$JAR_PATH/*:." ditto.Test $@
 }
+usage(){
+        cat <<EOF
+Uso: $0 [build|compile|test] 
+    build [lexer|parser|java|all]: Compila las partes del proyecto
+        lexer: Genera el lexer ditto/lexer/Lexer.java a partir de ditto/lexer/Tokens.l
+        parser: Genera el parser ditto/parser/Parser.java y los tokens ditto/parser/TokenKind.java
+                a partir de ditto/parser/Syntax.cup
+        java: Compila el codigo java del compilador
+        all: Genera y compila todo
+
+    compile [path]: Compila el fichero .ditto especificado en path
+                    Se pueden encontrar programas de ejemplo en test/pass/*.ditto
+
+    test: ejecuta los tests
+        ast: ejecuta los tests de construcción del ast
+        bind: ejecuta los tests de vinculación
+        typesize: ejecuta los tests de cálculo de tamaño de tipos
+        typecheck: ejecuta los tests de tipado
+        offsets: ejecuta los tests de cáluculo de desplazamientos
+        code: ejecuta los tests de compilación
+EOF
+}
 
 case $1 in
+    help)
+        usage && exit 0
+        ;;
     build)
         case $2 in
             lexer)
@@ -40,8 +65,8 @@ case $1 in
                 $0 build lexer && $0 build parser && $0 build java
                 ;;
             *)
-                echo "Nou entiendo"
-                exit 1
+                echo "Opción no válida para \"build\": \"$2\""
+                usage && exit 1
                 ;;
         esac
         ;;
@@ -159,7 +184,6 @@ case $1 in
         ;;
     
     *)
-        echo "Nou entiendo"
-        exit 1
+        usage && exit 1
         ;;
 esac

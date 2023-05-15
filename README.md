@@ -2,30 +2,38 @@
 
 Implementación de un compilador de `ditto` a WASM. Práctica de la asignatura *Procesadores de Lenguaje*
 
-## Entregas
- - [> Feb] Primera entrega  
-   Descripción propuesta del lenguaje
- - [> Mar] Segunda entrega  
-   Análisis léxico y sintáctico, con mínima recuperación de errores y generación del AST
- - [= May] Tercera entrega  
-   Análisis semántico (vinculación y tipos) y generación del WebAssembly
-
 ## Uso
 
-Compilar lexer y parser:
+Para probar el compilador, usar el script `run.sh`
 
-```bash
-./run.sh build all
+```
+Uso: ./run.sh [build|compile|test] 
+    build [lexer|parser|java|all]: Compila las partes del proyecto
+        lexer: Genera el lexer ditto/lexer/Lexer.java a partir de ditto/lexer/Tokens.l
+        parser: Genera el parser ditto/parser/Parser.java y los tokens ditto/parser/TokenKind.java
+                a partir de ditto/parser/Syntax.cup
+        java: Compila el codigo java del compilador
+        all: Genera y compila todo
+
+    compile [path]: Compila el fichero .ditto especificado en path
+                    Se pueden encontrar programas de ejemplo en test/pass/*.ditto
+
+    test: ejecuta los tests
+        ast: ejecuta los tests de construcción del ast
+        bind: ejecuta los tests de vinculación
+        typesize: ejecuta los tests de cálculo de tamaño de tipos
+        typecheck: ejecuta los tests de tipado
+        offsets: ejecuta los tests de cáluculo de desplazamientos
+        code: ejecuta los tests de compilación
 ```
 
-Mostrar AST de un fichero `testFile.ditto` situado en `test/`:
+## Estructura
 
-```bash
-./run.sh ast testFile
-```
-
-Mostrar AST de todos los ficheros `*.ditto` situados en `test/`:
-
-```bash
-./run.sh test-ast
-```
+ - `ditto`: Código del compilador.
+   - `ditto/ast`: Definición de nodos del AST.
+   - `ditto/parser`: Gramática CUP junto con parser generado.
+   - `ditto/lexer`: Definición de tokens `.l` para JFLEX y lexer generado.
+ - `run.sh`: Script de ejecución.
+ - `test`: Directorio con programas de prueba.
+   - `test/fail`: Programas que deben fallar. La subcarpeta en la que se encuentran indica la etapa.
+   - `test/pass`: Programas que deben compilarse correctamente.
